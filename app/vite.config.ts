@@ -172,7 +172,7 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     server: {
-      host: '0.0.0.0',
+      host: 'localhost',
       hmr: true,
       port: Number.parseInt(VITE_APP_PORT, 10),
       // 仅 H5 端生效，其他端不生效（其他端走build，不走devServer)
