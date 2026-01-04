@@ -204,9 +204,7 @@ describe('userService', () => {
       }
       userRepository.createQueryBuilder = jest.fn().mockReturnValue(mockQueryBuilder)
 
-      await expect(service.getAccountInfo(999))
-        .rejects
-        .toThrow(BusinessException)
+      await expect(service.getAccountInfo(999)).rejects.toThrow(BusinessException)
     })
   })
 
@@ -233,9 +231,7 @@ describe('userService', () => {
         newPassword: 'NewTest123',
       }
 
-      await expect(service.updatePassword(1, dto))
-        .rejects
-        .toThrow(BusinessException)
+      await expect(service.updatePassword(1, dto)).rejects.toThrow(BusinessException)
     })
   })
 
@@ -251,9 +247,7 @@ describe('userService', () => {
     it('should throw error when user does not exist', async () => {
       userRepository.findOneBy = jest.fn().mockResolvedValue(undefined)
 
-      await expect(service.exist('nonexistent'))
-        .rejects
-        .toThrow(BusinessException)
+      await expect(service.exist('nonexistent')).rejects.toThrow(BusinessException)
     })
   })
 })

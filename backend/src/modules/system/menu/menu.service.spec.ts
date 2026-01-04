@@ -236,9 +236,7 @@ describe('menuService', () => {
         updateBy: 1,
       }
 
-      await expect(service.check(dto))
-        .rejects
-        .toThrow(BusinessException)
+      await expect(service.check(dto)).rejects.toThrow(BusinessException)
     })
 
     it('should throw error when parent menu not found', async () => {
@@ -252,9 +250,7 @@ describe('menuService', () => {
       }
       menuRepository.findOneBy = jest.fn().mockResolvedValue(undefined)
 
-      await expect(service.check(dto))
-        .rejects
-        .toThrow(BusinessException)
+      await expect(service.check(dto)).rejects.toThrow(BusinessException)
     })
 
     it('should throw error when parent is also a menu', async () => {
@@ -268,9 +264,7 @@ describe('menuService', () => {
       }
       menuRepository.findOneBy = jest.fn().mockResolvedValue({ id: 1, type: 1 } as MenuEntity)
 
-      await expect(service.check(dto))
-        .rejects
-        .toThrow(BusinessException)
+      await expect(service.check(dto)).rejects.toThrow(BusinessException)
     })
 
     it('should not throw error when creating button under directory', async () => {
@@ -344,10 +338,12 @@ describe('menuService', () => {
     it('should return all permissions for admin user', async () => {
       mockRoleService.getRoleIdsByUser.mockResolvedValue([1])
       mockRoleService.hasAdminRole.mockReturnValue(true)
-      menuRepository.findBy = jest.fn().mockResolvedValue([
-        { permission: 'sys:user:list' },
-        { permission: 'sys:user:create,sys:user:update' },
-      ] as MenuEntity[])
+      menuRepository.findBy = jest
+        .fn()
+        .mockResolvedValue([
+          { permission: 'sys:user:list' },
+          { permission: 'sys:user:create,sys:user:update' },
+        ] as MenuEntity[])
 
       const result = await service.getPermissions(1)
 
@@ -360,9 +356,7 @@ describe('menuService', () => {
       const mockQueryBuilder = {
         innerJoinAndSelect: jest.fn().mockReturnThis(),
         andWhere: jest.fn().mockReturnThis(),
-        getMany: jest.fn().mockResolvedValue([
-          { permission: 'sys:user:list' },
-        ]),
+        getMany: jest.fn().mockResolvedValue([{ permission: 'sys:user:list' }]),
       }
       menuRepository.createQueryBuilder = jest.fn().mockReturnValue(mockQueryBuilder as any)
       mockRoleService.getRoleIdsByUser.mockResolvedValue([1])
@@ -397,7 +391,9 @@ describe('menuService', () => {
       mockRedis.get.mockResolvedValue('mock-token')
       mockRoleService.getRoleIdsByUser.mockResolvedValue([1])
       mockRoleService.hasAdminRole.mockReturnValue(true)
-      menuRepository.findBy = jest.fn().mockResolvedValue([{ permission: 'sys:user:list' }] as MenuEntity[])
+      menuRepository.findBy = jest
+        .fn()
+        .mockResolvedValue([{ permission: 'sys:user:list' }] as MenuEntity[])
 
       await service.refreshPerms(1)
 
@@ -418,9 +414,7 @@ describe('menuService', () => {
     it('should refresh permissions for all online users', async () => {
       const mockKeys = ['auth:token:1', 'auth:token:2']
       mockRedis.keys = jest.fn().mockResolvedValue(mockKeys)
-      mockRoleService.getRoleIdsByUser
-        .mockResolvedValueOnce([1])
-        .mockResolvedValueOnce([2])
+      mockRoleService.getRoleIdsByUser.mockResolvedValueOnce([1]).mockResolvedValueOnce([2])
       mockRoleService.hasAdminRole.mockReturnValue(false)
       menuRepository.createQueryBuilder = jest.fn().mockReturnValue({
         innerJoinAndSelect: jest.fn().mockReturnThis(),

@@ -145,18 +145,18 @@ describe('authService', () => {
     it('should throw error when user not found', async () => {
       mockUserService.findUserByUserName.mockResolvedValue(undefined)
 
-      await expect(service.login('nonexistent', '123456', '127.0.0.1', 'Mozilla/5.0'))
-        .rejects
-        .toThrow(BusinessException)
+      await expect(
+        service.login('nonexistent', '123456', '127.0.0.1', 'Mozilla/5.0'),
+      ).rejects.toThrow(BusinessException)
       expect(mockUserService.findUserByUserName).toHaveBeenCalledWith('nonexistent')
     })
 
     it('should throw error when password is incorrect', async () => {
       mockUserService.findUserByUserName.mockResolvedValue(mockUser as UserEntity)
 
-      await expect(service.login('admin', 'wrongpassword', '127.0.0.1', 'Mozilla/5.0'))
-        .rejects
-        .toThrow(BusinessException)
+      await expect(
+        service.login('admin', 'wrongpassword', '127.0.0.1', 'Mozilla/5.0'),
+      ).rejects.toThrow(BusinessException)
       expect(mockUserService.findUserByUserName).toHaveBeenCalledWith('admin')
     })
   })
@@ -175,17 +175,15 @@ describe('authService', () => {
     it('should throw error when user not found', async () => {
       mockUserService.findUserByUserName.mockResolvedValue(undefined)
 
-      await expect(service.validateUser('nonexistent', '123456'))
-        .rejects
-        .toThrow(BusinessException)
+      await expect(service.validateUser('nonexistent', '123456')).rejects.toThrow(BusinessException)
     })
 
     it('should throw error when password is incorrect', async () => {
       mockUserService.findUserByUserName.mockResolvedValue(mockUser as UserEntity)
 
-      await expect(service.validateUser('admin', 'wrongpassword'))
-        .rejects
-        .toThrow(BusinessException)
+      await expect(service.validateUser('admin', 'wrongpassword')).rejects.toThrow(
+        BusinessException,
+      )
     })
   })
 
@@ -199,9 +197,9 @@ describe('authService', () => {
     it('should throw error when password is incorrect', async () => {
       mockUserService.findUserByUserName.mockResolvedValue(mockUser as UserEntity)
 
-      await expect(service.checkPassword('admin', 'wrongpassword'))
-        .rejects
-        .toThrow(BusinessException)
+      await expect(service.checkPassword('admin', 'wrongpassword')).rejects.toThrow(
+        BusinessException,
+      )
     })
   })
 

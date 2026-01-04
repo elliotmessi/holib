@@ -46,10 +46,14 @@ export abstract class CompleteEntity extends CommonEntity {
    * @see https://typeorm.io/decorator-reference#virtualcolumn
    */
   @ApiProperty({ description: '创建者' })
-  @VirtualColumn({ query: alias => `SELECT username FROM sys_user WHERE id = ${alias}.create_by` })
+  @VirtualColumn({
+    query: (alias) => `SELECT username FROM sys_user WHERE id = ${alias}.create_by`,
+  })
   creator: string
 
   @ApiProperty({ description: '更新者' })
-  @VirtualColumn({ query: alias => `SELECT username FROM sys_user WHERE id = ${alias}.update_by` })
+  @VirtualColumn({
+    query: (alias) => `SELECT username FROM sys_user WHERE id = ${alias}.update_by`,
+  })
   updater: string
 }

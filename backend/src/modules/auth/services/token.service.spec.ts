@@ -103,9 +103,7 @@ describe('tokenService', () => {
     it('should throw error for invalid token', async () => {
       mockJwtService.verifyAsync.mockRejectedValue(new Error('Invalid token'))
 
-      await expect(service.verifyAccessToken('invalid-token'))
-        .rejects
-        .toThrow('Invalid token')
+      await expect(service.verifyAccessToken('invalid-token')).rejects.toThrow('Invalid token')
     })
   })
 })

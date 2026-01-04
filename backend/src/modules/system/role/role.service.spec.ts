@@ -92,7 +92,7 @@ describe('roleService', () => {
 
   describe('findAll', () => {
     it('should return paginated roles', async () => {
-      ; (paginate as jest.Mock).mockResolvedValue({
+      ;(paginate as jest.Mock).mockResolvedValue({
         items: [mockRole],
         total: 1,
         page: 1,
@@ -112,7 +112,7 @@ describe('roleService', () => {
         getMany: jest.fn().mockResolvedValue([mockRole]),
       }
       roleRepository.createQueryBuilder = jest.fn().mockReturnValue(mockQueryBuilder as any)
-      ; (paginate as jest.Mock).mockResolvedValue({
+      ;(paginate as jest.Mock).mockResolvedValue({
         items: [mockRole],
         total: 1,
         page: 1,
@@ -177,9 +177,7 @@ describe('roleService', () => {
     })
 
     it('should throw error when trying to delete root role', async () => {
-      await expect(service.delete(ROOT_ROLE_ID))
-        .rejects
-        .toThrow('不能删除超级管理员')
+      await expect(service.delete(ROOT_ROLE_ID)).rejects.toThrow('不能删除超级管理员')
     })
   })
 
@@ -203,10 +201,9 @@ describe('roleService', () => {
 
   describe('getRoleValues', () => {
     it('should return role values by ids', async () => {
-      roleRepository.findBy = jest.fn().mockResolvedValue([
-        { value: 'admin' },
-        { value: 'user' },
-      ] as RoleEntity[])
+      roleRepository.findBy = jest
+        .fn()
+        .mockResolvedValue([{ value: 'admin' }, { value: 'user' }] as RoleEntity[])
 
       const result = await service.getRoleValues([1, 2])
 
