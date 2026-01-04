@@ -4,6 +4,7 @@ import {
   FooterToolbar,
   PageContainer,
   ProDescriptions,
+  ProColumns,
   ProDescriptionsItemProps,
   ProTable,
 } from '@ant-design/pro-components';
@@ -90,11 +91,11 @@ const TableList: React.FC<unknown> = () => {
   const actionRef = useRef<ActionType>();
   const [row, setRow] = useState<API.UserInfo>();
   const [selectedRowsState, setSelectedRows] = useState<API.UserInfo[]>([]);
-  const columns: ProDescriptionsItemProps<API.UserInfo>[] = [
+  const columns: ProColumns<API.UserInfo>[] = [
     {
       title: '名称',
       dataIndex: 'name',
-      tip: '名称是唯一的 key',
+      tooltip: '名称是唯一的 key',
       formItemProps: {
         rules: [
           {
@@ -132,12 +133,18 @@ const TableList: React.FC<unknown> = () => {
           >
             配置
           </a>
-          <Divider type="vertical" />
+          <Divider orientation="vertical" />
           <a href="">订阅警报</a>
         </>
       ),
     },
   ];
+  // const descColumns: ProDescriptionsProps<API.UserInfo>[] = columns.map(
+  //   (column) => ({
+  //     ...column,
+  //     dataIndex: column.dataIndex || '',
+  //   }),
+  // );
 
   return (
     <PageContainer
@@ -241,8 +248,8 @@ const TableList: React.FC<unknown> = () => {
         />
       ) : null}
 
-      <Drawer
-        width={600}
+      <Drawer 
+        size={600}
         open={!!row}
         onClose={() => {
           setRow(undefined);
@@ -259,7 +266,7 @@ const TableList: React.FC<unknown> = () => {
             params={{
               id: row?.name,
             }}
-            columns={columns}
+            columns={columns as ProDescriptionsItemProps<API.UserInfo>[]}
           />
         )}
       </Drawer>
