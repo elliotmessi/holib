@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# Build outputs
+dist/
+build/
+out/
+*.log
+logs/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Docker files
+.dockerignore
+Dockerfile.*
+docker-compose*.yml
+
+# Database files
+*.sqlite
+*.db
+*.db-journal
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Generated files
+*.generated.ts
+*.gen.ts
+
+# Testing files
+*.spec.js.snap
+*.test.js.snap
+
+# Misc
+.trae/
+*.pid
+*.seed
+*.pid.lock
