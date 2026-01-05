@@ -1,5 +1,6 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger'
-import { Column, Entity, OneToMany, Relation, Tree, TreeChildren, TreeParent } from 'typeorm'
+import { Column, Entity, OneToMany, Tree, TreeChildren, TreeParent } from 'typeorm'
+import type { Relation } from 'typeorm'
 
 import { CompleteEntity } from '~/common/entity/common.entity'
 
