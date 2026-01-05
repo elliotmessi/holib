@@ -7,7 +7,7 @@ import { LessThan } from 'typeorm'
 
 import { CronOnce } from '~/common/decorators/cron-once.decorator'
 import { ConfigKeyPaths } from '~/config'
-import { AccessTokenEntity } from '~/modules/auth/entities/access-token.entity'
+import { AccessTokenEntity } from '~/modules/auth/entities/tokens.entity'
 
 @Injectable()
 export class CronService {

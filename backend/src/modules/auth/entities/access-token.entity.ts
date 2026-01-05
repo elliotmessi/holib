@@ -11,8 +11,6 @@ import {
 
 import { UserEntity } from '~/modules/user/user.entity'
 
-import { RefreshTokenEntity } from './refresh-token.entity'
-
 @Entity('user_access_tokens')
 export class AccessTokenEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
@@ -27,12 +25,7 @@ export class AccessTokenEntity extends BaseEntity {
   @CreateDateColumn({ comment: '令牌创建时间' })
   created_at!: Date
 
-  @OneToOne(() => RefreshTokenEntity, (refreshToken) => refreshToken.accessToken, {
-    cascade: true,
-  })
-  refreshToken!: RefreshTokenEntity
-
-  @ManyToOne(() => UserEntity, (user) => user.accessTokens, {
+  @ManyToOne(() => UserEntity, undefined, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'user_id' })

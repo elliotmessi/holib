@@ -18,7 +18,7 @@ export class PharmacyEntity extends CommonEntity {
   @ManyToOne('HospitalEntity', { onDelete: 'SET NULL', eager: true })
   hospital: Relation<any>
 
-  @Column()
+  @Column({ nullable: true })
   hospitalId: number
 
   @Column({ type: 'enum', enum: PharmacyType })

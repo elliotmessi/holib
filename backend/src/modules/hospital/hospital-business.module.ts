@@ -1,14 +1,10 @@
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
-import { HospitalEntity } from './hospital/hospital.entity'
-import { HospitalController } from './hospital/hospital.controller'
-import { HospitalService } from './hospital/hospital.service'
+import { HospitalModule } from './hospital/hospital.module'
 import { DepartmentModule } from './department/department.module'
 import { PharmacyModule } from './pharmacy/pharmacy.module'
 import { DoctorModule } from './doctor/doctor.module'
-import { DoctorController } from './doctor/doctor.controller'
-import { DoctorService } from './doctor/doctor.service'
 import { DrugCategoryModule } from './drug-category/drug-category.module'
 import { DrugModule } from './drug/drug.module'
 import { DrugRuleModule } from './drug-rule/drug-rule.module'
@@ -21,7 +17,7 @@ import { PrescriptionDrugModule } from './prescription-drug/prescription-drug.mo
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([HospitalEntity]),
+    HospitalModule,
     DepartmentModule,
     PharmacyModule,
     DoctorModule,
@@ -35,8 +31,20 @@ import { PrescriptionDrugModule } from './prescription-drug/prescription-drug.mo
     PrescriptionModule,
     PrescriptionDrugModule,
   ],
-  controllers: [HospitalController, DoctorController],
-  providers: [HospitalService, DoctorService],
-  exports: [HospitalService, DoctorService, TypeOrmModule],
+  exports: [
+    HospitalModule,
+    DepartmentModule,
+    PharmacyModule,
+    DoctorModule,
+    DrugCategoryModule,
+    DrugModule,
+    DrugRuleModule,
+    InventoryModule,
+    InventoryTransactionModule,
+    PatientModule,
+    PatientAllergyModule,
+    PrescriptionModule,
+    PrescriptionDrugModule,
+  ],
 })
 export class HospitalBusinessModule {}

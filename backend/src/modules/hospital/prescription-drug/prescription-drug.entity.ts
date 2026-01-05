@@ -10,7 +10,7 @@ export class PrescriptionDrugEntity extends CommonEntity {
   @Column()
   prescriptionId: number
 
-  @ManyToOne('DrugEntity', { onDelete: 'SET NULL', eager: true })
+  @ManyToOne('DrugEntity', { onDelete: 'CASCADE', eager: true })
   drug: Relation<any>
 
   @Column()

@@ -25,9 +25,9 @@ export class HospitalEntity extends CommonEntity {
   @Column({ type: 'text', nullable: true })
   description: string
 
-  @OneToMany('DepartmentEntity', (department) => (department as any).hospital, { eager: true })
+  @OneToMany('DepartmentEntity', (department) => (department as any).hospital)
   departments: Relation<any[]>
 
-  @OneToMany('PharmacyEntity', (pharmacy) => (pharmacy as any).hospital, { eager: true })
+  @OneToMany('PharmacyEntity', (pharmacy) => (pharmacy as any).hospital)
   pharmacies: Relation<any[]>
 }
