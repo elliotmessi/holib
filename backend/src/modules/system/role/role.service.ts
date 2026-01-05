@@ -40,7 +40,7 @@ export class RoleService {
     remark,
     status,
   }: RoleQueryDto): Promise<Pagination<RoleEntity>> {
-    const queryBuilder = await this.roleRepository.createQueryBuilder('role').where({
+    const queryBuilder = this.roleRepository.createQueryBuilder('role').where({
       ...(name ? { name: Like(`%${name}%`) } : null),
       ...(value ? { value: Like(`%${value}%`) } : null),
       ...(remark ? { remark: Like(`%${remark}%`) } : null),

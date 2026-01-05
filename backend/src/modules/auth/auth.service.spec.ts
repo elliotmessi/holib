@@ -68,6 +68,7 @@ describe('authService', () => {
   const mockUserService = {
     findUserByUserName: jest.fn(),
     forbidden: jest.fn().mockResolvedValue(undefined),
+    forceUpdatePassword: jest.fn().mockResolvedValue(undefined),
   }
 
   const mockLoginLogService = {
@@ -290,6 +291,26 @@ describe('authService', () => {
 
       expect(mockRedis.set).toHaveBeenCalled()
       expect(mockUserService.forbidden).toHaveBeenCalledWith(1, 'mock-access-token')
+    })
+  })
+
+  describe('loginLog', () => {
+    it('should create login log', async () => {
+      await service.loginLog(1, '127.0.0.1', 'Mozilla/5.0')
+
+      expect(mockLoginLogService.create).toHaveBeenCalledWith(1, '127.0.0.1', 'Mozilla/5.0')
+    })
+  })
+
+  describe('resetPassword', () => {
+    it('should reset user password', async () => {
+      mockUserService.findUserByUserName.mockResolvedValue(mockUser as UserEntity)
+      mockUserService.forceUpdatePassword = jest.fn().mockResolvedValue(undefined)
+
+      await service.resetPassword('admin', 'NewPassword123')
+
+      expect(mockUserService.findUserByUserName).toHaveBeenCalledWith('admin')
+      expect(mockUserService.forceUpdatePassword).toHaveBeenCalledWith(1, 'NewPassword123')
     })
   })
 })

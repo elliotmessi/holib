@@ -162,7 +162,7 @@ export class UserService {
         ...data,
         psalt: salt,
         roles: await this.roleRepository.findBy({ id: In(roleIds) }),
-        dept: await DeptEntity.findOneBy({ id: deptId }),
+        dept: deptId ? await manager.findOneBy(DeptEntity, { id: deptId }) : null,
       })
 
       const result = await manager.save(u)
@@ -185,13 +185,13 @@ export class UserService {
         status,
       })
 
-      const user = await this.userRepository
-        .createQueryBuilder('user')
+      const user = await manager
+        .createQueryBuilder(UserEntity, 'user')
         .leftJoinAndSelect('user.roles', 'roles')
         .leftJoinAndSelect('user.dept', 'dept')
         .where('user.id = :id', { id })
         .getOne()
-      if (roleIds) {
+      if (roleIds && user) {
         await manager
           .createQueryBuilder()
           .relation(UserEntity, 'roles')
@@ -298,7 +298,7 @@ export class UserService {
    * 禁用多个用户
    */
   async multiForbidden(uids: number[]): Promise<void> {
-    if (uids) {
+    if (uids && uids.length > 0) {
       const pvs: string[] = []
       const ts: string[] = []
       const ps: string[] = []
