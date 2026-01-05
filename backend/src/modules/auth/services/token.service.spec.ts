@@ -5,7 +5,7 @@ import { getRepositoryToken } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { REDIS_CLIENT } from '~/common/decorators/inject-redis.decorator'
 import { ISecurityConfig, SecurityConfig } from '~/config'
-import { AccessTokenEntity } from '../entities/tokens.entity'
+import { AccessTokenEntity } from '~/modules/auth/entities/access-token.entity'
 import { TokenService } from '~/modules/auth/services/token.service'
 import { RoleService } from '~/modules/system/role/role.service'
 

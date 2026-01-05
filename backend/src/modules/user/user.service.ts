@@ -24,7 +24,7 @@ import { QQService } from '~/shared/helper/qq.service'
 
 import { md5, randomValue } from '~/utils'
 
-import { AccessTokenEntity } from '../auth/entities/tokens.entity'
+import { AccessTokenEntity } from '../auth/entities/access-token.entity'
 import { DeptEntity } from '../system/dept/dept.entity'
 import { ParamConfigService } from '../system/param-config/param-config.service'
 import { RoleEntity } from '../system/role/role.entity'

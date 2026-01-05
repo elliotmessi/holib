@@ -11,7 +11,7 @@ import { ErrorEnum } from '~/constants/error-code.constant'
 
 import { genOnlineUserKey } from '~/helper/genRedisKey'
 import { AuthService } from '~/modules/auth/auth.service'
-import { AccessTokenEntity } from '~/modules/auth/entities/tokens.entity'
+import { AccessTokenEntity } from '~/modules/auth/entities/access-token.entity'
 
 import { TokenService } from '~/modules/auth/services/token.service'
 import { SseService } from '~/modules/sse/sse.service'

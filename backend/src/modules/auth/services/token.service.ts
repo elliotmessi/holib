@@ -11,7 +11,8 @@ import { RoleService } from '~/modules/system/role/role.service'
 import { UserEntity } from '~/modules/user/user.entity'
 import { generateUUID } from '~/utils'
 
-import { AccessTokenEntity, RefreshTokenEntity } from '../entities/tokens.entity'
+import { AccessTokenEntity } from '../entities/access-token.entity'
+import { RefreshTokenEntity } from '../entities/refresh-token.entity'
 
 /**
  * 令牌服务
