@@ -27,7 +27,7 @@ export class AccessTokenEntity extends BaseEntity {
   created_at!: Date
 
   @OneToOne(
-    () => require('./tokens.entity').RefreshTokenEntity,
+    () => require('./refresh-token.entity').RefreshTokenEntity,
     (refreshToken: RefreshTokenEntity) => refreshToken.accessToken,
     {
       cascade: true,
