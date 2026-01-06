@@ -8,14 +8,14 @@ export function formatToDateTime(
   date: string | number | Date | dayjs.Dayjs | null | undefined = undefined,
   format = DATE_TIME_FORMAT,
 ): string {
-  return dayjs(date).format(format)
+  return dayjs(date || undefined).format(format)
 }
 
 export function formatToDate(
   date: string | number | Date | dayjs.Dayjs | null | undefined = undefined,
   format = DATE_FORMAT,
 ): string {
-  return dayjs(date).format(format)
+  return dayjs(date || undefined).format(format)
 }
 
 export function isDateObject(obj: unknown): boolean {
