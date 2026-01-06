@@ -1,3 +1,10 @@
 {
-  "oxc.enable": true
+  "oxc.enable": true,
+  "oxc.path.node": "D:/nvm4w/nodejs/node.exe",
+  "oxc.node.path": "D:/nvm4w/nodejs/node.exe",
+  "oxc.path.oxfmt": "${workspaceFolder}/backend/node_modules/.bin/oxfmt",
+  "oxc.path.oxlint": "${workspaceFolder}/backend/node_modules/.bin/oxlint",
+  "oxc.oxfmt.path": "${workspaceFolder}/backend/node_modules/.bin/oxfmt",
+  "oxc.oxlint.path": "${workspaceFolder}/backend/node_modules/.bin/oxlint",
+  "oxc.fmt.configPath": "${workspaceFolder}/backend/.oxfmtrc.json"
 }
