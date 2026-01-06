@@ -3,15 +3,20 @@ import { IsString, IsOptional, IsInt, Min, IsEnum, IsNumber, IsBoolean } from 'c
 
 import { DrugRuleType, InteractionSeverity } from './drug-rule.entity'
 
-export class CreateDrugRuleDto {
-  @ApiProperty({ description: '药品ID' })
+/**
+ * 药品规则基础DTO，包含所有共同字段
+ */
+class DrugRuleBaseDto {
+  @ApiProperty({ description: '药品ID', required: false })
   @IsInt()
   @Min(1)
-  drugId: number
+  @IsOptional()
+  drugId?: number
 
-  @ApiProperty({ description: '规则类型', enum: DrugRuleType })
+  @ApiProperty({ description: '规则类型', enum: DrugRuleType, required: false })
   @IsEnum(DrugRuleType)
-  ruleType: DrugRuleType
+  @IsOptional()
+  ruleType?: DrugRuleType
 
   @ApiProperty({ description: '最小剂量', required: false })
   @IsNumber()
@@ -55,7 +60,24 @@ export class CreateDrugRuleDto {
   isActive?: boolean
 }
 
-export class UpdateDrugRuleDto extends CreateDrugRuleDto {}
+/**
+ * 创建药品规则DTO，所有必填字段均为必填
+ */
+export class CreateDrugRuleDto extends DrugRuleBaseDto {
+  @ApiProperty({ description: '药品ID' })
+  @IsInt()
+  @Min(1)
+  drugId: number
+
+  @ApiProperty({ description: '规则类型', enum: DrugRuleType })
+  @IsEnum(DrugRuleType)
+  ruleType: DrugRuleType
+}
+
+/**
+ * 更新药品规则DTO，所有字段均为可选
+ */
+export class UpdateDrugRuleDto extends DrugRuleBaseDto {}
 
 export class DrugRuleQueryDto {
   @ApiProperty({ description: '药品ID', required: false })

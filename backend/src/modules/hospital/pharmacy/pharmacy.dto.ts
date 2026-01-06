@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsString, IsOptional, IsInt, Min, MinLength, MaxLength, IsEnum } from 'class-validator'
+import { PartialType } from '@nestjs/mapped-types'
 
 import { PharmacyType } from './pharmacy.entity'
 
@@ -52,7 +53,7 @@ export class CreatePharmacyDto {
   description?: string
 }
 
-export class UpdatePharmacyDto extends CreatePharmacyDto {}
+export class UpdatePharmacyDto extends PartialType(CreatePharmacyDto) {}
 
 export class PharmacyQueryDto {
   @ApiProperty({ description: '药房名称', required: false })

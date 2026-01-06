@@ -8,6 +8,7 @@ import {
   IsDateString,
   MaxLength,
 } from 'class-validator'
+import { PartialType } from '@nestjs/mapped-types'
 
 export class CreatePrescriptionDrugDto {
   @ApiProperty({ description: '处方ID' })
@@ -63,7 +64,7 @@ export class CreatePrescriptionDrugDto {
   usageInstructions?: string
 }
 
-export class UpdatePrescriptionDrugDto extends CreatePrescriptionDrugDto {}
+export class UpdatePrescriptionDrugDto extends PartialType(CreatePrescriptionDrugDto) {}
 
 export class PrescriptionDrugQueryDto {
   @ApiProperty({ description: '处方ID', required: false })

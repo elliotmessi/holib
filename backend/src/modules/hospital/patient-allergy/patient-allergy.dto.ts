@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsString, IsOptional, IsInt, Min, IsEnum, IsDateString } from 'class-validator'
+import { PartialType } from '@nestjs/mapped-types'
 
 import { AllergyType, AllergySeverity } from './patient-allergy.entity'
 
@@ -43,7 +44,7 @@ export class CreatePatientAllergyDto {
   notes?: string
 }
 
-export class UpdatePatientAllergyDto extends CreatePatientAllergyDto {}
+export class UpdatePatientAllergyDto extends PartialType(CreatePatientAllergyDto) {}
 
 export class PatientAllergyQueryDto {
   @ApiProperty({ description: '病人ID', required: false })

@@ -21,6 +21,9 @@ describe('DTO Validation Tests', () => {
           validTo: '2026-12-31',
           retailPrice: 25.5,
           wholesalePrice: 20.0,
+          pharmacologicalClassId: 1,
+          dosageClassId: 1,
+          departmentClassId: 1,
         })
         const errors = await validate(dto)
         expect(errors.length).toBe(0)

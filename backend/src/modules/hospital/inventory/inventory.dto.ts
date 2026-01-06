@@ -10,7 +10,11 @@ import {
   IsBoolean,
   MaxLength,
 } from 'class-validator'
+import { PartialType } from '@nestjs/mapped-types'
 
+/**
+ * 创建库存DTO，所有必填字段均为必填
+ */
 export class CreateInventoryDto {
   @ApiProperty({ description: '药品ID' })
   @IsInt()
@@ -33,23 +37,6 @@ export class CreateInventoryDto {
   @Min(0)
   quantity: number
 
-  @ApiProperty({ description: '最低库存阈值', required: false })
-  @IsInt()
-  @Min(0)
-  @IsOptional()
-  minimumThreshold?: number
-
-  @ApiProperty({ description: '最高库存阈值', required: false })
-  @IsInt()
-  @Min(0)
-  @IsOptional()
-  maximumThreshold?: number
-
-  @ApiProperty({ description: '库存位置', required: false })
-  @IsString()
-  @IsOptional()
-  storageLocation?: string
-
   @ApiProperty({ description: '有效期起始日期' })
   @IsDateString()
   validFrom: string
@@ -57,14 +44,30 @@ export class CreateInventoryDto {
   @ApiProperty({ description: '有效期截止日期' })
   @IsDateString()
   validTo: string
-}
 
-export class UpdateInventoryDto extends CreateInventoryDto {
+  @ApiProperty({ description: '最低库存阈值', required: false })
+  @IsInt()
+  @Min(0)
+  minimumThreshold?: number
+
+  @ApiProperty({ description: '最高库存阈值', required: false })
+  @IsInt()
+  @Min(0)
+  maximumThreshold?: number
+
+  @ApiProperty({ description: '库存位置', required: false })
+  @IsString()
+  storageLocation?: string
+
   @ApiProperty({ description: '是否冻结', required: false })
   @IsBoolean()
-  @IsOptional()
   isFrozen?: boolean
 }
+
+/**
+ * 更新库存DTO，所有字段均为可选
+ */
+export class UpdateInventoryDto extends PartialType(CreateInventoryDto) {}
 
 export class InventoryQueryDto {
   @ApiProperty({ description: '药品ID', required: false })

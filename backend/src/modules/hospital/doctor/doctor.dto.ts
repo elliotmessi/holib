@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsString, IsOptional, IsInt, Min, MinLength, MaxLength, IsEmail } from 'class-validator'
+import { PartialType } from '@nestjs/mapped-types'
 
 export class CreateDoctorDto {
   @ApiProperty({ description: '医生工号' })
@@ -67,7 +68,7 @@ export class CreateDoctorDto {
   password?: string
 }
 
-export class UpdateDoctorDto extends CreateDoctorDto {
+export class UpdateDoctorDto extends PartialType(CreateDoctorDto) {
   @ApiProperty({ description: '状态', required: false })
   @IsString()
   @IsOptional()

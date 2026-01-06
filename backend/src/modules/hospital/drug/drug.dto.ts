@@ -10,6 +10,7 @@ import {
   IsNumber,
   IsEnum,
 } from 'class-validator'
+import { PartialType } from '@nestjs/mapped-types'
 
 import { DrugStatus } from './drug.entity'
 
@@ -116,7 +117,7 @@ export class CreateDrugDto {
   description?: string
 }
 
-export class UpdateDrugDto extends CreateDrugDto {
+export class UpdateDrugDto extends PartialType(CreateDrugDto) {
   @ApiProperty({ description: '状态', enum: DrugStatus, required: false })
   @IsEnum(DrugStatus)
   @IsOptional()

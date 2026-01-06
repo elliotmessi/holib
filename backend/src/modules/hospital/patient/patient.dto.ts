@@ -1,10 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsString, IsOptional, IsInt, Min, MinLength, MaxLength, IsNumber } from 'class-validator'
+import { PartialType } from '@nestjs/mapped-types'
 
-/**
- * 患者基础DTO，包含所有共同字段
- */
-class PatientBaseDto {
+export class CreatePatientDto {
+  @ApiProperty({ description: '病历号' })
+  @IsString()
+  @MinLength(1)
+  @MaxLength(20)
+  medicalRecordNumber: string
+
   @ApiProperty({ description: '姓名' })
   @IsString()
   @MinLength(1)
@@ -63,28 +67,7 @@ class PatientBaseDto {
   remark?: string
 }
 
-/**
- * 创建患者DTO，病历号为必填
- */
-export class CreatePatientDto extends PatientBaseDto {
-  @ApiProperty({ description: '病历号' })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(20)
-  medicalRecordNumber: string
-}
-
-/**
- * 更新患者DTO，病历号为可选
- */
-export class UpdatePatientDto extends PatientBaseDto {
-  @ApiProperty({ description: '病历号', required: false })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(20)
-  @IsOptional()
-  medicalRecordNumber?: string
-}
+export class UpdatePatientDto extends PartialType(CreatePatientDto) {}
 
 export class PatientQueryDto {
   @ApiProperty({ description: '病人姓名', required: false })
