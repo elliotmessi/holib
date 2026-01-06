@@ -24,11 +24,11 @@ import { UserService } from './user.service'
 
 describe('UserService', () => {
   let service: UserService
-  let userRepository: jest.Mocked<Repository<UserEntity>>
-  let roleRepository: jest.Mocked<Repository<RoleEntity>>
-  let entityManager: jest.Mocked<EntityManager>
-  let redis: jest.Mocked<Redis>
-  let paramConfigService: jest.Mocked<ParamConfigService>
+  let userRepository: Mocked<Repository<UserEntity>>
+  let roleRepository: Mocked<Repository<RoleEntity>>
+  let entityManager: Mocked<EntityManager>
+  let redis: Mocked<Redis>
+  let paramConfigService: Mocked<ParamConfigService>
 
   const mockUserEntity: Partial<UserEntity> = {
     id: 1,
@@ -62,66 +62,66 @@ describe('UserService', () => {
   }
 
   const mockRedis = {
-    get: jest.fn(),
-    set: jest.fn(),
-    del: jest.fn(),
+    get: vi.fn(),
+    set: vi.fn(),
+    del: vi.fn(),
   }
 
   const mockUserRepository = {
-    createQueryBuilder: jest.fn().mockReturnValue({
-      where: jest.fn().mockReturnThis(),
-      leftJoinAndSelect: jest.fn().mockReturnThis(),
-      andWhere: jest.fn().mockReturnThis(),
-      take: jest.fn().mockReturnThis(),
-      skip: jest.fn().mockReturnThis(),
-      limit: jest.fn().mockReturnThis(),
-      offset: jest.fn().mockReturnThis(),
-      getOne: jest.fn().mockResolvedValue(mockUserEntity),
-      getManyAndCount: jest.fn().mockResolvedValue([[mockUserEntity], 1]),
+    createQueryBuilder: vi.fn().mockReturnValue({
+      where: vi.fn().mockReturnThis(),
+      leftJoinAndSelect: vi.fn().mockReturnThis(),
+      andWhere: vi.fn().mockReturnThis(),
+      take: vi.fn().mockReturnThis(),
+      skip: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
+      offset: vi.fn().mockReturnThis(),
+      getOne: vi.fn().mockResolvedValue(mockUserEntity),
+      getManyAndCount: vi.fn().mockResolvedValue([[mockUserEntity], 1]),
     }),
-    findOneBy: jest.fn().mockResolvedValue(mockUserEntity),
-    update: jest.fn().mockResolvedValue({ affected: 1 }),
-    delete: jest.fn().mockResolvedValue({ affected: 1 }),
-    findBy: jest.fn().mockResolvedValue([mockUserEntity.roles[0]]),
+    findOneBy: vi.fn().mockResolvedValue(mockUserEntity),
+    update: vi.fn().mockResolvedValue({ affected: 1 }),
+    delete: vi.fn().mockResolvedValue({ affected: 1 }),
+    findBy: vi.fn().mockResolvedValue([mockUserEntity.roles[0]]),
   }
 
   const mockRoleRepository = {
-    findBy: jest.fn().mockResolvedValue([mockUserEntity.roles[0]]),
-    findOneBy: jest.fn().mockResolvedValue(mockUserEntity.roles[0]),
+    findBy: vi.fn().mockResolvedValue([mockUserEntity.roles[0]]),
+    findOneBy: vi.fn().mockResolvedValue(mockUserEntity.roles[0]),
   }
 
   const mockEntityManager = {
-    transaction: jest.fn().mockImplementation(async (callback) => {
+    transaction: vi.fn().mockImplementation(async (callback) => {
       return callback({
-        create: jest.fn().mockReturnValue(mockUserEntity),
-        save: jest.fn().mockResolvedValue(mockUserEntity),
-        update: jest.fn().mockResolvedValue({ affected: 1 }),
-        findOneBy: jest.fn().mockResolvedValue({ id: 1 } as any),
-        createQueryBuilder: jest.fn().mockReturnValue({
-          leftJoinAndSelect: jest.fn().mockReturnThis(),
-          where: jest.fn().mockReturnThis(),
-          relation: jest.fn().mockReturnValue({
-            of: jest.fn().mockReturnValue({
-              addAndRemove: jest.fn().mockResolvedValue(undefined),
-              set: jest.fn().mockResolvedValue(undefined),
+        create: vi.fn().mockReturnValue(mockUserEntity),
+        save: vi.fn().mockResolvedValue(mockUserEntity),
+        update: vi.fn().mockResolvedValue({ affected: 1 }),
+        findOneBy: vi.fn().mockResolvedValue({ id: 1 } as any),
+        createQueryBuilder: vi.fn().mockReturnValue({
+          leftJoinAndSelect: vi.fn().mockReturnThis(),
+          where: vi.fn().mockReturnThis(),
+          relation: vi.fn().mockReturnValue({
+            of: vi.fn().mockReturnValue({
+              addAndRemove: vi.fn().mockResolvedValue(undefined),
+              set: vi.fn().mockResolvedValue(undefined),
             }),
           }),
-          getOne: jest.fn().mockResolvedValue(mockUserEntity),
+          getOne: vi.fn().mockResolvedValue(mockUserEntity),
         }),
       } as any)
     }),
   }
 
   const mockParamConfigService = {
-    findValueByKey: jest.fn().mockResolvedValue('123456'),
+    findValueByKey: vi.fn().mockResolvedValue('123456'),
   }
 
   const mockQQService = {
-    getAvater: jest.fn().mockResolvedValue('https://example.com/qq-avatar.jpg'),
+    getAvater: vi.fn().mockResolvedValue('https://example.com/qq-avatar.jpg'),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -154,15 +154,11 @@ describe('UserService', () => {
     }).compile()
 
     service = module.get<UserService>(UserService)
-    userRepository = module.get(getRepositoryToken(UserEntity)) as jest.Mocked<
-      Repository<UserEntity>
-    >
-    roleRepository = module.get(getRepositoryToken(RoleEntity)) as jest.Mocked<
-      Repository<RoleEntity>
-    >
-    entityManager = module.get(EntityManager) as jest.Mocked<EntityManager>
-    redis = module.get(REDIS_CLIENT) as jest.Mocked<Redis>
-    paramConfigService = module.get(ParamConfigService) as jest.Mocked<ParamConfigService>
+    userRepository = module.get(getRepositoryToken(UserEntity)) as Mocked<Repository<UserEntity>>
+    roleRepository = module.get(getRepositoryToken(RoleEntity)) as Mocked<Repository<RoleEntity>>
+    entityManager = module.get(EntityManager) as Mocked<EntityManager>
+    redis = module.get(REDIS_CLIENT) as Mocked<Redis>
+    paramConfigService = module.get(ParamConfigService) as Mocked<ParamConfigService>
   })
 
   it('should be defined', () => {
@@ -178,9 +174,9 @@ describe('UserService', () => {
     })
 
     it('should return undefined when user does not exist', async () => {
-      mockUserRepository.createQueryBuilder = jest.fn().mockReturnValue({
-        where: jest.fn().mockReturnThis(),
-        getOne: jest.fn().mockResolvedValue(undefined),
+      mockUserRepository.createQueryBuilder = vi.fn().mockReturnValue({
+        where: vi.fn().mockReturnThis(),
+        getOne: vi.fn().mockResolvedValue(undefined),
       } as any)
 
       const result = await service.findUserById(999)
@@ -191,9 +187,9 @@ describe('UserService', () => {
 
   describe('findUserByUserName', () => {
     it('should return user when username exists and user is enabled', async () => {
-      mockUserRepository.createQueryBuilder = jest.fn().mockReturnValue({
-        where: jest.fn().mockReturnThis(),
-        getOne: jest.fn().mockResolvedValue(mockUserEntity),
+      mockUserRepository.createQueryBuilder = vi.fn().mockReturnValue({
+        where: vi.fn().mockReturnThis(),
+        getOne: vi.fn().mockResolvedValue(mockUserEntity),
       } as any)
 
       const result = await service.findUserByUserName('admin')
@@ -203,9 +199,9 @@ describe('UserService', () => {
     })
 
     it('should return undefined when username does not exist', async () => {
-      mockUserRepository.createQueryBuilder = jest.fn().mockReturnValue({
-        where: jest.fn().mockReturnThis(),
-        getOne: jest.fn().mockResolvedValue(undefined),
+      mockUserRepository.createQueryBuilder = vi.fn().mockReturnValue({
+        where: vi.fn().mockReturnThis(),
+        getOne: vi.fn().mockResolvedValue(undefined),
       } as any)
 
       const result = await service.findUserByUserName('nonexistent')
@@ -216,10 +212,10 @@ describe('UserService', () => {
 
   describe('getAccountInfo', () => {
     it('should return account info when user exists', async () => {
-      mockUserRepository.createQueryBuilder = jest.fn().mockReturnValue({
-        leftJoinAndSelect: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        getOne: jest.fn().mockResolvedValue(mockUserEntity),
+      mockUserRepository.createQueryBuilder = vi.fn().mockReturnValue({
+        leftJoinAndSelect: vi.fn().mockReturnThis(),
+        where: vi.fn().mockReturnThis(),
+        getOne: vi.fn().mockResolvedValue(mockUserEntity),
       } as any)
 
       const result = await service.getAccountInfo(1)
@@ -229,10 +225,10 @@ describe('UserService', () => {
     })
 
     it('should throw error when user does not exist', async () => {
-      mockUserRepository.createQueryBuilder = jest.fn().mockReturnValue({
-        leftJoinAndSelect: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        getOne: jest.fn().mockResolvedValue(undefined),
+      mockUserRepository.createQueryBuilder = vi.fn().mockReturnValue({
+        leftJoinAndSelect: vi.fn().mockReturnThis(),
+        where: vi.fn().mockReturnThis(),
+        getOne: vi.fn().mockResolvedValue(undefined),
       } as any)
 
       await expect(service.getAccountInfo(999)).rejects.toThrow(BusinessException)
@@ -316,9 +312,9 @@ describe('UserService', () => {
 
   describe('delete', () => {
     it('should delete users when they are not root user', async () => {
-      mockUserRepository.createQueryBuilder = jest.fn().mockReturnValue({
-        where: jest.fn().mockReturnThis(),
-        getOne: jest.fn().mockResolvedValue({ id: 2 } as UserEntity),
+      mockUserRepository.createQueryBuilder = vi.fn().mockReturnValue({
+        where: vi.fn().mockReturnThis(),
+        getOne: vi.fn().mockResolvedValue({ id: 2 } as UserEntity),
       } as any)
 
       await service.delete([2, 3])
@@ -327,9 +323,9 @@ describe('UserService', () => {
     })
 
     it('should throw error when trying to delete root user', async () => {
-      mockUserRepository.createQueryBuilder = jest.fn().mockReturnValue({
-        where: jest.fn().mockReturnThis(),
-        getOne: jest.fn().mockResolvedValue(mockUserEntity),
+      mockUserRepository.createQueryBuilder = vi.fn().mockReturnValue({
+        where: vi.fn().mockReturnThis(),
+        getOne: vi.fn().mockResolvedValue(mockUserEntity),
       } as any)
 
       await expect(service.delete([1])).rejects.toThrow()
@@ -338,7 +334,7 @@ describe('UserService', () => {
 
   describe('updatePassword', () => {
     it('should update password when old password is correct', async () => {
-      mockUserRepository.findOneBy = jest
+      mockUserRepository.findOneBy = vi
         .fn()
         .mockResolvedValue({ ...mockUserEntity, psalt: 'salt', password: md5('123456salt') })
 
@@ -353,7 +349,7 @@ describe('UserService', () => {
     })
 
     it('should throw error when old password is incorrect', async () => {
-      mockUserRepository.findOneBy = jest
+      mockUserRepository.findOneBy = vi
         .fn()
         .mockResolvedValue({ ...mockUserEntity, psalt: 'salt', password: md5('123456salt') })
 
@@ -376,14 +372,14 @@ describe('UserService', () => {
 
   describe('list', () => {
     it('should return paginated user list', async () => {
-      mockUserRepository.createQueryBuilder = jest.fn().mockReturnValue({
-        leftJoinAndSelect: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        take: jest.fn().mockReturnThis(),
-        skip: jest.fn().mockReturnThis(),
-        limit: jest.fn().mockReturnThis(),
-        offset: jest.fn().mockReturnThis(),
-        getManyAndCount: jest.fn().mockResolvedValue([[mockUserEntity], 1]),
+      mockUserRepository.createQueryBuilder = vi.fn().mockReturnValue({
+        leftJoinAndSelect: vi.fn().mockReturnThis(),
+        where: vi.fn().mockReturnThis(),
+        take: vi.fn().mockReturnThis(),
+        skip: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockReturnThis(),
+        offset: vi.fn().mockReturnThis(),
+        getManyAndCount: vi.fn().mockResolvedValue([[mockUserEntity], 1]),
       })
 
       const result = await service.list({
@@ -396,14 +392,14 @@ describe('UserService', () => {
     })
 
     it('should return filtered user list by username', async () => {
-      mockUserRepository.createQueryBuilder = jest.fn().mockReturnValue({
-        leftJoinAndSelect: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        take: jest.fn().mockReturnThis(),
-        skip: jest.fn().mockReturnThis(),
-        limit: jest.fn().mockReturnThis(),
-        offset: jest.fn().mockReturnThis(),
-        getManyAndCount: jest.fn().mockResolvedValue([[mockUserEntity], 1]),
+      mockUserRepository.createQueryBuilder = vi.fn().mockReturnValue({
+        leftJoinAndSelect: vi.fn().mockReturnThis(),
+        where: vi.fn().mockReturnThis(),
+        take: vi.fn().mockReturnThis(),
+        skip: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockReturnThis(),
+        offset: vi.fn().mockReturnThis(),
+        getManyAndCount: vi.fn().mockResolvedValue([[mockUserEntity], 1]),
       })
 
       const result = await service.list({
@@ -417,15 +413,15 @@ describe('UserService', () => {
     })
 
     it('should return filtered user list by department', async () => {
-      mockUserRepository.createQueryBuilder = jest.fn().mockReturnValue({
-        leftJoinAndSelect: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        andWhere: jest.fn().mockReturnThis(),
-        take: jest.fn().mockReturnThis(),
-        skip: jest.fn().mockReturnThis(),
-        limit: jest.fn().mockReturnThis(),
-        offset: jest.fn().mockReturnThis(),
-        getManyAndCount: jest.fn().mockResolvedValue([[mockUserEntity], 1]),
+      mockUserRepository.createQueryBuilder = vi.fn().mockReturnValue({
+        leftJoinAndSelect: vi.fn().mockReturnThis(),
+        where: vi.fn().mockReturnThis(),
+        andWhere: vi.fn().mockReturnThis(),
+        take: vi.fn().mockReturnThis(),
+        skip: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockReturnThis(),
+        offset: vi.fn().mockReturnThis(),
+        getManyAndCount: vi.fn().mockResolvedValue([[mockUserEntity], 1]),
       })
 
       const result = await service.list({
@@ -447,8 +443,8 @@ describe('UserService', () => {
     })
 
     it('should forbidden a user with accessToken', async () => {
-      AccessTokenEntity.findOne = jest.fn().mockResolvedValue({ id: 'token-1' } as any)
-      redis.del = jest.fn().mockResolvedValue(1)
+      AccessTokenEntity.findOne = vi.fn().mockResolvedValue({ id: 'token-1' } as any)
+      redis.del = vi.fn().mockResolvedValue(1)
 
       await service.forbidden(1, 'mock-access-token')
 

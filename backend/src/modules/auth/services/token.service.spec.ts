@@ -11,7 +11,7 @@ import { RoleService } from '~/modules/system/role/role.service'
 
 describe('tokenService', () => {
   let service: TokenService
-  let accessTokenRepository: jest.Mocked<Repository<AccessTokenEntity>>
+  let accessTokenRepository: Mocked<Repository<AccessTokenEntity>>
 
   const mockSecurityConfig: ISecurityConfig = {
     jwtSecret: 'test-secret',
@@ -21,29 +21,29 @@ describe('tokenService', () => {
   }
 
   const mockJwtService = {
-    sign: jest.fn().mockReturnValue('mock-jwt-token'),
-    signAsync: jest.fn().mockResolvedValue('mock-jwt-token'),
-    verifyAsync: jest.fn(),
+    sign: vi.fn().mockReturnValue('mock-jwt-token'),
+    signAsync: vi.fn().mockResolvedValue('mock-jwt-token'),
+    verifyAsync: vi.fn(),
   }
 
   const mockAccessTokenRepository = {
-    findOne: jest.fn().mockResolvedValue(null),
-    delete: jest.fn().mockResolvedValue({ affected: 1 } as any),
+    findOne: vi.fn().mockResolvedValue(null),
+    delete: vi.fn().mockResolvedValue({ affected: 1 } as any),
   }
 
   const mockRoleService = {
-    getRoleIdsByUser: jest.fn(),
-    getRoleValues: jest.fn(),
+    getRoleIdsByUser: vi.fn(),
+    getRoleValues: vi.fn(),
   }
 
   const mockRedis = {
-    get: jest.fn(),
-    set: jest.fn(),
-    del: jest.fn(),
+    get: vi.fn(),
+    set: vi.fn(),
+    del: vi.fn(),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [

@@ -11,7 +11,7 @@ import { DrugService } from './drug.service'
 
 describe('DrugService', () => {
   let service: DrugService
-  let drugRepository: jest.Mocked<Repository<DrugEntity>>
+  let drugRepository: Mocked<Repository<DrugEntity>>
 
   const mockDrugEntity: Partial<DrugEntity> = {
     id: 1,
@@ -38,23 +38,23 @@ describe('DrugService', () => {
   }
 
   const mockDrugRepository = {
-    findOneBy: jest.fn().mockResolvedValue(undefined),
-    create: jest.fn().mockReturnValue(mockDrugEntity as DrugEntity),
-    save: jest.fn().mockResolvedValue(mockDrugEntity as DrugEntity),
-    findOne: jest.fn().mockResolvedValue(mockDrugEntity as DrugEntity),
-    createQueryBuilder: jest.fn().mockReturnValue({
-      leftJoinAndSelect: jest.fn().mockReturnThis(),
-      andWhere: jest.fn().mockReturnThis(),
-      orderBy: jest.fn().mockReturnThis(),
-      getMany: jest.fn().mockResolvedValue([mockDrugEntity as DrugEntity]),
-      getManyAndCount: jest.fn().mockResolvedValue([[mockDrugEntity as DrugEntity], 1]),
+    findOneBy: vi.fn().mockResolvedValue(undefined),
+    create: vi.fn().mockReturnValue(mockDrugEntity as DrugEntity),
+    save: vi.fn().mockResolvedValue(mockDrugEntity as DrugEntity),
+    findOne: vi.fn().mockResolvedValue(mockDrugEntity as DrugEntity),
+    createQueryBuilder: vi.fn().mockReturnValue({
+      leftJoinAndSelect: vi.fn().mockReturnThis(),
+      andWhere: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockReturnThis(),
+      getMany: vi.fn().mockResolvedValue([mockDrugEntity as DrugEntity]),
+      getManyAndCount: vi.fn().mockResolvedValue([[mockDrugEntity as DrugEntity], 1]),
     }),
-    update: jest.fn().mockResolvedValue({ affected: 1 }),
-    delete: jest.fn().mockResolvedValue({ affected: 1 }),
+    update: vi.fn().mockResolvedValue({ affected: 1 }),
+    delete: vi.fn().mockResolvedValue({ affected: 1 }),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -67,11 +67,8 @@ describe('DrugService', () => {
     }).compile()
 
     service = module.get<DrugService>(DrugService)
-    drugRepository = module.get(getRepositoryToken(DrugEntity)) as jest.Mocked<
-      Repository<DrugEntity>
-    >
+    drugRepository = module.get(getRepositoryToken(DrugEntity)) as Mocked<Repository<DrugEntity>>
 
-    // 设置默认返回值
     drugRepository.findOne.mockResolvedValue(mockDrugEntity as DrugEntity)
   })
 

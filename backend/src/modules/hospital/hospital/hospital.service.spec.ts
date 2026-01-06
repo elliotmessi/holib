@@ -11,7 +11,7 @@ import { HospitalService } from './hospital.service'
 
 describe('HospitalService', () => {
   let service: HospitalService
-  let hospitalRepository: jest.Mocked<Repository<HospitalEntity>>
+  let hospitalRepository: Mocked<Repository<HospitalEntity>>
 
   const mockHospitalEntity: Partial<HospitalEntity> = {
     id: 1,
@@ -35,20 +35,20 @@ describe('HospitalService', () => {
   }
 
   const mockHospitalRepository = {
-    findOneBy: jest.fn().mockResolvedValue(undefined),
-    create: jest.fn().mockReturnValue(mockHospitalEntity as HospitalEntity),
-    save: jest.fn().mockResolvedValue(mockHospitalEntity as HospitalEntity),
-    createQueryBuilder: jest.fn().mockReturnValue({
-      andWhere: jest.fn().mockReturnThis(),
-      orderBy: jest.fn().mockReturnThis(),
-      getMany: jest.fn().mockResolvedValue([mockHospitalEntity as HospitalEntity]),
+    findOneBy: vi.fn().mockResolvedValue(undefined),
+    create: vi.fn().mockReturnValue(mockHospitalEntity as HospitalEntity),
+    save: vi.fn().mockResolvedValue(mockHospitalEntity as HospitalEntity),
+    createQueryBuilder: vi.fn().mockReturnValue({
+      andWhere: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockReturnThis(),
+      getMany: vi.fn().mockResolvedValue([mockHospitalEntity as HospitalEntity]),
     }),
-    findOne: jest.fn().mockResolvedValue(mockHospitalEntity as HospitalEntity),
-    delete: jest.fn().mockResolvedValue({ affected: 1 }),
+    findOne: vi.fn().mockResolvedValue(mockHospitalEntity as HospitalEntity),
+    delete: vi.fn().mockResolvedValue({ affected: 1 }),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Reset the mock functions to their default behavior
     mockHospitalRepository.findOne.mockResolvedValue(mockHospitalEntity as HospitalEntity)
@@ -65,7 +65,7 @@ describe('HospitalService', () => {
     }).compile()
 
     service = module.get<HospitalService>(HospitalService)
-    hospitalRepository = module.get(getRepositoryToken(HospitalEntity)) as jest.Mocked<
+    hospitalRepository = module.get(getRepositoryToken(HospitalEntity)) as Mocked<
       Repository<HospitalEntity>
     >
   })

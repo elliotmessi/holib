@@ -11,7 +11,7 @@ import { PharmacyService } from './pharmacy.service'
 
 describe('PharmacyService', () => {
   let service: PharmacyService
-  let pharmacyRepository: jest.Mocked<Repository<PharmacyEntity>>
+  let pharmacyRepository: Mocked<Repository<PharmacyEntity>>
 
   const mockPharmacyEntity: Partial<PharmacyEntity> = {
     id: 1,
@@ -29,23 +29,23 @@ describe('PharmacyService', () => {
   }
 
   const mockPharmacyRepository = {
-    findOneBy: jest.fn().mockResolvedValue(undefined),
-    create: jest.fn().mockReturnValue(mockPharmacyEntity as PharmacyEntity),
-    save: jest.fn().mockResolvedValue(mockPharmacyEntity as PharmacyEntity),
-    findOne: jest.fn().mockResolvedValue(mockPharmacyEntity as PharmacyEntity),
-    createQueryBuilder: jest.fn().mockReturnValue({
-      leftJoinAndSelect: jest.fn().mockReturnThis(),
-      andWhere: jest.fn().mockReturnThis(),
-      orderBy: jest.fn().mockReturnThis(),
-      getMany: jest.fn().mockResolvedValue([mockPharmacyEntity as PharmacyEntity]),
-      getManyAndCount: jest.fn().mockResolvedValue([[mockPharmacyEntity as PharmacyEntity], 1]),
+    findOneBy: vi.fn().mockResolvedValue(undefined),
+    create: vi.fn().mockReturnValue(mockPharmacyEntity as PharmacyEntity),
+    save: vi.fn().mockResolvedValue(mockPharmacyEntity as PharmacyEntity),
+    findOne: vi.fn().mockResolvedValue(mockPharmacyEntity as PharmacyEntity),
+    createQueryBuilder: vi.fn().mockReturnValue({
+      leftJoinAndSelect: vi.fn().mockReturnThis(),
+      andWhere: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockReturnThis(),
+      getMany: vi.fn().mockResolvedValue([mockPharmacyEntity as PharmacyEntity]),
+      getManyAndCount: vi.fn().mockResolvedValue([[mockPharmacyEntity as PharmacyEntity], 1]),
     }),
-    update: jest.fn().mockResolvedValue({ affected: 1 }),
-    delete: jest.fn().mockResolvedValue({ affected: 1 }),
+    update: vi.fn().mockResolvedValue({ affected: 1 }),
+    delete: vi.fn().mockResolvedValue({ affected: 1 }),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -58,7 +58,7 @@ describe('PharmacyService', () => {
     }).compile()
 
     service = module.get<PharmacyService>(PharmacyService)
-    pharmacyRepository = module.get(getRepositoryToken(PharmacyEntity)) as jest.Mocked<
+    pharmacyRepository = module.get(getRepositoryToken(PharmacyEntity)) as Mocked<
       Repository<PharmacyEntity>
     >
 

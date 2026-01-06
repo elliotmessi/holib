@@ -31,14 +31,12 @@ describe('JwtStrategy', () => {
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('constructor', () => {
     it('should initialize with correct options', () => {
-      // 验证PassportStrategy被正确实例化
       expect(strategy).toBeInstanceOf(JwtStrategy)
-      // 验证配置被正确传递
       expect(securityConfig.jwtSecret).toBe('test-secret')
     })
   })

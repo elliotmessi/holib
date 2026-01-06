@@ -10,23 +10,18 @@ import { DoctorEntity } from './doctor.entity'
 import { DoctorService } from './doctor.service'
 import { DoctorController } from './doctor.controller'
 
-// Mock the DoctorService
 const mockDoctorService = {
-  findAll: jest.fn().mockResolvedValue([]),
-  create: jest
-    .fn()
-    .mockResolvedValue({ id: 1, doctorCode: 'DOC001', name: '张三' } as DoctorEntity),
-  findOne: jest
-    .fn()
-    .mockResolvedValue({ id: 1, doctorCode: 'DOC001', name: '张三' } as DoctorEntity),
-  update: jest.fn().mockResolvedValue(undefined),
-  changePassword: jest.fn().mockResolvedValue(undefined),
-  remove: jest.fn().mockResolvedValue(undefined),
+  findAll: vi.fn().mockResolvedValue([]),
+  create: vi.fn().mockResolvedValue({ id: 1, doctorCode: 'DOC001', name: '张三' } as DoctorEntity),
+  findOne: vi.fn().mockResolvedValue({ id: 1, doctorCode: 'DOC001', name: '张三' } as DoctorEntity),
+  update: vi.fn().mockResolvedValue(undefined),
+  changePassword: vi.fn().mockResolvedValue(undefined),
+  remove: vi.fn().mockResolvedValue(undefined),
 }
 
 describe('DoctorController', () => {
   let app: INestApplication
-  let doctorService: jest.Mocked<DoctorService>
+  let doctorService: Mocked<DoctorService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -39,10 +34,10 @@ describe('DoctorController', () => {
         {
           provide: getRepositoryToken(DoctorEntity),
           useValue: {
-            find: jest.fn(),
-            save: jest.fn(),
-            findOne: jest.fn(),
-            delete: jest.fn(),
+            find: vi.fn(),
+            save: vi.fn(),
+            findOne: vi.fn(),
+            delete: vi.fn(),
           } as Partial<Repository<DoctorEntity>>,
         },
       ],
@@ -50,7 +45,6 @@ describe('DoctorController', () => {
 
     app = module.createNestApplication()
 
-    // 添加全局验证管道，与主应用配置一致
     app.useGlobalPipes(
       new (require('@nestjs/common').ValidationPipe)({
         transform: true,
@@ -60,12 +54,12 @@ describe('DoctorController', () => {
     )
     await app.init()
 
-    doctorService = module.get(DoctorService) as jest.Mocked<DoctorService>
+    doctorService = module.get(DoctorService) as Mocked<DoctorService>
   })
 
   afterEach(async () => {
     await app.close()
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('GET /doctors', () => {
@@ -121,16 +115,14 @@ describe('DoctorController', () => {
 
       expect(response.body).toBeDefined()
       expect(doctorService.create).toHaveBeenCalled()
-      // 检查调用参数是否包含核心字段，不检查整个对象
       const callArgs = doctorService.create.mock.calls[0][0]
       expect(callArgs).toHaveProperty('doctorCode', createDto.doctorCode)
       expect(callArgs).toHaveProperty('name', createDto.name)
-      expect(callArgs).toHaveProperty('createBy', 1) // 预期会添加createBy字段
+      expect(callArgs).toHaveProperty('createBy', 1)
     })
 
     it('should handle validation errors', async () => {
       const createDto = {
-        // Missing required fields
         name: '张三',
       }
 
@@ -149,7 +141,6 @@ describe('DoctorController', () => {
         contactPerson: '张三',
       }
 
-      // 模拟抛出异常，期望返回500
       doctorService.create.mockRejectedValue(new Error('Data already exists'))
 
       await request(app.getHttpServer()).post('/doctors').send(createDto).expect(500)
@@ -165,19 +156,16 @@ describe('DoctorController', () => {
 
       expect(response.body).toBeDefined()
       expect(response.body.id).toBe(1)
-      // 允许字符串ID，因为URL参数默认是字符串
       expect(doctorService.findOne).toHaveBeenCalledWith(1)
     })
 
     it('should return 404 when doctor not found', async () => {
-      // 模拟返回undefined，根据服务实现，可能返回200而不是抛出异常
       doctorService.findOne.mockResolvedValue(undefined)
 
       await request(app.getHttpServer()).get('/doctors/999').expect(200)
     })
 
     it('should handle invalid id', async () => {
-      // 模拟抛出异常
       doctorService.findOne.mockRejectedValue(new Error('Invalid ID'))
 
       await request(app.getHttpServer()).get('/doctors/invalid').expect(500)
@@ -204,12 +192,11 @@ describe('DoctorController', () => {
 
       expect(response.body).toBeDefined()
       expect(doctorService.update).toHaveBeenCalled()
-      // 检查调用参数是否包含核心字段，不检查整个对象
       expect(doctorService.update.mock.calls[0][0]).toBe(1)
       const callArgs = doctorService.update.mock.calls[0][1]
       expect(callArgs).toHaveProperty('doctorCode', updateDto.doctorCode)
       expect(callArgs).toHaveProperty('name', updateDto.name)
-      expect(callArgs).toHaveProperty('updateBy', 1) // 预期会添加updateBy字段
+      expect(callArgs).toHaveProperty('updateBy', 1)
     })
 
     it('should handle non-existent doctor', async () => {
@@ -224,7 +211,6 @@ describe('DoctorController', () => {
         contactPerson: '张三',
       }
 
-      // 模拟抛出异常
       doctorService.update.mockRejectedValue(new Error('Doctor not found'))
 
       await request(app.getHttpServer()).put('/doctors/999').send(updateDto).expect(500)
@@ -242,7 +228,6 @@ describe('DoctorController', () => {
         contactPerson: '张三',
       }
 
-      // 模拟抛出异常
       doctorService.update.mockRejectedValue(new Error('Duplicate doctor code'))
 
       await request(app.getHttpServer()).put('/doctors/1').send(updateDto).expect(500)
@@ -263,7 +248,6 @@ describe('DoctorController', () => {
 
       expect(response.body).toBeDefined()
       expect(doctorService.changePassword).toHaveBeenCalled()
-      // 检查调用参数，允许字符串ID
       expect(doctorService.changePassword.mock.calls[0][0]).toBe(1)
       expect(doctorService.changePassword.mock.calls[0][1]).toEqual(changePasswordDto)
     })
@@ -274,7 +258,6 @@ describe('DoctorController', () => {
         newPassword: 'new123456',
       }
 
-      // 模拟抛出异常
       doctorService.changePassword.mockRejectedValue(new Error('Password mismatch'))
 
       await request(app.getHttpServer())
@@ -289,7 +272,6 @@ describe('DoctorController', () => {
         newPassword: 'new123456',
       }
 
-      // 模拟抛出异常
       doctorService.changePassword.mockRejectedValue(new Error('Doctor not found'))
 
       await request(app.getHttpServer())
@@ -305,19 +287,16 @@ describe('DoctorController', () => {
 
       expect(response.body).toBeDefined()
       expect(doctorService.remove).toHaveBeenCalled()
-      // 检查调用参数，允许字符串ID
       expect(doctorService.remove.mock.calls[0][0]).toBe(1)
     })
 
     it('should handle non-existent doctor', async () => {
-      // 模拟抛出异常
       doctorService.remove.mockRejectedValue(new Error('Doctor not found'))
 
       await request(app.getHttpServer()).delete('/doctors/999').expect(500)
     })
 
     it('should handle invalid id', async () => {
-      // 模拟抛出异常
       doctorService.remove.mockRejectedValue(new Error('Invalid ID'))
 
       await request(app.getHttpServer()).delete('/doctors/invalid').expect(500)

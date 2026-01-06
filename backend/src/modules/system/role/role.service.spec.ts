@@ -12,9 +12,9 @@ import { RoleService } from './role.service'
 
 describe('RoleService', () => {
   let service: RoleService
-  let roleRepository: jest.Mocked<Repository<RoleEntity>>
-  let menuRepository: jest.Mocked<Repository<MenuEntity>>
-  let entityManager: jest.Mocked<EntityManager>
+  let roleRepository: Mocked<Repository<RoleEntity>>
+  let menuRepository: Mocked<Repository<MenuEntity>>
+  let entityManager: Mocked<EntityManager>
 
   const mockRoleEntity: Partial<RoleEntity> = {
     id: 1,
@@ -49,53 +49,53 @@ describe('RoleService', () => {
 
   // 创建一个完整的mockQueryBuilder，包含所有必要的方法
   const mockQueryBuilder = {
-    where: jest.fn().mockReturnThis(),
-    take: jest.fn().mockReturnThis(),
-    skip: jest.fn().mockReturnThis(),
-    limit: jest.fn().mockReturnThis(),
-    offset: jest.fn().mockReturnThis(),
-    leftJoinAndSelect: jest.fn().mockReturnThis(),
-    getOne: jest.fn().mockResolvedValue(mockRoleEntity),
-    getManyAndCount: jest.fn().mockResolvedValue([[mockRoleEntity], 1]),
+    where: vi.fn().mockReturnThis(),
+    take: vi.fn().mockReturnThis(),
+    skip: vi.fn().mockReturnThis(),
+    limit: vi.fn().mockReturnThis(),
+    offset: vi.fn().mockReturnThis(),
+    leftJoinAndSelect: vi.fn().mockReturnThis(),
+    getOne: vi.fn().mockResolvedValue(mockRoleEntity),
+    getManyAndCount: vi.fn().mockResolvedValue([[mockRoleEntity], 1]),
   }
 
   // 为了处理paginate函数的instanceof检查，我们需要让mockRoleRepository同时支持Repository和QueryBuilder接口
   const mockRoleRepository = {
     // Repository方法
-    find: jest.fn().mockResolvedValue([mockRoleEntity]),
-    count: jest.fn().mockResolvedValue(1),
-    findOne: jest.fn().mockResolvedValue(mockRoleEntity),
-    findOneBy: jest.fn().mockResolvedValue(mockRoleEntity),
-    createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
-    delete: jest.fn().mockResolvedValue({ affected: 1 }),
-    save: jest.fn().mockResolvedValue(mockRoleEntity),
-    update: jest.fn().mockResolvedValue({ affected: 1 }),
-    findBy: jest.fn().mockResolvedValue([mockRoleEntity]),
-    exist: jest.fn().mockResolvedValue(false),
+    find: vi.fn().mockResolvedValue([mockRoleEntity]),
+    count: vi.fn().mockResolvedValue(1),
+    findOne: vi.fn().mockResolvedValue(mockRoleEntity),
+    findOneBy: vi.fn().mockResolvedValue(mockRoleEntity),
+    createQueryBuilder: vi.fn().mockReturnValue(mockQueryBuilder),
+    delete: vi.fn().mockResolvedValue({ affected: 1 }),
+    save: vi.fn().mockResolvedValue(mockRoleEntity),
+    update: vi.fn().mockResolvedValue({ affected: 1 }),
+    findBy: vi.fn().mockResolvedValue([mockRoleEntity]),
+    exist: vi.fn().mockResolvedValue(false),
     // QueryBuilder方法（用于处理paginate函数将其视为QueryBuilder的情况）
-    where: jest.fn().mockReturnThis(),
-    take: jest.fn().mockReturnThis(),
-    skip: jest.fn().mockReturnThis(),
-    limit: jest.fn().mockReturnThis(),
-    offset: jest.fn().mockReturnThis(),
-    getManyAndCount: jest.fn().mockResolvedValue([[mockRoleEntity], 1]),
+    where: vi.fn().mockReturnThis(),
+    take: vi.fn().mockReturnThis(),
+    skip: vi.fn().mockReturnThis(),
+    limit: vi.fn().mockReturnThis(),
+    offset: vi.fn().mockReturnThis(),
+    getManyAndCount: vi.fn().mockResolvedValue([[mockRoleEntity], 1]),
   }
 
   const mockMenuRepository = {
-    find: jest.fn().mockResolvedValue([{ id: 1 } as MenuEntity]),
-    findBy: jest.fn().mockResolvedValue([mockMenuEntity]),
+    find: vi.fn().mockResolvedValue([{ id: 1 } as MenuEntity]),
+    findBy: vi.fn().mockResolvedValue([mockMenuEntity]),
   }
 
   const mockEntityManager = {
-    transaction: jest.fn().mockImplementation(async (callback) => {
+    transaction: vi.fn().mockImplementation(async (callback) => {
       return callback({
-        save: jest.fn().mockResolvedValue(undefined),
+        save: vi.fn().mockResolvedValue(undefined),
       } as any)
     }),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -116,13 +116,9 @@ describe('RoleService', () => {
     }).compile()
 
     service = module.get<RoleService>(RoleService)
-    roleRepository = module.get(getRepositoryToken(RoleEntity)) as jest.Mocked<
-      Repository<RoleEntity>
-    >
-    menuRepository = module.get(getRepositoryToken(MenuEntity)) as jest.Mocked<
-      Repository<MenuEntity>
-    >
-    entityManager = module.get(EntityManager) as jest.Mocked<EntityManager>
+    roleRepository = module.get(getRepositoryToken(RoleEntity)) as Mocked<Repository<RoleEntity>>
+    menuRepository = module.get(getRepositoryToken(MenuEntity)) as Mocked<Repository<MenuEntity>>
+    entityManager = module.get(EntityManager) as Mocked<EntityManager>
   })
 
   it('should be defined', () => {

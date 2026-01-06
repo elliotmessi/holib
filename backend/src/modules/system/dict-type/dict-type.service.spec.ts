@@ -8,7 +8,7 @@ import { DictTypeService } from './dict-type.service'
 
 describe('DictTypeService', () => {
   let service: DictTypeService
-  let dictTypeRepository: jest.Mocked<Repository<DictTypeEntity>>
+  let dictTypeRepository: Mocked<Repository<DictTypeEntity>>
 
   const mockDictTypeEntity: Partial<DictTypeEntity> = {
     id: 1,
@@ -21,22 +21,22 @@ describe('DictTypeService', () => {
   }
 
   const mockDictTypeRepository = {
-    createQueryBuilder: jest.fn().mockReturnValue({
-      where: jest.fn().mockReturnThis(),
-      skip: jest.fn().mockReturnThis(),
-      take: jest.fn().mockReturnThis(),
-      getManyAndCount: jest.fn().mockResolvedValue([[mockDictTypeEntity], 1]),
+    createQueryBuilder: vi.fn().mockReturnValue({
+      where: vi.fn().mockReturnThis(),
+      skip: vi.fn().mockReturnThis(),
+      take: vi.fn().mockReturnThis(),
+      getManyAndCount: vi.fn().mockResolvedValue([[mockDictTypeEntity], 1]),
     }),
-    find: jest.fn().mockResolvedValue([mockDictTypeEntity]),
-    count: jest.fn().mockResolvedValue(1),
-    insert: jest.fn().mockResolvedValue(undefined),
-    update: jest.fn().mockResolvedValue(undefined),
-    delete: jest.fn().mockResolvedValue(undefined),
-    findOneBy: jest.fn().mockResolvedValue(mockDictTypeEntity),
+    find: vi.fn().mockResolvedValue([mockDictTypeEntity]),
+    count: vi.fn().mockResolvedValue(1),
+    insert: vi.fn().mockResolvedValue(undefined),
+    update: vi.fn().mockResolvedValue(undefined),
+    delete: vi.fn().mockResolvedValue(undefined),
+    findOneBy: vi.fn().mockResolvedValue(mockDictTypeEntity),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -49,7 +49,7 @@ describe('DictTypeService', () => {
     }).compile()
 
     service = module.get<DictTypeService>(DictTypeService)
-    dictTypeRepository = module.get(getRepositoryToken(DictTypeEntity)) as jest.Mocked<
+    dictTypeRepository = module.get(getRepositoryToken(DictTypeEntity)) as Mocked<
       Repository<DictTypeEntity>
     >
   })

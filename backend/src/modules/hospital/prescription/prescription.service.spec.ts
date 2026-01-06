@@ -21,17 +21,17 @@ import {
 import { PrescriptionService } from './prescription.service'
 
 // Mock nanoid
-jest.mock('nanoid', () => ({
-  nanoid: jest.fn().mockReturnValue('test1234'),
+vi.mock('nanoid', () => ({
+  nanoid: vi.fn().mockReturnValue('test1234'),
 }))
 
 describe('PrescriptionService', () => {
   let service: PrescriptionService
-  let prescriptionRepository: jest.Mocked<Repository<PrescriptionEntity>>
-  let prescriptionDrugRepository: jest.Mocked<Repository<PrescriptionDrugEntity>>
-  let inventoryRepository: jest.Mocked<Repository<InventoryEntity>>
-  let transactionRepository: jest.Mocked<Repository<InventoryTransactionEntity>>
-  let dataSource: jest.Mocked<DataSource>
+  let prescriptionRepository: Mocked<Repository<PrescriptionEntity>>
+  let prescriptionDrugRepository: Mocked<Repository<PrescriptionDrugEntity>>
+  let inventoryRepository: Mocked<Repository<InventoryEntity>>
+  let transactionRepository: Mocked<Repository<InventoryTransactionEntity>>
+  let dataSource: Mocked<DataSource>
 
   const mockPrescriptionEntity: Partial<PrescriptionEntity> = {
     id: 1,
@@ -88,53 +88,53 @@ describe('PrescriptionService', () => {
   }
 
   const mockDataSource = {
-    transaction: jest.fn().mockImplementation((callback) => {
+    transaction: vi.fn().mockImplementation((callback) => {
       return callback({
-        save: jest.fn().mockResolvedValue(mockPrescriptionEntity as PrescriptionEntity),
-        create: jest.fn().mockReturnValue(mockPrescriptionEntity as PrescriptionEntity),
-        findOne: jest.fn().mockResolvedValue(mockInventoryEntity as InventoryEntity),
+        save: vi.fn().mockResolvedValue(mockPrescriptionEntity as PrescriptionEntity),
+        create: vi.fn().mockReturnValue(mockPrescriptionEntity as PrescriptionEntity),
+        findOne: vi.fn().mockResolvedValue(mockInventoryEntity as InventoryEntity),
       })
     }),
   }
 
   const mockPrescriptionRepository = {
-    find: jest.fn().mockResolvedValue([mockPrescriptionEntity as PrescriptionEntity]),
-    create: jest.fn().mockReturnValue(mockPrescriptionEntity as PrescriptionEntity),
-    save: jest.fn().mockResolvedValue(mockPrescriptionEntity as PrescriptionEntity),
-    createQueryBuilder: jest.fn().mockReturnValue({
-      leftJoinAndSelect: jest.fn().mockReturnThis(),
-      andWhere: jest.fn().mockReturnThis(),
-      where: jest.fn().mockReturnThis(),
-      orderBy: jest.fn().mockReturnThis(),
-      getMany: jest.fn().mockResolvedValue([mockPrescriptionEntity as PrescriptionEntity]),
-      select: jest.fn().mockReturnThis(),
-      addSelect: jest.fn().mockReturnThis(),
-      groupBy: jest.fn().mockReturnThis(),
-      getRawMany: jest
+    find: vi.fn().mockResolvedValue([mockPrescriptionEntity as PrescriptionEntity]),
+    create: vi.fn().mockReturnValue(mockPrescriptionEntity as PrescriptionEntity),
+    save: vi.fn().mockResolvedValue(mockPrescriptionEntity as PrescriptionEntity),
+    createQueryBuilder: vi.fn().mockReturnValue({
+      leftJoinAndSelect: vi.fn().mockReturnThis(),
+      andWhere: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockReturnThis(),
+      getMany: vi.fn().mockResolvedValue([mockPrescriptionEntity as PrescriptionEntity]),
+      select: vi.fn().mockReturnThis(),
+      addSelect: vi.fn().mockReturnThis(),
+      groupBy: vi.fn().mockReturnThis(),
+      getRawMany: vi
         .fn()
         .mockResolvedValue([
           { status: PrescriptionStatus.PENDING_REVIEW, count: 1, totalAmount: '100.00' },
         ]),
     }),
-    findOne: jest.fn().mockResolvedValue(mockPrescriptionEntity as PrescriptionEntity),
+    findOne: vi.fn().mockResolvedValue(mockPrescriptionEntity as PrescriptionEntity),
   }
 
   const mockPrescriptionDrugRepository = {
-    find: jest.fn().mockResolvedValue([mockPrescriptionDrugEntity as PrescriptionDrugEntity]),
-    create: jest.fn().mockReturnValue(mockPrescriptionDrugEntity as PrescriptionDrugEntity),
-    save: jest.fn().mockResolvedValue(mockPrescriptionDrugEntity as PrescriptionDrugEntity),
+    find: vi.fn().mockResolvedValue([mockPrescriptionDrugEntity as PrescriptionDrugEntity]),
+    create: vi.fn().mockReturnValue(mockPrescriptionDrugEntity as PrescriptionDrugEntity),
+    save: vi.fn().mockResolvedValue(mockPrescriptionDrugEntity as PrescriptionDrugEntity),
   }
 
   const mockInventoryRepository = {
-    findOne: jest.fn().mockResolvedValue(mockInventoryEntity as InventoryEntity),
+    findOne: vi.fn().mockResolvedValue(mockInventoryEntity as InventoryEntity),
   }
 
   const mockTransactionRepository = {
-    save: jest.fn().mockResolvedValue(mockTransactionEntity as InventoryTransactionEntity),
+    save: vi.fn().mockResolvedValue(mockTransactionEntity as InventoryTransactionEntity),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Reset the mock functions to their default behavior
     mockPrescriptionRepository.findOne.mockResolvedValue(
@@ -151,7 +151,7 @@ describe('PrescriptionService', () => {
     // Mock transaction callback to handle different entities
     mockDataSource.transaction.mockImplementation((callback) => {
       const mockManager = {
-        save: jest.fn().mockImplementation((entity: any) => {
+        save: vi.fn().mockImplementation((entity: any) => {
           if (
             entity instanceof PrescriptionEntity ||
             entity.constructor.name === 'PrescriptionEntity'
@@ -179,7 +179,7 @@ describe('PrescriptionService', () => {
           }
           return Promise.resolve(entity)
         }),
-        create: jest.fn().mockImplementation((entityType: any, data: any) => {
+        create: vi.fn().mockImplementation((entityType: any, data: any) => {
           if (entityType === PrescriptionDrugEntity) {
             return { ...mockPrescriptionDrugEntity, ...data } as PrescriptionDrugEntity
           }
@@ -188,7 +188,7 @@ describe('PrescriptionService', () => {
           }
           return data
         }),
-        findOne: jest.fn().mockResolvedValue(mockInventoryEntity as InventoryEntity),
+        findOne: vi.fn().mockResolvedValue(mockInventoryEntity as InventoryEntity),
       }
       return callback(mockManager)
     })
@@ -220,19 +220,19 @@ describe('PrescriptionService', () => {
     }).compile()
 
     service = module.get<PrescriptionService>(PrescriptionService)
-    prescriptionRepository = module.get(getRepositoryToken(PrescriptionEntity)) as jest.Mocked<
+    prescriptionRepository = module.get(getRepositoryToken(PrescriptionEntity)) as Mocked<
       Repository<PrescriptionEntity>
     >
-    prescriptionDrugRepository = module.get(
-      getRepositoryToken(PrescriptionDrugEntity),
-    ) as jest.Mocked<Repository<PrescriptionDrugEntity>>
-    inventoryRepository = module.get(getRepositoryToken(InventoryEntity)) as jest.Mocked<
+    prescriptionDrugRepository = module.get(getRepositoryToken(PrescriptionDrugEntity)) as Mocked<
+      Repository<PrescriptionDrugEntity>
+    >
+    inventoryRepository = module.get(getRepositoryToken(InventoryEntity)) as Mocked<
       Repository<InventoryEntity>
     >
-    transactionRepository = module.get(
-      getRepositoryToken(InventoryTransactionEntity),
-    ) as jest.Mocked<Repository<InventoryTransactionEntity>>
-    dataSource = module.get(DataSource) as jest.Mocked<DataSource>
+    transactionRepository = module.get(getRepositoryToken(InventoryTransactionEntity)) as Mocked<
+      Repository<InventoryTransactionEntity>
+    >
+    dataSource = module.get(DataSource) as Mocked<DataSource>
   })
 
   it('should be defined', () => {
@@ -484,9 +484,9 @@ describe('PrescriptionService', () => {
       // Update transaction mock to use insufficient inventory
       mockDataSource.transaction.mockImplementation((callback) => {
         const mockManager = {
-          save: jest.fn(),
-          create: jest.fn(),
-          findOne: jest
+          save: vi.fn(),
+          create: vi.fn(),
+          findOne: vi
             .fn()
             .mockResolvedValue({ ...mockInventoryEntity, quantity: 10 } as InventoryEntity),
         }

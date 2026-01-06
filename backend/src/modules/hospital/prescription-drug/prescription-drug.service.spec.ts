@@ -15,7 +15,7 @@ import { PrescriptionDrugService } from './prescription-drug.service'
 
 describe('PrescriptionDrugService', () => {
   let service: PrescriptionDrugService
-  let prescriptionDrugRepository: jest.Mocked<Repository<PrescriptionDrugEntity>>
+  let prescriptionDrugRepository: Mocked<Repository<PrescriptionDrugEntity>>
 
   const mockPrescriptionDrugEntity: Partial<PrescriptionDrugEntity> = {
     id: 1,
@@ -34,32 +34,32 @@ describe('PrescriptionDrugService', () => {
   }
 
   const mockPrescriptionDrugRepository = {
-    create: jest.fn().mockImplementation((data: any) => {
+    create: vi.fn().mockImplementation((data: any) => {
       return {
         ...mockPrescriptionDrugEntity,
         ...data,
         totalPrice: data.quantity * data.unitPrice,
       } as PrescriptionDrugEntity
     }),
-    save: jest.fn().mockImplementation((entity: any) => {
+    save: vi.fn().mockImplementation((entity: any) => {
       return Promise.resolve(entity)
     }),
-    createQueryBuilder: jest.fn().mockReturnValue({
-      leftJoinAndSelect: jest.fn().mockReturnThis(),
-      andWhere: jest.fn().mockReturnThis(),
-      orderBy: jest.fn().mockReturnThis(),
-      getMany: jest.fn().mockResolvedValue([mockPrescriptionDrugEntity as PrescriptionDrugEntity]),
-      select: jest.fn().mockReturnThis(),
-      where: jest.fn().mockReturnThis(),
-      getRawOne: jest.fn().mockResolvedValue({ total: '105.00' }),
+    createQueryBuilder: vi.fn().mockReturnValue({
+      leftJoinAndSelect: vi.fn().mockReturnThis(),
+      andWhere: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockReturnThis(),
+      getMany: vi.fn().mockResolvedValue([mockPrescriptionDrugEntity as PrescriptionDrugEntity]),
+      select: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnThis(),
+      getRawOne: vi.fn().mockResolvedValue({ total: '105.00' }),
     }),
-    findOne: jest.fn().mockResolvedValue(mockPrescriptionDrugEntity as PrescriptionDrugEntity),
-    find: jest.fn().mockResolvedValue([mockPrescriptionDrugEntity as PrescriptionDrugEntity]),
-    delete: jest.fn().mockResolvedValue({ affected: 1 }),
+    findOne: vi.fn().mockResolvedValue(mockPrescriptionDrugEntity as PrescriptionDrugEntity),
+    find: vi.fn().mockResolvedValue([mockPrescriptionDrugEntity as PrescriptionDrugEntity]),
+    delete: vi.fn().mockResolvedValue({ affected: 1 }),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Reset the mock functions to their default behavior
     mockPrescriptionDrugRepository.findOne.mockResolvedValue(
@@ -80,9 +80,9 @@ describe('PrescriptionDrugService', () => {
     }).compile()
 
     service = module.get<PrescriptionDrugService>(PrescriptionDrugService)
-    prescriptionDrugRepository = module.get(
-      getRepositoryToken(PrescriptionDrugEntity),
-    ) as jest.Mocked<Repository<PrescriptionDrugEntity>>
+    prescriptionDrugRepository = module.get(getRepositoryToken(PrescriptionDrugEntity)) as Mocked<
+      Repository<PrescriptionDrugEntity>
+    >
   })
 
   it('should be defined', () => {
@@ -240,7 +240,7 @@ describe('PrescriptionDrugService', () => {
       }
 
       // Mock the save method to check if totalPrice is recalculated
-      const mockSave = jest.spyOn(mockPrescriptionDrugRepository, 'save')
+      const mockSave = vi.spyOn(mockPrescriptionDrugRepository, 'save')
 
       await service.update(1, updateDto)
 
@@ -297,9 +297,9 @@ describe('PrescriptionDrugService', () => {
     it('should return 0 when no prescription drugs found', async () => {
       // Mock the query builder to return null total
       mockPrescriptionDrugRepository.createQueryBuilder.mockReturnValue({
-        select: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        getRawOne: jest.fn().mockResolvedValue({ total: null }),
+        select: vi.fn().mockReturnThis(),
+        where: vi.fn().mockReturnThis(),
+        getRawOne: vi.fn().mockResolvedValue({ total: null }),
       } as any)
 
       const result = await service.calculateTotalAmount(999)

@@ -9,7 +9,7 @@ import { DictItemService } from './dict-item.service'
 
 describe('DictItemService', () => {
   let service: DictItemService
-  let dictItemRepository: jest.Mocked<Repository<DictItemEntity>>
+  let dictItemRepository: Mocked<Repository<DictItemEntity>>
 
   const mockDictItemEntity: Partial<DictItemEntity> = {
     id: 1,
@@ -32,22 +32,22 @@ describe('DictItemService', () => {
   }
 
   const mockDictItemRepository = {
-    createQueryBuilder: jest.fn().mockReturnValue({
-      orderBy: jest.fn().mockReturnThis(),
-      where: jest.fn().mockReturnThis(),
-      skip: jest.fn().mockReturnThis(),
-      take: jest.fn().mockReturnThis(),
-      getManyAndCount: jest.fn().mockResolvedValue([[mockDictItemEntity], 1]),
+    createQueryBuilder: vi.fn().mockReturnValue({
+      orderBy: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnThis(),
+      skip: vi.fn().mockReturnThis(),
+      take: vi.fn().mockReturnThis(),
+      getManyAndCount: vi.fn().mockResolvedValue([[mockDictItemEntity], 1]),
     }),
-    count: jest.fn().mockResolvedValue(1),
-    insert: jest.fn().mockResolvedValue(undefined),
-    update: jest.fn().mockResolvedValue(undefined),
-    delete: jest.fn().mockResolvedValue(undefined),
-    findOneBy: jest.fn().mockResolvedValue(mockDictItemEntity),
+    count: vi.fn().mockResolvedValue(1),
+    insert: vi.fn().mockResolvedValue(undefined),
+    update: vi.fn().mockResolvedValue(undefined),
+    delete: vi.fn().mockResolvedValue(undefined),
+    findOneBy: vi.fn().mockResolvedValue(mockDictItemEntity),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -60,7 +60,7 @@ describe('DictItemService', () => {
     }).compile()
 
     service = module.get<DictItemService>(DictItemService)
-    dictItemRepository = module.get(getRepositoryToken(DictItemEntity)) as jest.Mocked<
+    dictItemRepository = module.get(getRepositoryToken(DictItemEntity)) as Mocked<
       Repository<DictItemEntity>
     >
   })

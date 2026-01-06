@@ -20,9 +20,9 @@ import {
 
 describe('InventoryService', () => {
   let service: InventoryService
-  let inventoryRepository: jest.Mocked<Repository<InventoryEntity>>
-  let transactionRepository: jest.Mocked<Repository<InventoryTransactionEntity>>
-  let dataSource: jest.Mocked<DataSource>
+  let inventoryRepository: Mocked<Repository<InventoryEntity>>
+  let transactionRepository: Mocked<Repository<InventoryTransactionEntity>>
+  let dataSource: Mocked<DataSource>
 
   const mockInventoryEntity: Partial<InventoryEntity> = {
     id: 1,
@@ -54,10 +54,10 @@ describe('InventoryService', () => {
   }
 
   const mockDataSource = {
-    transaction: jest.fn().mockImplementation(async (callback) => {
+    transaction: vi.fn().mockImplementation(async (callback) => {
       return callback({
-        save: jest.fn().mockResolvedValue(mockInventoryEntity as InventoryEntity),
-        create: jest
+        save: vi.fn().mockResolvedValue(mockInventoryEntity as InventoryEntity),
+        create: vi
           .fn()
           .mockReturnValue(mockInventoryTransactionEntity as InventoryTransactionEntity),
       })
@@ -65,28 +65,28 @@ describe('InventoryService', () => {
   }
 
   const mockInventoryRepository = {
-    findOne: jest.fn(),
-    create: jest.fn().mockReturnValue(mockInventoryEntity as InventoryEntity),
-    save: jest.fn().mockResolvedValue(mockInventoryEntity as InventoryEntity),
-    find: jest.fn().mockResolvedValue([mockInventoryEntity as InventoryEntity]),
-    createQueryBuilder: jest.fn().mockReturnValue({
-      leftJoinAndSelect: jest.fn().mockReturnThis(),
-      where: jest.fn().mockReturnThis(),
-      andWhere: jest.fn().mockReturnThis(),
-      orderBy: jest.fn().mockReturnThis(),
-      getMany: jest.fn().mockResolvedValue([mockInventoryEntity as InventoryEntity]),
-      getManyAndCount: jest.fn().mockResolvedValue([[mockInventoryEntity as InventoryEntity], 1]),
+    findOne: vi.fn(),
+    create: vi.fn().mockReturnValue(mockInventoryEntity as InventoryEntity),
+    save: vi.fn().mockResolvedValue(mockInventoryEntity as InventoryEntity),
+    find: vi.fn().mockResolvedValue([mockInventoryEntity as InventoryEntity]),
+    createQueryBuilder: vi.fn().mockReturnValue({
+      leftJoinAndSelect: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnThis(),
+      andWhere: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockReturnThis(),
+      getMany: vi.fn().mockResolvedValue([mockInventoryEntity as InventoryEntity]),
+      getManyAndCount: vi.fn().mockResolvedValue([[mockInventoryEntity as InventoryEntity], 1]),
     }),
-    delete: jest.fn().mockResolvedValue({ affected: 1 }),
+    delete: vi.fn().mockResolvedValue({ affected: 1 }),
   }
 
   const mockTransactionRepository = {
-    create: jest.fn().mockReturnValue(mockInventoryTransactionEntity as InventoryTransactionEntity),
-    save: jest.fn().mockResolvedValue(mockInventoryTransactionEntity as InventoryTransactionEntity),
+    create: vi.fn().mockReturnValue(mockInventoryTransactionEntity as InventoryTransactionEntity),
+    save: vi.fn().mockResolvedValue(mockInventoryTransactionEntity as InventoryTransactionEntity),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -107,13 +107,13 @@ describe('InventoryService', () => {
     }).compile()
 
     service = module.get<InventoryService>(InventoryService)
-    inventoryRepository = module.get(getRepositoryToken(InventoryEntity)) as jest.Mocked<
+    inventoryRepository = module.get(getRepositoryToken(InventoryEntity)) as Mocked<
       Repository<InventoryEntity>
     >
-    transactionRepository = module.get(
-      getRepositoryToken(InventoryTransactionEntity),
-    ) as jest.Mocked<Repository<InventoryTransactionEntity>>
-    dataSource = module.get(DataSource) as jest.Mocked<DataSource>
+    transactionRepository = module.get(getRepositoryToken(InventoryTransactionEntity)) as Mocked<
+      Repository<InventoryTransactionEntity>
+    >
+    dataSource = module.get(DataSource) as Mocked<DataSource>
 
     // 在获取service之后设置默认返回值
     inventoryRepository.findOne.mockResolvedValue(mockInventoryEntity as InventoryEntity)

@@ -17,7 +17,7 @@ import { InventoryTransactionService } from './inventory-transaction.service'
 
 describe('InventoryTransactionService', () => {
   let service: InventoryTransactionService
-  let transactionRepository: jest.Mocked<Repository<InventoryTransactionEntity>>
+  let transactionRepository: Mocked<Repository<InventoryTransactionEntity>>
 
   const mockTransactionEntity: Partial<InventoryTransactionEntity> = {
     id: 1,
@@ -37,20 +37,20 @@ describe('InventoryTransactionService', () => {
   }
 
   const mockTransactionRepository = {
-    findOne: jest.fn(),
-    create: jest.fn().mockReturnValue(mockTransactionEntity as InventoryTransactionEntity),
-    save: jest.fn().mockResolvedValue(mockTransactionEntity as InventoryTransactionEntity),
-    find: jest.fn().mockResolvedValue([mockTransactionEntity as InventoryTransactionEntity]),
-    createQueryBuilder: jest.fn().mockReturnValue({
-      leftJoinAndSelect: jest.fn().mockReturnThis(),
-      where: jest.fn().mockReturnThis(),
-      andWhere: jest.fn().mockReturnThis(),
-      orderBy: jest.fn().mockReturnThis(),
-      select: jest.fn().mockReturnThis(),
-      addSelect: jest.fn().mockReturnThis(),
-      groupBy: jest.fn().mockReturnThis(),
-      getMany: jest.fn().mockResolvedValue([mockTransactionEntity as InventoryTransactionEntity]),
-      getRawMany: jest.fn().mockResolvedValue([
+    findOne: vi.fn(),
+    create: vi.fn().mockReturnValue(mockTransactionEntity as InventoryTransactionEntity),
+    save: vi.fn().mockResolvedValue(mockTransactionEntity as InventoryTransactionEntity),
+    find: vi.fn().mockResolvedValue([mockTransactionEntity as InventoryTransactionEntity]),
+    createQueryBuilder: vi.fn().mockReturnValue({
+      leftJoinAndSelect: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnThis(),
+      andWhere: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockReturnThis(),
+      select: vi.fn().mockReturnThis(),
+      addSelect: vi.fn().mockReturnThis(),
+      groupBy: vi.fn().mockReturnThis(),
+      getMany: vi.fn().mockResolvedValue([mockTransactionEntity as InventoryTransactionEntity]),
+      getRawMany: vi.fn().mockResolvedValue([
         {
           type: InventoryTransactionType.ADJUSTMENT,
           totalQuantity: 10,
@@ -61,7 +61,7 @@ describe('InventoryTransactionService', () => {
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -74,9 +74,9 @@ describe('InventoryTransactionService', () => {
     }).compile()
 
     service = module.get<InventoryTransactionService>(InventoryTransactionService)
-    transactionRepository = module.get(
-      getRepositoryToken(InventoryTransactionEntity),
-    ) as jest.Mocked<Repository<InventoryTransactionEntity>>
+    transactionRepository = module.get(getRepositoryToken(InventoryTransactionEntity)) as Mocked<
+      Repository<InventoryTransactionEntity>
+    >
 
     // 设置默认返回值
     transactionRepository.findOne.mockResolvedValue(

@@ -17,30 +17,29 @@ describe('JwtAuthGuard', () => {
 
   beforeEach(() => {
     reflector = {
-      getAllAndOverride: jest.fn(),
+      getAllAndOverride: vi.fn(),
     } as any
 
     authService = {
-      getPasswordVersionByUid: jest.fn(),
-      getTokenByUid: jest.fn(),
+      getPasswordVersionByUid: vi.fn(),
+      getTokenByUid: vi.fn(),
     } as any
 
     tokenService = {
-      checkAccessToken: jest.fn(),
+      checkAccessToken: vi.fn(),
     } as any
 
     redis = {
-      get: jest.fn(),
+      get: vi.fn(),
     } as any
 
-    // 创建guard实例
     guard = new JwtAuthGuard(reflector, authService, tokenService, redis, {
       multiDeviceLogin: false,
     } as any)
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('handleRequest', () => {

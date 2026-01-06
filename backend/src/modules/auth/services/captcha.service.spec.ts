@@ -6,21 +6,21 @@ import { CaptchaLogService } from '~/modules/system/log/services/captcha-log.ser
 
 describe('captchaService', () => {
   let service: CaptchaService
-  let redis: jest.Mocked<Redis>
-  let captchaLogService: jest.Mocked<CaptchaLogService>
+  let redis: Mocked<Redis>
+  let captchaLogService: Mocked<CaptchaLogService>
 
   const mockRedis = {
-    get: jest.fn(),
-    set: jest.fn(),
-    del: jest.fn(),
+    get: vi.fn(),
+    set: vi.fn(),
+    del: vi.fn(),
   }
 
   const mockCaptchaLogService = {
-    create: jest.fn(),
+    create: vi.fn(),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [

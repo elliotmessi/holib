@@ -11,7 +11,7 @@ import { PatientService } from './patient.service'
 
 describe('PatientService', () => {
   let service: PatientService
-  let patientRepository: jest.Mocked<Repository<PatientEntity>>
+  let patientRepository: Mocked<Repository<PatientEntity>>
 
   const mockPatientEntity: Partial<PatientEntity> = {
     id: 1,
@@ -31,20 +31,20 @@ describe('PatientService', () => {
   }
 
   const mockPatientRepository = {
-    findOneBy: jest.fn().mockResolvedValue(undefined),
-    create: jest.fn().mockReturnValue(mockPatientEntity as PatientEntity),
-    save: jest.fn().mockResolvedValue(mockPatientEntity as PatientEntity),
-    createQueryBuilder: jest.fn().mockReturnValue({
-      andWhere: jest.fn().mockReturnThis(),
-      orderBy: jest.fn().mockReturnThis(),
-      getMany: jest.fn().mockResolvedValue([mockPatientEntity as PatientEntity]),
+    findOneBy: vi.fn().mockResolvedValue(undefined),
+    create: vi.fn().mockReturnValue(mockPatientEntity as PatientEntity),
+    save: vi.fn().mockResolvedValue(mockPatientEntity as PatientEntity),
+    createQueryBuilder: vi.fn().mockReturnValue({
+      andWhere: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockReturnThis(),
+      getMany: vi.fn().mockResolvedValue([mockPatientEntity as PatientEntity]),
     }),
-    findOne: jest.fn().mockResolvedValue(mockPatientEntity as PatientEntity),
-    delete: jest.fn().mockResolvedValue({ affected: 1 }),
+    findOne: vi.fn().mockResolvedValue(mockPatientEntity as PatientEntity),
+    delete: vi.fn().mockResolvedValue({ affected: 1 }),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Reset the mock functions to their default behavior
     mockPatientRepository.findOne.mockResolvedValue(mockPatientEntity as PatientEntity)
@@ -61,7 +61,7 @@ describe('PatientService', () => {
     }).compile()
 
     service = module.get<PatientService>(PatientService)
-    patientRepository = module.get(getRepositoryToken(PatientEntity)) as jest.Mocked<
+    patientRepository = module.get(getRepositoryToken(PatientEntity)) as Mocked<
       Repository<PatientEntity>
     >
   })

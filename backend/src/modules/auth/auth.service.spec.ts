@@ -19,7 +19,7 @@ describe('authService', () => {
   let menuService: MenuService
   let tokenService: TokenService
   let loginLogService: LoginLogService
-  let redis: jest.Mocked<Redis>
+  let redis: Mocked<Redis>
 
   const mockUser: Partial<UserEntity> & { psalt: string } = {
     id: 1,
@@ -32,9 +32,9 @@ describe('authService', () => {
   }
 
   const mockRedis = {
-    get: jest.fn(),
-    set: jest.fn(),
-    del: jest.fn(),
+    get: vi.fn(),
+    set: vi.fn(),
+    del: vi.fn(),
   }
 
   const mockSecurityConfig: ISecurityConfig = {
@@ -49,34 +49,34 @@ describe('authService', () => {
   }
 
   const mockTokenService = {
-    generateAccessToken: jest.fn().mockResolvedValue({
+    generateAccessToken: vi.fn().mockResolvedValue({
       accessToken: 'mock-access-token',
       refreshToken: 'mock-refresh-token',
     }),
-    removeAccessToken: jest.fn().mockResolvedValue(undefined),
+    removeAccessToken: vi.fn().mockResolvedValue(undefined),
   }
 
   const mockRoleService = {
-    getRoleIdsByUser: jest.fn().mockResolvedValue([1]),
-    getRoleValues: jest.fn().mockResolvedValue(['admin']),
+    getRoleIdsByUser: vi.fn().mockResolvedValue([1]),
+    getRoleValues: vi.fn().mockResolvedValue(['admin']),
   }
 
   const mockMenuService = {
-    getPermissions: jest.fn().mockResolvedValue(['sys:user:list', 'sys:user:create']),
+    getPermissions: vi.fn().mockResolvedValue(['sys:user:list', 'sys:user:create']),
   }
 
   const mockUserService = {
-    findUserByUserName: jest.fn(),
-    forbidden: jest.fn().mockResolvedValue(undefined),
-    forceUpdatePassword: jest.fn().mockResolvedValue(undefined),
+    findUserByUserName: vi.fn(),
+    forbidden: vi.fn().mockResolvedValue(undefined),
+    forceUpdatePassword: vi.fn().mockResolvedValue(undefined),
   }
 
   const mockLoginLogService = {
-    create: jest.fn().mockResolvedValue(undefined),
+    create: vi.fn().mockResolvedValue(undefined),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -219,7 +219,7 @@ describe('authService', () => {
   describe('getMenus', () => {
     it('should return menus from menu service', async () => {
       const mockMenus = [{ id: 1, name: '系统管理' }]
-      menuService.getMenus = jest.fn().mockResolvedValue(mockMenus as any)
+      menuService.getMenus = vi.fn().mockResolvedValue(mockMenus as any)
 
       const result = await service.getMenus(1)
 
@@ -305,7 +305,7 @@ describe('authService', () => {
   describe('resetPassword', () => {
     it('should reset user password', async () => {
       mockUserService.findUserByUserName.mockResolvedValue(mockUser as UserEntity)
-      mockUserService.forceUpdatePassword = jest.fn().mockResolvedValue(undefined)
+      mockUserService.forceUpdatePassword = vi.fn().mockResolvedValue(undefined)
 
       await service.resetPassword('admin', 'NewPassword123')
 

@@ -8,7 +8,7 @@ import { ParamConfigService } from './param-config.service'
 
 describe('ParamConfigService', () => {
   let service: ParamConfigService
-  let paramConfigRepository: jest.Mocked<Repository<ParamConfigEntity>>
+  let paramConfigRepository: Mocked<Repository<ParamConfigEntity>>
 
   const mockParamConfigEntity: Partial<ParamConfigEntity> = {
     id: 1,
@@ -21,22 +21,22 @@ describe('ParamConfigService', () => {
   }
 
   const mockParamConfigRepository = {
-    createQueryBuilder: jest.fn().mockReturnValue({
-      where: jest.fn().mockReturnThis(),
-      skip: jest.fn().mockReturnThis(),
-      take: jest.fn().mockReturnThis(),
-      getManyAndCount: jest.fn().mockResolvedValue([[mockParamConfigEntity], 1]),
+    createQueryBuilder: vi.fn().mockReturnValue({
+      where: vi.fn().mockReturnThis(),
+      skip: vi.fn().mockReturnThis(),
+      take: vi.fn().mockReturnThis(),
+      getManyAndCount: vi.fn().mockResolvedValue([[mockParamConfigEntity], 1]),
     }),
-    count: jest.fn().mockResolvedValue(1),
-    insert: jest.fn().mockResolvedValue(undefined),
-    update: jest.fn().mockResolvedValue({ affected: 1 }),
-    delete: jest.fn().mockResolvedValue({ affected: 1 }),
-    findOneBy: jest.fn().mockResolvedValue(mockParamConfigEntity),
-    findOne: jest.fn().mockResolvedValue(mockParamConfigEntity),
+    count: vi.fn().mockResolvedValue(1),
+    insert: vi.fn().mockResolvedValue(undefined),
+    update: vi.fn().mockResolvedValue({ affected: 1 }),
+    delete: vi.fn().mockResolvedValue({ affected: 1 }),
+    findOneBy: vi.fn().mockResolvedValue(mockParamConfigEntity),
+    findOne: vi.fn().mockResolvedValue(mockParamConfigEntity),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -49,7 +49,7 @@ describe('ParamConfigService', () => {
     }).compile()
 
     service = module.get<ParamConfigService>(ParamConfigService)
-    paramConfigRepository = module.get(getRepositoryToken(ParamConfigEntity)) as jest.Mocked<
+    paramConfigRepository = module.get(getRepositoryToken(ParamConfigEntity)) as Mocked<
       Repository<ParamConfigEntity>
     >
   })

@@ -11,8 +11,8 @@ import { DepartmentService } from './department.service'
 
 describe('DepartmentService', () => {
   let service: DepartmentService
-  let departmentRepository: jest.Mocked<TreeRepository<DepartmentEntity>>
-  let dataSource: jest.Mocked<DataSource>
+  let departmentRepository: Mocked<TreeRepository<DepartmentEntity>>
+  let dataSource: Mocked<DataSource>
 
   const mockDepartmentEntity: Partial<DepartmentEntity> = {
     id: 1,
@@ -26,28 +26,28 @@ describe('DepartmentService', () => {
 
   const mockDataSource = {
     manager: {
-      findOneBy: jest.fn().mockResolvedValue({ id: 1, name: '人民医院' }),
+      findOneBy: vi.fn().mockResolvedValue({ id: 1, name: '人民医院' }),
     },
   }
 
   const mockDepartmentRepository = {
-    findOneBy: jest.fn().mockResolvedValue(mockDepartmentEntity as DepartmentEntity),
-    create: jest.fn().mockReturnValue(mockDepartmentEntity as DepartmentEntity),
-    save: jest.fn().mockResolvedValue(mockDepartmentEntity as DepartmentEntity),
-    find: jest.fn().mockResolvedValue([mockDepartmentEntity as DepartmentEntity]),
-    createQueryBuilder: jest.fn().mockReturnValue({
-      leftJoinAndSelect: jest.fn().mockReturnThis(),
-      andWhere: jest.fn().mockReturnThis(),
-      orderBy: jest.fn().mockReturnThis(),
-      getMany: jest.fn().mockResolvedValue([mockDepartmentEntity as DepartmentEntity]),
+    findOneBy: vi.fn().mockResolvedValue(mockDepartmentEntity as DepartmentEntity),
+    create: vi.fn().mockReturnValue(mockDepartmentEntity as DepartmentEntity),
+    save: vi.fn().mockResolvedValue(mockDepartmentEntity as DepartmentEntity),
+    find: vi.fn().mockResolvedValue([mockDepartmentEntity as DepartmentEntity]),
+    createQueryBuilder: vi.fn().mockReturnValue({
+      leftJoinAndSelect: vi.fn().mockReturnThis(),
+      andWhere: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockReturnThis(),
+      getMany: vi.fn().mockResolvedValue([mockDepartmentEntity as DepartmentEntity]),
     }),
-    findOne: jest.fn().mockResolvedValue(mockDepartmentEntity as DepartmentEntity),
-    findDescendants: jest.fn().mockResolvedValue([mockDepartmentEntity as DepartmentEntity]),
-    delete: jest.fn().mockResolvedValue({ affected: 1 }),
+    findOne: vi.fn().mockResolvedValue(mockDepartmentEntity as DepartmentEntity),
+    findDescendants: vi.fn().mockResolvedValue([mockDepartmentEntity as DepartmentEntity]),
+    delete: vi.fn().mockResolvedValue({ affected: 1 }),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -64,12 +64,11 @@ describe('DepartmentService', () => {
     }).compile()
 
     service = module.get<DepartmentService>(DepartmentService)
-    departmentRepository = module.get(getRepositoryToken(DepartmentEntity)) as jest.Mocked<
+    departmentRepository = module.get(getRepositoryToken(DepartmentEntity)) as Mocked<
       TreeRepository<DepartmentEntity>
     >
-    dataSource = module.get(DataSource) as jest.Mocked<DataSource>
+    dataSource = module.get(DataSource) as Mocked<DataSource>
 
-    // 设置默认返回值
     departmentRepository.findOne.mockResolvedValue(mockDepartmentEntity as DepartmentEntity)
   })
 
@@ -150,11 +149,8 @@ describe('DepartmentService', () => {
         parentId: 1,
       }
 
-      // 先检查医院是否存在
       mockDataSource.manager.findOneBy.mockResolvedValue({ id: 1, name: '人民医院' })
-      // 检查部门代码是否存在 - 第一次调用返回undefined
       departmentRepository.findOneBy.mockResolvedValueOnce(undefined)
-      // 检查父部门是否存在 - 第二次调用返回父部门
       departmentRepository.findOneBy.mockResolvedValueOnce(mockDepartmentEntity as DepartmentEntity)
 
       const result = await service.create(createDto)
@@ -227,12 +223,12 @@ describe('DepartmentService', () => {
         ...mockDepartmentEntity,
         children: [],
       }
-      ;(departmentRepository.createQueryBuilder as jest.Mock).mockReturnValue({
-        leftJoinAndSelect: jest.fn().mockReturnThis(),
-        andWhere: jest.fn().mockReturnThis(),
-        orderBy: jest.fn().mockReturnThis(),
-        getMany: jest.fn().mockResolvedValue([mockDepartmentWithChildren as DepartmentEntity]),
-      } as any)
+      ;(departmentRepository.createQueryBuilder as unknown as Mocked<any>).mockReturnValue({
+        leftJoinAndSelect: vi.fn().mockReturnThis(),
+        andWhere: vi.fn().mockReturnThis(),
+        orderBy: vi.fn().mockReturnThis(),
+        getMany: vi.fn().mockResolvedValue([mockDepartmentWithChildren as DepartmentEntity]),
+      })
 
       const result = await service.findTree(1)
 
@@ -246,12 +242,12 @@ describe('DepartmentService', () => {
         ...mockDepartmentEntity,
         children: [],
       }
-      ;(departmentRepository.createQueryBuilder as jest.Mock).mockReturnValue({
-        leftJoinAndSelect: jest.fn().mockReturnThis(),
-        andWhere: jest.fn().mockReturnThis(),
-        orderBy: jest.fn().mockReturnThis(),
-        getMany: jest.fn().mockResolvedValue([mockDepartmentWithChildren as DepartmentEntity]),
-      } as any)
+      ;(departmentRepository.createQueryBuilder as unknown as Mocked<any>).mockReturnValue({
+        leftJoinAndSelect: vi.fn().mockReturnThis(),
+        andWhere: vi.fn().mockReturnThis(),
+        orderBy: vi.fn().mockReturnThis(),
+        getMany: vi.fn().mockResolvedValue([mockDepartmentWithChildren as DepartmentEntity]),
+      })
 
       const result = await service.findTree()
 

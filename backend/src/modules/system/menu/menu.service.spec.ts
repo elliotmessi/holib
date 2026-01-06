@@ -10,6 +10,7 @@ import { RoleService } from '../role/role.service'
 import { SseService } from '~/modules/sse/sse.service'
 import { BusinessException } from '~/common/exceptions/biz.exception'
 import { ErrorEnum } from '~/constants/error-code.constant'
+import { REDIS_CLIENT } from '~/common/decorators/inject-redis.decorator'
 
 describe('MenuService', () => {
   let service: MenuService
@@ -36,41 +37,41 @@ describe('MenuService', () => {
         {
           provide: getRepositoryToken(MenuEntity),
           useValue: {
-            find: jest.fn(),
-            save: jest.fn(),
-            update: jest.fn(),
-            findBy: jest.fn(),
-            findOneBy: jest.fn(),
-            createQueryBuilder: jest.fn(() => ({
-              innerJoinAndSelect: jest.fn().mockReturnThis(),
-              andWhere: jest.fn().mockReturnThis(),
-              orderBy: jest.fn().mockReturnThis(),
-              getMany: jest.fn(),
+            find: vi.fn(),
+            save: vi.fn(),
+            update: vi.fn(),
+            findBy: vi.fn(),
+            findOneBy: vi.fn(),
+            createQueryBuilder: vi.fn(() => ({
+              innerJoinAndSelect: vi.fn().mockReturnThis(),
+              andWhere: vi.fn().mockReturnThis(),
+              orderBy: vi.fn().mockReturnThis(),
+              getMany: vi.fn(),
             })),
-            findOne: jest.fn(),
-            delete: jest.fn(),
+            findOne: vi.fn(),
+            delete: vi.fn(),
           } as any,
         },
         {
           provide: RoleService,
           useValue: {
-            getRoleIdsByUser: jest.fn(),
-            hasAdminRole: jest.fn(),
+            getRoleIdsByUser: vi.fn(),
+            hasAdminRole: vi.fn(),
           } as Partial<RoleService>,
         },
         {
           provide: SseService,
           useValue: {
-            noticeClientToUpdateMenusByMenuIds: jest.fn(),
-            noticeClientToUpdateMenusByUserIds: jest.fn(),
+            noticeClientToUpdateMenusByMenuIds: vi.fn(),
+            noticeClientToUpdateMenusByUserIds: vi.fn(),
           } as Partial<SseService>,
         },
         {
-          provide: require('~/common/decorators/inject-redis.decorator').REDIS_CLIENT,
+          provide: REDIS_CLIENT,
           useValue: {
-            get: jest.fn(),
-            set: jest.fn(),
-            keys: jest.fn(),
+            get: vi.fn(),
+            set: vi.fn(),
+            keys: vi.fn(),
           } as Partial<Redis>,
         },
       ],
@@ -80,12 +81,12 @@ describe('MenuService', () => {
     menuRepository = module.get<Repository<MenuEntity>>(getRepositoryToken(MenuEntity))
     roleService = module.get<RoleService>(RoleService)
     sseService = module.get<SseService>(SseService)
-    redis = module.get<Redis>(require('~/common/decorators/inject-redis.decorator').REDIS_CLIENT)
+    redis = module.get<Redis>(REDIS_CLIENT)
   })
 
   describe('list', () => {
     it('should return menu list with tree structure', async () => {
-      jest.spyOn(menuRepository, 'find').mockResolvedValue([mockMenu as MenuEntity])
+      vi.spyOn(menuRepository, 'find').mockResolvedValue([mockMenu as MenuEntity])
 
       const result = await service.list({} as MenuQueryDto)
       expect(result).toBeDefined()
@@ -93,14 +94,14 @@ describe('MenuService', () => {
     })
 
     it('should return raw menu list when tree structure is empty', async () => {
-      jest.spyOn(menuRepository, 'find').mockResolvedValue([])
+      vi.spyOn(menuRepository, 'find').mockResolvedValue([])
 
       const result = await service.list({} as MenuQueryDto)
       expect(result).toEqual([])
     })
 
     it('should return menu list with filters', async () => {
-      jest.spyOn(menuRepository, 'find').mockResolvedValue([mockMenu as MenuEntity])
+      vi.spyOn(menuRepository, 'find').mockResolvedValue([mockMenu as MenuEntity])
 
       const result = await service.list({
         name: '测试',
@@ -115,8 +116,8 @@ describe('MenuService', () => {
 
   describe('create', () => {
     it('should create menu successfully', async () => {
-      jest.spyOn(menuRepository, 'save').mockResolvedValue({ ...mockMenu, id: 1 } as MenuEntity)
-      jest.spyOn(sseService, 'noticeClientToUpdateMenusByMenuIds').mockResolvedValue()
+      vi.spyOn(menuRepository, 'save').mockResolvedValue({ ...mockMenu, id: 1 } as MenuEntity)
+      vi.spyOn(sseService, 'noticeClientToUpdateMenusByMenuIds').mockResolvedValue()
 
       await service.create(mockMenu as MenuDto)
       expect(menuRepository.save).toHaveBeenCalled()
@@ -126,10 +127,12 @@ describe('MenuService', () => {
 
   describe('update', () => {
     it('should update menu successfully', async () => {
-      jest
-        .spyOn(menuRepository, 'update')
-        .mockResolvedValue({ affected: 1, raw: {}, generatedMaps: [] } as any)
-      jest.spyOn(sseService, 'noticeClientToUpdateMenusByMenuIds').mockResolvedValue()
+      vi.spyOn(menuRepository, 'update').mockResolvedValue({
+        affected: 1,
+        raw: {},
+        generatedMaps: [],
+      } as any)
+      vi.spyOn(sseService, 'noticeClientToUpdateMenusByMenuIds').mockResolvedValue()
 
       await service.update(1, { name: '更新菜单' } as MenuUpdateDto)
       expect(menuRepository.update).toHaveBeenCalledWith(1, { name: '更新菜单' })
@@ -139,22 +142,22 @@ describe('MenuService', () => {
 
   describe('getMenus', () => {
     it('should return all menus for admin role', async () => {
-      jest.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([1])
-      jest.spyOn(roleService, 'hasAdminRole').mockReturnValue(true)
-      jest.spyOn(menuRepository, 'find').mockResolvedValue([mockMenu as MenuEntity])
+      vi.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([1])
+      vi.spyOn(roleService, 'hasAdminRole').mockReturnValue(true)
+      vi.spyOn(menuRepository, 'find').mockResolvedValue([mockMenu as MenuEntity])
 
       const result = await service.getMenus(1)
       expect(result).toBeDefined()
     })
 
     it('should return menus for non-admin role', async () => {
-      jest.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([2])
-      jest.spyOn(roleService, 'hasAdminRole').mockReturnValue(false)
-      jest.spyOn(menuRepository, 'createQueryBuilder').mockReturnValue({
-        innerJoinAndSelect: jest.fn().mockReturnThis(),
-        andWhere: jest.fn().mockReturnThis(),
-        orderBy: jest.fn().mockReturnThis(),
-        getMany: jest.fn().mockResolvedValue([mockMenu as MenuEntity]),
+      vi.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([2])
+      vi.spyOn(roleService, 'hasAdminRole').mockReturnValue(false)
+      vi.spyOn(menuRepository, 'createQueryBuilder').mockReturnValue({
+        innerJoinAndSelect: vi.fn().mockReturnThis(),
+        andWhere: vi.fn().mockReturnThis(),
+        orderBy: vi.fn().mockReturnThis(),
+        getMany: vi.fn().mockResolvedValue([mockMenu as MenuEntity]),
       } as any)
 
       const result = await service.getMenus(1)
@@ -162,7 +165,7 @@ describe('MenuService', () => {
     })
 
     it('should return empty array when no role ids', async () => {
-      jest.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([])
+      vi.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([])
 
       const result = await service.getMenus(1)
       expect(result).toBeDefined()
@@ -180,7 +183,7 @@ describe('MenuService', () => {
     })
 
     it('should throw exception when creating menu with menu parent', async () => {
-      jest.spyOn(service, 'getMenuItemInfo').mockResolvedValue({ type: 1 } as MenuEntity)
+      vi.spyOn(service, 'getMenuItemInfo').mockResolvedValue({ type: 1 } as MenuEntity)
 
       await expect(service.check({ type: 1, parentId: 1 } as Partial<MenuDto>)).rejects.toThrow(
         BusinessException,
@@ -191,7 +194,7 @@ describe('MenuService', () => {
     })
 
     it('should not throw exception when creating menu with directory parent', async () => {
-      jest.spyOn(service, 'getMenuItemInfo').mockResolvedValue({ type: 0 } as MenuEntity)
+      vi.spyOn(service, 'getMenuItemInfo').mockResolvedValue({ type: 0 } as MenuEntity)
 
       await expect(
         service.check({ type: 1, parentId: 1 } as Partial<MenuDto>),
@@ -201,8 +204,7 @@ describe('MenuService', () => {
 
   describe('findChildMenus', () => {
     it('should return child menus recursively', async () => {
-      jest
-        .spyOn(menuRepository, 'findBy')
+      vi.spyOn(menuRepository, 'findBy')
         .mockResolvedValueOnce([{ id: 2, parentId: 1, type: 0 } as MenuEntity])
         .mockResolvedValueOnce([{ id: 3, parentId: 2, type: 1 } as MenuEntity])
         .mockResolvedValueOnce([])
@@ -212,7 +214,7 @@ describe('MenuService', () => {
     })
 
     it('should return empty array when no child menus', async () => {
-      jest.spyOn(menuRepository, 'findBy').mockResolvedValue([])
+      vi.spyOn(menuRepository, 'findBy').mockResolvedValue([])
 
       const result = await service.findChildMenus(1)
       expect(result).toEqual([])
@@ -221,14 +223,14 @@ describe('MenuService', () => {
 
   describe('getMenuItemInfo', () => {
     it('should return menu info when menu exists', async () => {
-      jest.spyOn(menuRepository, 'findOneBy').mockResolvedValue(mockMenu as MenuEntity)
+      vi.spyOn(menuRepository, 'findOneBy').mockResolvedValue(mockMenu as MenuEntity)
 
       const result = await service.getMenuItemInfo(1)
       expect(result).toEqual(mockMenu as MenuEntity)
     })
 
     it('should return null when menu not exists', async () => {
-      jest.spyOn(menuRepository, 'findOneBy').mockResolvedValue(null)
+      vi.spyOn(menuRepository, 'findOneBy').mockResolvedValue(null)
 
       const result = await service.getMenuItemInfo(1)
       expect(result).toBeNull()
@@ -237,8 +239,7 @@ describe('MenuService', () => {
 
   describe('getMenuItemAndParentInfo', () => {
     it('should return menu and parent info when menu exists with parent', async () => {
-      jest
-        .spyOn(menuRepository, 'findOneBy')
+      vi.spyOn(menuRepository, 'findOneBy')
         .mockResolvedValueOnce({
           ...mockMenu,
           id: 2,
@@ -253,7 +254,7 @@ describe('MenuService', () => {
     })
 
     it('should return menu without parent info when menu has no parent', async () => {
-      jest.spyOn(menuRepository, 'findOneBy').mockResolvedValueOnce(mockMenu as MenuEntity)
+      vi.spyOn(menuRepository, 'findOneBy').mockResolvedValueOnce(mockMenu as MenuEntity)
 
       const result = await service.getMenuItemAndParentInfo(1)
       expect(result).toBeDefined()
@@ -264,14 +265,14 @@ describe('MenuService', () => {
 
   describe('findRouterExist', () => {
     it('should return true when router exists', async () => {
-      jest.spyOn(menuRepository, 'findOneBy').mockResolvedValue(mockMenu as MenuEntity)
+      vi.spyOn(menuRepository, 'findOneBy').mockResolvedValue(mockMenu as MenuEntity)
 
       const result = await service.findRouterExist('/test')
       expect(result).toBe(true)
     })
 
     it('should return false when router not exists', async () => {
-      jest.spyOn(menuRepository, 'findOneBy').mockResolvedValue(null)
+      vi.spyOn(menuRepository, 'findOneBy').mockResolvedValue(null)
 
       const result = await service.findRouterExist('/not-exist')
       expect(result).toBe(false)
@@ -280,26 +281,24 @@ describe('MenuService', () => {
 
   describe('getPermissions', () => {
     it('should return all permissions for admin role', async () => {
-      jest.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([1])
-      jest.spyOn(roleService, 'hasAdminRole').mockReturnValue(true)
-      jest
-        .spyOn(menuRepository, 'findBy')
-        .mockResolvedValue([
-          { permission: 'test:create,test:update' } as MenuEntity,
-          { permission: 'test:delete' } as MenuEntity,
-        ])
+      vi.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([1])
+      vi.spyOn(roleService, 'hasAdminRole').mockReturnValue(true)
+      vi.spyOn(menuRepository, 'findBy').mockResolvedValue([
+        { permission: 'test:create,test:update' } as MenuEntity,
+        { permission: 'test:delete' } as MenuEntity,
+      ])
 
       const result = await service.getPermissions(1)
       expect(result).toEqual(['test:create', 'test:update', 'test:delete'])
     })
 
     it('should return permissions for non-admin role', async () => {
-      jest.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([2])
-      jest.spyOn(roleService, 'hasAdminRole').mockReturnValue(false)
-      jest.spyOn(menuRepository, 'createQueryBuilder').mockReturnValue({
-        innerJoinAndSelect: jest.fn().mockReturnThis(),
-        andWhere: jest.fn().mockReturnThis(),
-        getMany: jest.fn().mockResolvedValue([{ permission: 'test:create' } as MenuEntity]),
+      vi.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([2])
+      vi.spyOn(roleService, 'hasAdminRole').mockReturnValue(false)
+      vi.spyOn(menuRepository, 'createQueryBuilder').mockReturnValue({
+        innerJoinAndSelect: vi.fn().mockReturnThis(),
+        andWhere: vi.fn().mockReturnThis(),
+        getMany: vi.fn().mockResolvedValue([{ permission: 'test:create' } as MenuEntity]),
       } as any)
 
       const result = await service.getPermissions(1)
@@ -307,7 +306,7 @@ describe('MenuService', () => {
     })
 
     it('should return empty array when no role ids', async () => {
-      jest.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([])
+      vi.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([])
 
       const result = await service.getPermissions(1)
       expect(result).toEqual([])
@@ -316,7 +315,7 @@ describe('MenuService', () => {
 
   describe('deleteMenuItem', () => {
     it('should delete menu items successfully', async () => {
-      jest.spyOn(menuRepository, 'delete').mockResolvedValue({ affected: 2, raw: {} })
+      vi.spyOn(menuRepository, 'delete').mockResolvedValue({ affected: 2, raw: {} })
 
       await service.deleteMenuItem([1, 2])
       expect(menuRepository.delete).toHaveBeenCalledWith([1, 2])
@@ -325,14 +324,14 @@ describe('MenuService', () => {
 
   describe('refreshPerms', () => {
     it('should refresh permissions for online user', async () => {
-      jest.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([1])
-      jest.spyOn(roleService, 'hasAdminRole').mockReturnValue(true)
-      jest
-        .spyOn(menuRepository, 'findBy')
-        .mockResolvedValue([{ permission: 'test:create' } as MenuEntity])
-      jest.spyOn(redis, 'get').mockResolvedValue('online')
-      jest.spyOn(redis, 'set').mockResolvedValue('OK')
-      jest.spyOn(sseService, 'noticeClientToUpdateMenusByUserIds').mockResolvedValue()
+      vi.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([1])
+      vi.spyOn(roleService, 'hasAdminRole').mockReturnValue(true)
+      vi.spyOn(menuRepository, 'findBy').mockResolvedValue([
+        { permission: 'test:create' } as MenuEntity,
+      ])
+      vi.spyOn(redis, 'get').mockResolvedValue('online')
+      vi.spyOn(redis, 'set').mockResolvedValue('OK')
+      vi.spyOn(sseService, 'noticeClientToUpdateMenusByUserIds').mockResolvedValue()
 
       await service.refreshPerms(1)
       expect(redis.set).toHaveBeenCalled()
@@ -340,9 +339,9 @@ describe('MenuService', () => {
     })
 
     it('should not refresh permissions for offline user', async () => {
-      jest.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([1])
-      jest.spyOn(roleService, 'hasAdminRole').mockReturnValue(true)
-      jest.spyOn(redis, 'get').mockResolvedValue(null)
+      vi.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([1])
+      vi.spyOn(roleService, 'hasAdminRole').mockReturnValue(true)
+      vi.spyOn(redis, 'get').mockResolvedValue(null)
 
       await service.refreshPerms(1)
       expect(redis.set).not.toHaveBeenCalled()
@@ -351,15 +350,14 @@ describe('MenuService', () => {
 
   describe('refreshOnlineUserPerms', () => {
     it('should refresh permissions for all online users', async () => {
-      // 使用正确的Redis键格式 'auth:token:'
-      jest.spyOn(redis, 'keys').mockResolvedValue(['auth:token:1', 'auth:token:2'])
-      jest.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([1])
-      jest.spyOn(roleService, 'hasAdminRole').mockReturnValue(true)
-      jest
-        .spyOn(menuRepository, 'findBy')
-        .mockResolvedValue([{ permission: 'test:create' } as MenuEntity])
-      jest.spyOn(redis, 'set').mockResolvedValue('OK')
-      jest.spyOn(sseService, 'noticeClientToUpdateMenusByUserIds').mockResolvedValue()
+      vi.spyOn(redis, 'keys').mockResolvedValue(['auth:token:1', 'auth:token:2'])
+      vi.spyOn(roleService, 'getRoleIdsByUser').mockResolvedValue([1])
+      vi.spyOn(roleService, 'hasAdminRole').mockReturnValue(true)
+      vi.spyOn(menuRepository, 'findBy').mockResolvedValue([
+        { permission: 'test:create' } as MenuEntity,
+      ])
+      vi.spyOn(redis, 'set').mockResolvedValue('OK')
+      vi.spyOn(sseService, 'noticeClientToUpdateMenusByUserIds').mockResolvedValue()
 
       await service.refreshOnlineUserPerms()
       expect(redis.keys).toHaveBeenCalled()
@@ -369,7 +367,7 @@ describe('MenuService', () => {
     })
 
     it('should do nothing when no online users', async () => {
-      jest.spyOn(redis, 'keys').mockResolvedValue([])
+      vi.spyOn(redis, 'keys').mockResolvedValue([])
 
       await service.refreshOnlineUserPerms()
       expect(menuRepository.findBy).not.toHaveBeenCalled()
@@ -378,14 +376,14 @@ describe('MenuService', () => {
 
   describe('checkRoleByMenuId', () => {
     it('should return true when menu is associated with role', async () => {
-      jest.spyOn(menuRepository, 'findOne').mockResolvedValue(mockMenu as MenuEntity)
+      vi.spyOn(menuRepository, 'findOne').mockResolvedValue(mockMenu as MenuEntity)
 
       const result = await service.checkRoleByMenuId(1)
       expect(result).toBe(true)
     })
 
     it('should return false when menu is not associated with role', async () => {
-      jest.spyOn(menuRepository, 'findOne').mockResolvedValue(null)
+      vi.spyOn(menuRepository, 'findOne').mockResolvedValue(null)
 
       const result = await service.checkRoleByMenuId(1)
       expect(result).toBe(false)

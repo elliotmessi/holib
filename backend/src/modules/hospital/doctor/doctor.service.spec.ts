@@ -11,7 +11,7 @@ import { DoctorService } from './doctor.service'
 
 describe('DoctorService', () => {
   let service: DoctorService
-  let doctorRepository: jest.Mocked<Repository<DoctorEntity>>
+  let doctorRepository: Mocked<Repository<DoctorEntity>>
 
   const mockDoctorEntity: Partial<DoctorEntity> = {
     id: 1,
@@ -31,23 +31,22 @@ describe('DoctorService', () => {
   }
 
   const mockDoctorRepository = {
-    findOneBy: jest.fn().mockResolvedValue(undefined),
-    create: jest.fn().mockReturnValue(mockDoctorEntity as DoctorEntity),
-    save: jest.fn().mockResolvedValue(mockDoctorEntity as DoctorEntity),
-    createQueryBuilder: jest.fn().mockReturnValue({
-      leftJoinAndSelect: jest.fn().mockReturnThis(),
-      andWhere: jest.fn().mockReturnThis(),
-      orderBy: jest.fn().mockReturnThis(),
-      getMany: jest.fn().mockResolvedValue([mockDoctorEntity as DoctorEntity]),
+    findOneBy: vi.fn().mockResolvedValue(undefined),
+    create: vi.fn().mockReturnValue(mockDoctorEntity as DoctorEntity),
+    save: vi.fn().mockResolvedValue(mockDoctorEntity as DoctorEntity),
+    createQueryBuilder: vi.fn().mockReturnValue({
+      leftJoinAndSelect: vi.fn().mockReturnThis(),
+      andWhere: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockReturnThis(),
+      getMany: vi.fn().mockResolvedValue([mockDoctorEntity as DoctorEntity]),
     }),
-    findOne: jest.fn().mockResolvedValue(mockDoctorEntity as DoctorEntity),
-    delete: jest.fn().mockResolvedValue({ affected: 1 }),
+    findOne: vi.fn().mockResolvedValue(mockDoctorEntity as DoctorEntity),
+    delete: vi.fn().mockResolvedValue({ affected: 1 }),
   }
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
-    // Reset the mock functions to their default behavior
     mockDoctorRepository.findOne.mockResolvedValue(mockDoctorEntity as DoctorEntity)
     mockDoctorRepository.findOneBy.mockResolvedValue(undefined)
 
@@ -62,7 +61,7 @@ describe('DoctorService', () => {
     }).compile()
 
     service = module.get<DoctorService>(DoctorService)
-    doctorRepository = module.get(getRepositoryToken(DoctorEntity)) as jest.Mocked<
+    doctorRepository = module.get(getRepositoryToken(DoctorEntity)) as Mocked<
       Repository<DoctorEntity>
     >
   })
@@ -294,8 +293,7 @@ describe('DoctorService', () => {
         newPassword: 'new123456',
       }
 
-      // Mock the password hash to match
-      jest.spyOn(service as any, 'hashPassword').mockReturnValue('hashed_password')
+      vi.spyOn(service as any, 'hashPassword').mockReturnValue('hashed_password')
 
       await service.changePassword(1, changePasswordDto)
 
@@ -309,9 +307,7 @@ describe('DoctorService', () => {
         newPassword: 'new123456',
       }
 
-      // Mock the password hash to not match
-      jest
-        .spyOn(service as any, 'hashPassword')
+      vi.spyOn(service as any, 'hashPassword')
         .mockReturnValueOnce('wrong_hash')
         .mockReturnValue('new_hash')
 
@@ -354,8 +350,7 @@ describe('DoctorService', () => {
 
   describe('validatePassword', () => {
     it('should return true when password is correct', async () => {
-      // Mock the password hash to match
-      jest.spyOn(service as any, 'hashPassword').mockReturnValue('hashed_password')
+      vi.spyOn(service as any, 'hashPassword').mockReturnValue('hashed_password')
 
       const result = await service.validatePassword(1, 'a123456')
 
@@ -364,8 +359,7 @@ describe('DoctorService', () => {
     })
 
     it('should return false when password is incorrect', async () => {
-      // Mock the password hash to not match
-      jest.spyOn(service as any, 'hashPassword').mockReturnValue('wrong_hash')
+      vi.spyOn(service as any, 'hashPassword').mockReturnValue('wrong_hash')
 
       const result = await service.validatePassword(1, 'wrong_password')
 
