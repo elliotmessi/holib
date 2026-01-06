@@ -23,5 +23,5 @@
     "forceConsistentCasingInFileNames": false,
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "scripts", "dist", "**/*.spec.ts"]
+  "exclude": ["node_modules", "scripts", "dist"]
 }

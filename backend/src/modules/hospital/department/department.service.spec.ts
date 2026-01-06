@@ -86,9 +86,8 @@ describe('DepartmentService', () => {
         hospitalId: 1,
       }
 
-      departmentRepository.findOneBy
-        .mockResolvedValue(undefined)(dataSource.manager.findOneBy as jest.Mock)
-        .mockResolvedValue({ id: 1, name: '人民医院' })
+      departmentRepository.findOneBy.mockResolvedValue(undefined)
+      mockDataSource.manager.findOneBy.mockResolvedValue({ id: 1, name: '人民医院' })
 
       const result = await service.create(createDto)
 
@@ -135,9 +134,8 @@ describe('DepartmentService', () => {
         hospitalId: 999,
       }
 
-      departmentRepository.findOneBy
-        .mockResolvedValue(undefined)(dataSource.manager.findOneBy as jest.Mock)
-        .mockResolvedValue(undefined)
+      departmentRepository.findOneBy.mockResolvedValue(undefined)
+      mockDataSource.manager.findOneBy.mockResolvedValue(undefined)
 
       await expect(service.create(createDto)).rejects.toThrow(BusinessException)
       await expect(service.create(createDto)).rejects.toThrow('数据不存在')
@@ -152,10 +150,12 @@ describe('DepartmentService', () => {
         parentId: 1,
       }
 
-      departmentRepository.findOneBy
-        .mockResolvedValue(undefined)(dataSource.manager.findOneBy as jest.Mock)
-        .mockResolvedValue({ id: 1, name: '人民医院' })
-      departmentRepository.findOneBy.mockResolvedValue(mockDepartmentEntity as DepartmentEntity)
+      // 先检查医院是否存在
+      mockDataSource.manager.findOneBy.mockResolvedValue({ id: 1, name: '人民医院' })
+      // 检查部门代码是否存在 - 第一次调用返回undefined
+      departmentRepository.findOneBy.mockResolvedValueOnce(undefined)
+      // 检查父部门是否存在 - 第二次调用返回父部门
+      departmentRepository.findOneBy.mockResolvedValueOnce(mockDepartmentEntity as DepartmentEntity)
 
       const result = await service.create(createDto)
 
@@ -226,7 +226,8 @@ describe('DepartmentService', () => {
       const mockDepartmentWithChildren: Partial<DepartmentEntity> = {
         ...mockDepartmentEntity,
         children: [],
-      }(departmentRepository.createQueryBuilder as jest.Mock).mockReturnValue({
+      }
+      ;(departmentRepository.createQueryBuilder as jest.Mock).mockReturnValue({
         leftJoinAndSelect: jest.fn().mockReturnThis(),
         andWhere: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
@@ -244,7 +245,8 @@ describe('DepartmentService', () => {
       const mockDepartmentWithChildren: Partial<DepartmentEntity> = {
         ...mockDepartmentEntity,
         children: [],
-      }(departmentRepository.createQueryBuilder as jest.Mock).mockReturnValue({
+      }
+      ;(departmentRepository.createQueryBuilder as jest.Mock).mockReturnValue({
         leftJoinAndSelect: jest.fn().mockReturnThis(),
         andWhere: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
