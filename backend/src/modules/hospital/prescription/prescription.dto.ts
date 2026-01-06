@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsInt,
   Min,
+  MinLength,
   IsNumber,
   IsEnum,
   IsArray,
@@ -26,19 +27,19 @@ export class PrescriptionDrugDto {
 
   @ApiProperty({ description: '剂量单位' })
   @IsString()
-  @Min(1)
+  @MinLength(1)
   @MaxLength(20)
   dosageUnit: string
 
   @ApiProperty({ description: '用药频率' })
   @IsString()
-  @Min(1)
+  @MinLength(1)
   @MaxLength(20)
   frequency: string
 
   @ApiProperty({ description: '给药途径' })
   @IsString()
-  @Min(1)
+  @MinLength(1)
   @MaxLength(20)
   administrationRoute: string
 

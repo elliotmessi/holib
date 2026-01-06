@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsInt,
   Min,
+  MinLength,
   IsNumber,
   IsDateString,
   IsBoolean,
@@ -23,7 +24,7 @@ export class CreateInventoryDto {
 
   @ApiProperty({ description: '批次号' })
   @IsString()
-  @Min(1)
+  @MinLength(1)
   @MaxLength(50)
   batchNumber: string
 
@@ -101,7 +102,7 @@ export class AdjustInventoryDto {
 
   @ApiProperty({ description: '调整原因' })
   @IsString()
-  @Min(1)
+  @MinLength(1)
   reason: string
 }
 

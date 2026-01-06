@@ -3,9 +3,11 @@ import { INestApplication } from '@nestjs/common'
 import request from 'supertest'
 import { getRepositoryToken } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
+import { vi, describe, expect, it, beforeEach, afterEach } from 'vitest'
 
 import { BusinessException } from '~/common/exceptions/biz.exception'
 import { ErrorEnum } from '~/constants/error-code.constant'
+import { AllExceptionsFilter } from '~/common/filters/any-exception.filter'
 import { DoctorEntity } from './doctor.entity'
 import { DoctorService } from './doctor.service'
 import { DoctorController } from './doctor.controller'
@@ -52,6 +54,8 @@ describe('DoctorController', () => {
         transformOptions: { enableImplicitConversion: true },
       }),
     )
+
+    app.useGlobalFilters(new AllExceptionsFilter())
     await app.init()
 
     doctorService = module.get(DoctorService) as Mocked<DoctorService>
@@ -89,7 +93,7 @@ describe('DoctorController', () => {
     })
 
     it('should handle service errors', async () => {
-      doctorService.findAll.mockRejectedValue(new Error('Internal server error'))
+      doctorService.findAll.mockRejectedValue(new BusinessException(ErrorEnum.SERVER_ERROR))
 
       await request(app.getHttpServer()).get('/doctors').expect(500)
     })
@@ -141,9 +145,9 @@ describe('DoctorController', () => {
         contactPerson: '张三',
       }
 
-      doctorService.create.mockRejectedValue(new Error('Data already exists'))
+      doctorService.create.mockRejectedValue(new BusinessException(ErrorEnum.DATA_ALREADY_EXISTS))
 
-      await request(app.getHttpServer()).post('/doctors').send(createDto).expect(500)
+      await request(app.getHttpServer()).post('/doctors').send(createDto).expect(409)
     })
   })
 
@@ -166,9 +170,9 @@ describe('DoctorController', () => {
     })
 
     it('should handle invalid id', async () => {
-      doctorService.findOne.mockRejectedValue(new Error('Invalid ID'))
+      doctorService.findOne.mockRejectedValue(new BusinessException(ErrorEnum.DATA_NOT_FOUND))
 
-      await request(app.getHttpServer()).get('/doctors/invalid').expect(500)
+      await request(app.getHttpServer()).get('/doctors/invalid').expect(404)
     })
   })
 
@@ -211,7 +215,7 @@ describe('DoctorController', () => {
         contactPerson: '张三',
       }
 
-      doctorService.update.mockRejectedValue(new Error('Doctor not found'))
+      doctorService.update.mockRejectedValue(new BusinessException(ErrorEnum.USER_NOT_FOUND))
 
       await request(app.getHttpServer()).put('/doctors/999').send(updateDto).expect(500)
     })
@@ -228,9 +232,9 @@ describe('DoctorController', () => {
         contactPerson: '张三',
       }
 
-      doctorService.update.mockRejectedValue(new Error('Duplicate doctor code'))
+      doctorService.update.mockRejectedValue(new BusinessException(ErrorEnum.DATA_ALREADY_EXISTS))
 
-      await request(app.getHttpServer()).put('/doctors/1').send(updateDto).expect(500)
+      await request(app.getHttpServer()).put('/doctors/1').send(updateDto).expect(409)
     })
   })
 
@@ -258,7 +262,9 @@ describe('DoctorController', () => {
         newPassword: 'new123456',
       }
 
-      doctorService.changePassword.mockRejectedValue(new Error('Password mismatch'))
+      doctorService.changePassword.mockRejectedValue(
+        new BusinessException(ErrorEnum.PASSWORD_MISMATCH),
+      )
 
       await request(app.getHttpServer())
         .put('/doctors/1/password')
@@ -272,7 +278,9 @@ describe('DoctorController', () => {
         newPassword: 'new123456',
       }
 
-      doctorService.changePassword.mockRejectedValue(new Error('Doctor not found'))
+      doctorService.changePassword.mockRejectedValue(
+        new BusinessException(ErrorEnum.USER_NOT_FOUND),
+      )
 
       await request(app.getHttpServer())
         .put('/doctors/999/password')
@@ -291,15 +299,15 @@ describe('DoctorController', () => {
     })
 
     it('should handle non-existent doctor', async () => {
-      doctorService.remove.mockRejectedValue(new Error('Doctor not found'))
+      doctorService.remove.mockRejectedValue(new BusinessException(ErrorEnum.USER_NOT_FOUND))
 
       await request(app.getHttpServer()).delete('/doctors/999').expect(500)
     })
 
     it('should handle invalid id', async () => {
-      doctorService.remove.mockRejectedValue(new Error('Invalid ID'))
+      doctorService.remove.mockRejectedValue(new BusinessException(ErrorEnum.DATA_NOT_FOUND))
 
-      await request(app.getHttpServer()).delete('/doctors/invalid').expect(500)
+      await request(app.getHttpServer()).delete('/doctors/invalid').expect(404)
     })
   })
 })
