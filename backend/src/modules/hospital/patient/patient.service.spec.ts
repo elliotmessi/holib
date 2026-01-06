@@ -347,6 +347,119 @@ describe('PatientService', () => {
       await expect(service.update(999, updateDto)).rejects.toThrow('数据不存在')
     })
 
+    it('should throw error when updating with duplicate medicalRecordNumber', async () => {
+      patientRepository.findOneBy.mockResolvedValue(mockPatientEntity as PatientEntity)
+
+      const updateDto: UpdatePatientDto = {
+        medicalRecordNumber: 'MRN002', // This already exists in mock
+        name: '李四',
+        gender: '男',
+        age: 35,
+      }
+
+      await expect(service.update(1, updateDto)).rejects.toThrow(BusinessException)
+      await expect(service.update(1, updateDto)).rejects.toThrow('数据已存在')
+    })
+
+    it('should throw error when updating with duplicate idCard', async () => {
+      // Create a mock patient with different idCard
+      const mockPatientWithDifferentIdCard = {
+        ...mockPatientEntity,
+        idCard: '110101198501019999', // Different from the one we're testing
+      } as PatientEntity
+
+      patientRepository.findOne.mockResolvedValue(mockPatientWithDifferentIdCard)
+      patientRepository.findOneBy.mockResolvedValue(mockPatientEntity as PatientEntity) // Returns existing patient for idCard check
+
+      const updateDto: UpdatePatientDto = {
+        medicalRecordNumber: 'MRN001',
+        name: '李四',
+        gender: '男',
+        age: 35,
+        idCard: '110101198501011234', // This already exists in mockPatientEntity
+      }
+
+      await expect(service.update(1, updateDto)).rejects.toThrow(BusinessException)
+      await expect(service.update(1, updateDto)).rejects.toThrow('数据已存在')
+    })
+
+    it('should update patient successfully without changing medicalRecordNumber', async () => {
+      patientRepository.findOneBy.mockResolvedValue(undefined)
+
+      const updateDto = {
+        name: '李四（更新）',
+        gender: '男',
+        age: 36,
+        phone: '13900139000',
+        height: 175.0,
+        weight: 72.0,
+      }
+
+      await service.update(1, updateDto)
+
+      expect(patientRepository.findOne).toHaveBeenCalled()
+      expect(patientRepository.save).toHaveBeenCalled()
+    })
+
+    it('should update patient successfully without changing idCard', async () => {
+      patientRepository.findOneBy.mockResolvedValue(undefined)
+
+      const updateDto: UpdatePatientDto = {
+        medicalRecordNumber: 'MRN001',
+        name: '李四（更新）',
+        gender: '男',
+        age: 36,
+        phone: '13900139000',
+      }
+
+      await service.update(1, updateDto)
+
+      expect(patientRepository.findOne).toHaveBeenCalled()
+      expect(patientRepository.save).toHaveBeenCalled()
+    })
+
+    it('should update patient successfully when not providing idCard', async () => {
+      patientRepository.findOneBy.mockResolvedValue(undefined)
+
+      const updateDto: UpdatePatientDto = {
+        medicalRecordNumber: 'MRN001',
+        name: '李四（更新）',
+        gender: '男',
+        age: 36,
+        phone: '13900139000',
+      }
+
+      await service.update(1, updateDto)
+
+      expect(patientRepository.findOne).toHaveBeenCalled()
+      expect(patientRepository.save).toHaveBeenCalled()
+    })
+
+    it('should update patient successfully with new unique idCard', async () => {
+      // Create a mock patient with different idCard
+      const mockPatientWithDifferentIdCard = {
+        ...mockPatientEntity,
+        idCard: '110101198501019999', // Different from the one we're testing
+      } as PatientEntity
+
+      patientRepository.findOne.mockResolvedValue(mockPatientWithDifferentIdCard)
+      patientRepository.findOneBy.mockResolvedValue(undefined) // No existing patient for the new idCard
+
+      const updateDto: UpdatePatientDto = {
+        medicalRecordNumber: 'MRN001',
+        name: '李四',
+        gender: '男',
+        age: 35,
+        idCard: '110101198501015555', // This is a new unique idCard
+      }
+
+      await service.update(1, updateDto)
+
+      expect(patientRepository.findOne).toHaveBeenCalled()
+      expect(patientRepository.findOneBy).toHaveBeenCalled()
+      expect(patientRepository.save).toHaveBeenCalled()
+    })
+
     it('should throw error when medical record number already exists', async () => {
       const updateDto: UpdatePatientDto = {
         medicalRecordNumber: 'MRN002',

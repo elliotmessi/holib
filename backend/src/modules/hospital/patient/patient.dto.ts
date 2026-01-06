@@ -1,13 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsString, IsOptional, IsInt, Min, MinLength, MaxLength, IsNumber } from 'class-validator'
 
-export class CreatePatientDto {
-  @ApiProperty({ description: '病历号' })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(20)
-  medicalRecordNumber: string
-
+/**
+ * 患者基础DTO，包含所有共同字段
+ */
+class PatientBaseDto {
   @ApiProperty({ description: '姓名' })
   @IsString()
   @MinLength(1)
@@ -66,7 +63,28 @@ export class CreatePatientDto {
   remark?: string
 }
 
-export class UpdatePatientDto extends CreatePatientDto {}
+/**
+ * 创建患者DTO，病历号为必填
+ */
+export class CreatePatientDto extends PatientBaseDto {
+  @ApiProperty({ description: '病历号' })
+  @IsString()
+  @MinLength(1)
+  @MaxLength(20)
+  medicalRecordNumber: string
+}
+
+/**
+ * 更新患者DTO，病历号为可选
+ */
+export class UpdatePatientDto extends PatientBaseDto {
+  @ApiProperty({ description: '病历号', required: false })
+  @IsString()
+  @MinLength(1)
+  @MaxLength(20)
+  @IsOptional()
+  medicalRecordNumber?: string
+}
 
 export class PatientQueryDto {
   @ApiProperty({ description: '病人姓名', required: false })

@@ -172,6 +172,65 @@ describe('DrugService', () => {
       expect(result).toBeDefined()
       expect(drugRepository.createQueryBuilder).toHaveBeenCalled()
     })
+
+    it('should return filtered drugs by drugType', async () => {
+      const query: DrugQueryDto = {
+        drugType: '化学药品',
+      }
+
+      const result = await service.findAll(query)
+
+      expect(result).toBeDefined()
+      expect(drugRepository.createQueryBuilder).toHaveBeenCalled()
+    })
+
+    it('should return filtered drugs by dosageForm', async () => {
+      const query: DrugQueryDto = {
+        dosageForm: '胶囊剂',
+      }
+
+      const result = await service.findAll(query)
+
+      expect(result).toBeDefined()
+      expect(drugRepository.createQueryBuilder).toHaveBeenCalled()
+    })
+
+    it('should return filtered drugs by manufacturer', async () => {
+      const query: DrugQueryDto = {
+        manufacturer: '华北制药',
+      }
+
+      const result = await service.findAll(query)
+
+      expect(result).toBeDefined()
+      expect(drugRepository.createQueryBuilder).toHaveBeenCalled()
+    })
+
+    it('should return filtered drugs by pharmacologicalClassId', async () => {
+      const query: DrugQueryDto = {
+        pharmacologicalClassId: 1,
+      }
+
+      const result = await service.findAll(query)
+
+      expect(result).toBeDefined()
+      expect(drugRepository.createQueryBuilder).toHaveBeenCalled()
+    })
+
+    it('should return drugs with combined filter conditions', async () => {
+      const query: DrugQueryDto = {
+        name: '阿莫西林',
+        drugType: '化学药品',
+        dosageForm: '胶囊剂',
+        status: DrugStatus.NORMAL,
+        pharmacologicalClassId: 1,
+      }
+
+      const result = await service.findAll(query)
+
+      expect(result).toBeDefined()
+      expect(drugRepository.createQueryBuilder).toHaveBeenCalled()
+    })
   })
 
   describe('findOne', () => {
@@ -275,6 +334,46 @@ describe('DrugService', () => {
 
       await expect(service.updateStatus(999, DrugStatus.STOPPED)).rejects.toThrow(BusinessException)
       await expect(service.updateStatus(999, DrugStatus.STOPPED)).rejects.toThrow('数据不存在')
+    })
+  })
+
+  describe('update with edge cases', () => {
+    it('should update drug successfully without changing drugCode', async () => {
+      drugRepository.findOneBy.mockResolvedValue(undefined)
+
+      const updateDto: UpdateDrugDto = {
+        genericName: '阿莫西林胶囊',
+        tradeName: '阿莫仙',
+        specification: '0.25g*24粒',
+        dosageForm: '胶囊剂',
+        manufacturer: '华北制药股份有限公司',
+        approvalNumber: '国药准字H13020683',
+        drugType: '化学药品',
+        retailPrice: 28.0,
+        wholesalePrice: 22.0,
+      }
+
+      await service.update(1, updateDto)
+
+      expect(drugRepository.findOne).toHaveBeenCalled()
+      expect(drugRepository.save).toHaveBeenCalled()
+    })
+
+    it('should update drug successfully without providing validFrom and validTo', async () => {
+      drugRepository.findOneBy.mockResolvedValue(undefined)
+
+      const updateDto: UpdateDrugDto = {
+        drugCode: 'DRUG001',
+        genericName: '阿莫西林胶囊',
+        specification: '0.25g*24粒',
+        retailPrice: 28.0,
+        wholesalePrice: 22.0,
+      }
+
+      await service.update(1, updateDto)
+
+      expect(drugRepository.findOne).toHaveBeenCalled()
+      expect(drugRepository.save).toHaveBeenCalled()
     })
   })
 
