@@ -24,13 +24,9 @@ export class RefreshTokenEntity extends BaseEntity {
   @CreateDateColumn({ comment: '令牌创建时间' })
   created_at!: Date
 
-  @OneToOne(
-    () => require('./access-token.entity').AccessTokenEntity,
-    (accessToken: AccessTokenEntity) => accessToken.refreshToken,
-    {
-      onDelete: 'CASCADE',
-    },
-  )
+  @OneToOne('AccessTokenEntity', (accessToken: AccessTokenEntity) => accessToken.refreshToken, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   accessToken!: AccessTokenEntity
 }

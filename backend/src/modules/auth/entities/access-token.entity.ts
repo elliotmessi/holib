@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm'
 
-import { UserEntity } from '~/modules/user/user.entity'
+import type { UserEntity } from '~/modules/user/user.entity'
 import type { RefreshTokenEntity } from './refresh-token.entity'
 
 @Entity('user_access_tokens')
@@ -26,16 +26,12 @@ export class AccessTokenEntity extends BaseEntity {
   @CreateDateColumn({ comment: '令牌创建时间' })
   created_at!: Date
 
-  @OneToOne(
-    () => require('./refresh-token.entity').RefreshTokenEntity,
-    (refreshToken: RefreshTokenEntity) => refreshToken.accessToken,
-    {
-      cascade: true,
-    },
-  )
+  @OneToOne('RefreshTokenEntity', (refreshToken: RefreshTokenEntity) => refreshToken.accessToken, {
+    cascade: true,
+  })
   refreshToken!: RefreshTokenEntity
 
-  @ManyToOne(() => UserEntity, (user) => user.accessTokens, {
+  @ManyToOne('UserEntity', (user: UserEntity) => user.accessTokens, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'user_id' })
