@@ -1,4 +1,5 @@
 import { defineConfig } from '@umijs/max'
+import tailwindcss from '@tailwindcss/postcss'
 
 export default defineConfig({
   antd: {},
@@ -7,9 +8,9 @@ export default defineConfig({
   initialState: {},
   request: {},
   layout: {
-    title: '@umijs/max',
+    title: '医药后台管理系统',
   },
-  vite: {},
+  // vite: {},
   routes: [
     {
       path: '/',
@@ -33,5 +34,8 @@ export default defineConfig({
   ],
 
   npmClient: 'pnpm',
-  tailwindcss: {},
+  mfsu: {
+    esbuild: true,
+  },
+  extraPostCSSPlugins: [tailwindcss],
 })

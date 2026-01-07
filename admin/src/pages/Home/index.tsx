@@ -10,6 +10,7 @@ const HomePage: React.FC = () => {
     <PageContainer ghost>
       <div className={styles.container}>
         <Guide name={trim(name)} />
+        <div className="text-center text-red font-black">欢迎来到医药后台管理系统</div>
       </div>
     </PageContainer>
   )
