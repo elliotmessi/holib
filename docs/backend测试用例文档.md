@@ -10,10 +10,10 @@
 
 ### 1.2 测试框架与环境
 
-后端项目使用Jest作为测试框架，Supertest作为HTTP请求测试工具，@nestjs/testing提供单元测试和集成测试支持。测试环境配置位于package.json的jest配置节中，测试文件命名规范为*.spec.ts，放置于src目录下与被测模块同级的位置。
+后端项目使用Vitest作为测试框架，Supertest作为HTTP请求测试工具，@nestjs/testing提供单元测试和集成测试支持。测试环境配置位于vitest.config.ts，测试文件命名规范为*.spec.ts，放置于src目录下与被测模块同级的位置。
 
 ```
-测试配置文件位置：d:\projects\hospital\backend\package.json
+测试配置文件位置：d:\projects\hospital\backend\vitest.config.ts
 测试根目录：d:\projects\hospital\backend\src
 测试文件匹配规则：.*\.spec\.ts$
 ```
@@ -2271,16 +2271,16 @@ Token刷新功能允许用户在访问令牌过期前获取新的访问令牌，
 
 ### 12.2 Mock数据配置
 
-对于依赖外部服务的测试（如Redis、邮件服务等），应当使用Mock对象替代真实服务。NestJS提供了丰富的测试工具，可以使用Jest的mock功能和@nestjs/testing模块提供的Test utilities来创建Mock对象。
+对于依赖外部服务的测试（如Redis、邮件服务等），应当使用Mock对象替代真实服务。NestJS提供了丰富的测试工具，可以使用Vitest的mock功能和@nestjs/testing模块提供的Test utilities来创建Mock对象。
 
 以下是一个使用Mock Redis的示例配置：
 
 ```typescript
 const mockRedis = {
-  get: jest.fn(),
-  set: jest.fn(),
-  del: jest.fn(),
-  exists: jest.fn(),
+  get: vi.fn(),
+  set: vi.fn(),
+  del: vi.fn(),
+  exists: vi.fn(),
 };
 
 // 在测试模块配置中覆盖Redis提供者
@@ -2376,7 +2376,7 @@ npm run test:coverage
 
 ### 14.5 参考文献
 
-1. Jest官方文档：https://jestjs.io/docs/getting-started
+1. Vitest官方文档：https://vitest.dev/guide/getting-started.html
 2. NestJS测试文档：https://docs.nestjs.com/fundamentals/testing
 3. Supertest文档：https://github.com/ladjs/supertest
 4. 医院药品管理系统需求文档

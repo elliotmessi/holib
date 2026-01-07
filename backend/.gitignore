@@ -75,3 +75,6 @@ __data
 
 public/upload
 types/env.d.ts
+
+#doc
+/documentation
