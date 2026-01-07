@@ -107,6 +107,9 @@ importers:
       cron-parser:
         specifier: ^5.1.1
         version: 5.1.1
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
       crypto-js:
         specifier: ^4.2.0
         version: 4.2.0
@@ -243,9 +246,6 @@ importers:
       '@vitest/ui':
         specifier: ^4.0.16
         version: 4.0.16(vitest@4.0.16)
-      cross-env:
-        specifier: ^7.0.3
-        version: 7.0.3
       lint-staged:
         specifier: ^15.5.0
         version: 15.5.0

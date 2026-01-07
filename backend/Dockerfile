@@ -11,9 +11,10 @@ ENV DB_HOST=mysql \
     PNPM_HOME="/pnpm" \
     PATH="$PNPM_HOME:$PATH"
 
+# 使用.npmrc中的淘宝镜像源
+RUN npm config set registry https://registry.npmmirror.com
 
-RUN corepack enable \
-    && yarn global add pm2
+RUN npm i -g pnpm@10.27.0 pm2
 
 # WORKDIR指令用于设置Dockerfile中的RUN、CMD和ENTRYPOINT指令执行命令的工作目录(默认为/目录)，该指令在Dockerfile文件中可以出现多次，
 # 如果使用相对路径则为相对于WORKDIR上一次的值，
