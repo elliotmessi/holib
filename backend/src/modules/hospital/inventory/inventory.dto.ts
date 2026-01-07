@@ -48,19 +48,23 @@ export class CreateInventoryDto {
   @ApiProperty({ description: '最低库存阈值', required: false })
   @IsInt()
   @Min(0)
+  @IsOptional()
   minimumThreshold?: number
 
   @ApiProperty({ description: '最高库存阈值', required: false })
   @IsInt()
   @Min(0)
+  @IsOptional()
   maximumThreshold?: number
 
   @ApiProperty({ description: '库存位置', required: false })
   @IsString()
+  @IsOptional()
   storageLocation?: string
 
   @ApiProperty({ description: '是否冻结', required: false })
   @IsBoolean()
+  @IsOptional()
   isFrozen?: boolean
 }
 
