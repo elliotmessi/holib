@@ -1,0 +1,22 @@
+{
+  "rules": {
+    "all": true,
+    "quotes": ["error", "single"],
+    "semi": ["error", "never"],
+    "indent": ["error", 2],
+    "comma-dangle": ["error", "always"],
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1
+      }
+    ],
+    "object-curly-spacing": ["error", "always"],
+    "array-bracket-spacing": ["error", "never"],
+    "space-before-function-paren": ["error", "never"],
+    "space-infix-ops": ["error"],
+    "keyword-spacing": ["error"],
+    "brace-style": ["error", "1tbs"],
+    "eoflast": ["error"]
+  }
+}

@@ -1,4 +1,4 @@
-import { defineConfig } from '@umijs/max';
+import { defineConfig } from '@umijs/max'
 
 export default defineConfig({
   antd: {},
@@ -9,6 +9,7 @@ export default defineConfig({
   layout: {
     title: '@umijs/max',
   },
+  vite: {},
   routes: [
     {
       path: '/',
@@ -30,6 +31,7 @@ export default defineConfig({
       component: './Table',
     },
   ],
-  npmClient: 'pnpm',
-});
 
+  npmClient: 'pnpm',
+  tailwindcss: {},
+})
