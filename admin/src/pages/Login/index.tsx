@@ -1,57 +1,33 @@
-import { useState, useEffect } from 'react'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Form, Input, Card, Typography, message } from 'antd'
+import { Button, Checkbox, Form, Input, Card, Typography, message, Image } from 'antd'
+import { useModel } from '@umijs/max'
 import { Link, useNavigate } from '@umijs/max'
-import { getCaptcha } from '@/services/auth'
-import { login, logout } from '@/api/login'
-import { setUserInfo } from '@/utils/auth'
 
 const { Title } = Typography
 
 const LoginPage = () => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
-  const [captchaId, setCaptchaId] = useState('')
-  const [captchaImg, setCaptchaImg] = useState('')
-  const [loading, setLoading] = useState(false)
 
-  const fetchCaptcha = async () => {
-    try {
-      const res = await getCaptcha()
-      if (res.code === 200 && res.data) {
-        setCaptchaId(res.data.id)
-        setCaptchaImg(res.data.img)
-      }
-    } catch (error) {
-      message.error(`获取验证码失败: ${error instanceof Error ? error.message : '未知错误'}`)
-    }
-  }
+  const {
+    send: getCaptcha,
+    data: { id: captchaId, img: captchaImg } = { id: '', img: '' },
+    loading: captchaLoading,
+  } = useModel('captcha')
 
-  useEffect(() => {
-    fetchCaptcha()
-  }, [])
+  const { submitLogin, loading } = useModel('auth')
 
+  // 处理登录表单提交
   const handleLogin = async () => {
-    try {
-      const values = await form.validateFields()
-      setLoading(true)
-
-      const success = await login({
-        username: values.username,
-        password: values.password,
-        captchaId,
-        verifyCode: values.verifyCode,
-      })
-
-      if (success) {
-        message.success('登录成功')
+    const values = await form.validateFields()
+    if (values) {
+      submitLogin({...values, captchaId }, () => {
         navigate('/')
-      }
-    } catch (error) {
-      message.error(`登录失败: ${error instanceof Error ? error.message : '未知错误'}`)
-      fetchCaptcha()
-    } finally {
-      setLoading(false)
+      }, () => {
+        getCaptcha()
+      })
+    } else {
+      console.log('表单验证失败:')
     }
   }
 
@@ -102,9 +78,9 @@ const LoginPage = () => {
           >
             <div className="flex gap-2">
               <Input placeholder="验证码" style={{ flex: 1 }} />
-              <div
-                dangerouslySetInnerHTML={{ __html: captchaImg }}
-                onClick={fetchCaptcha}
+              <img
+                src={captchaImg}
+                onClick={() => getCaptcha()}
                 className="cursor-pointer border rounded bg-white flex items-center justify-center"
                 style={{ width: 120, height: 40 }}
               />

@@ -1,54 +1,20 @@
-import { request } from '@umijs/max'
+import http from "@/utils/http"
+
+export type UserInfo = {
+  id: string
+  name: string
+  nickName: string
+  email: string
+}
 
 // 获取用户信息
-export async function getProfile(options?: { [key: string]: any }) {
-  return request<{
-    success: boolean
-    data: {
-      id: string
-      name: string
-      nickName: string
-      email: string
-    }
-    errorMessage?: string
-  }>('/account/profile', {
-    method: 'GET',
-    ...(options || {}),
-  })
-}
+export const getProfile = () => http.get<UserInfo>("/account/profile", undefined, { cacheFor: 0 })
 
 // 获取权限列表
-export async function getPermissions(options?: { [key: string]: any }) {
-  return request<{
-    success: boolean
-    data: string[]
-    errorMessage?: string
-  }>('/account/permissions', {
-    method: 'GET',
-    ...(options || {}),
-  })
-}
+export const getPermissions = () => http.get<string[]>("/account/permissions")
 
 // 获取菜单列表
-export async function getMenus(options?: { [key: string]: any }) {
-  return request<{
-    success: boolean
-    data: any[]
-    errorMessage?: string
-  }>('/account/menus', {
-    method: 'GET',
-    ...(options || {}),
-  })
-}
+export const getMenus = () => http.get<unknown[]>("/account/menus")
 
 // 登出
-export async function logout(options?: { [key: string]: any }) {
-  return request<{
-    success: boolean
-    data?: any
-    errorMessage?: string
-  }>('/account/logout', {
-    method: 'GET',
-    ...(options || {}),
-  })
-}
+export const logout = () => http.get<boolean>("/account/logout")
