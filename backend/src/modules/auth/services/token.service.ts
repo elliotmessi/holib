@@ -162,4 +162,15 @@ export class TokenService {
   async verifyAccessToken(token: string): Promise<IAuthUser> {
     return this.jwtService.verifyAsync(token)
   }
+
+  /**
+   * 根据 refreshToken 值获取 refreshToken 实体
+   * @param refreshToken
+   */
+  async getRefreshTokenEntity(refreshToken: string): Promise<RefreshTokenEntity | null> {
+    return RefreshTokenEntity.findOne({
+      where: { value: refreshToken },
+      relations: ['accessToken', 'accessToken.user']
+    })
+  }
 }

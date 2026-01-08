@@ -9,6 +9,9 @@ export class ImageCaptcha {
 }
 
 export class LoginToken {
-  @ApiProperty({ description: 'JWT身份Token' })
-  token: string
+  @ApiProperty({ description: 'JWT访问令牌' })
+  accessToken: string
+
+  @ApiProperty({ description: 'JWT刷新令牌' })
+  refreshToken: string
 }

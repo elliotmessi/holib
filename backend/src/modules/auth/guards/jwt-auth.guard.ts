@@ -1,24 +1,24 @@
-import { ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common'
-import { Reflector } from '@nestjs/core'
-import { AuthGuard } from '@nestjs/passport'
-import { FastifyRequest } from 'fastify'
-import Redis from 'ioredis'
-import { isEmpty, isNil } from 'lodash'
-import { ExtractJwt } from 'passport-jwt'
+import { ExecutionContext, Inject, Injectable, UnauthorizedException, HttpException, HttpStatus } from "@nestjs/common"
+import { Reflector } from "@nestjs/core"
+import { AuthGuard } from "@nestjs/passport"
+import { FastifyRequest } from "fastify"
+import Redis from "ioredis"
+import { isEmpty, isNil } from "lodash"
+import { ExtractJwt } from "passport-jwt"
 
-import { InjectRedis } from '~/common/decorators/inject-redis.decorator'
+import { InjectRedis } from "~/common/decorators/inject-redis.decorator"
 
-import { BusinessException } from '~/common/exceptions/biz.exception'
-import { AppConfig, IAppConfig, RouterWhiteList } from '~/config'
-import { ErrorEnum } from '~/constants/error-code.constant'
-import { genTokenBlacklistKey } from '~/helper/genRedisKey'
+import { BusinessException } from "~/common/exceptions/biz.exception"
+import { AppConfig, IAppConfig, RouterWhiteList } from "~/config"
+import { ErrorEnum } from "~/constants/error-code.constant"
+import { genTokenBlacklistKey } from "~/helper/genRedisKey"
 
-import { AuthService } from '~/modules/auth/auth.service'
+import { AuthService } from "~/modules/auth/auth.service"
 
-import { checkIsDemoMode } from '~/utils'
+import { checkIsDemoMode } from "~/utils"
 
-import { AuthStrategy, PUBLIC_KEY } from '../auth.constant'
-import { TokenService } from '../services/token.service'
+import { AuthStrategy, PUBLIC_KEY } from "../auth.constant"
+import { TokenService } from "../services/token.service"
 
 /** @type {import('fastify').RequestGenericInterface} */
 interface RequestType {
@@ -40,25 +40,22 @@ export class JwtAuthGuard extends AuthGuard(AuthStrategy.JWT) {
     private authService: AuthService,
     private tokenService: TokenService,
     @InjectRedis() private readonly redis: Redis,
-    @Inject(AppConfig.KEY) private appConfig: IAppConfig,
+    @Inject(AppConfig.KEY) private appConfig: IAppConfig
   ) {
     super()
   }
 
   async canActivate(context: ExecutionContext): Promise<any> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ])
+    const isPublic = this.reflector.getAllAndOverride<boolean>(PUBLIC_KEY, [context.getHandler(), context.getClass()])
     const request = context.switchToHttp().getRequest<FastifyRequest<RequestType>>()
     // const response = context.switchToHttp().getResponse<FastifyReply>()
     if (RouterWhiteList.includes(request.routeOptions.url)) return true
     // TODO 此处代码的作用是判断如果在演示环境下，则拒绝用户的增删改操作，去掉此代码不影响正常的业务逻辑
-    if (request.method !== 'GET' && !request.url.includes('/auth/login')) checkIsDemoMode()
+    if (request.method !== "GET" && !request.url.includes("/auth/login")) checkIsDemoMode()
 
-    const isSse = request.headers.accept === 'text/event-stream'
+    const isSse = request.headers.accept === "text/event-stream"
 
-    if (isSse && !request.headers.authorization?.startsWith('Bearer ')) {
+    if (isSse && !request.headers.authorization?.startsWith("Bearer ")) {
       const { token } = request.query
       if (token) request.headers.authorization = `Bearer ${token}`
     }
@@ -66,8 +63,7 @@ export class JwtAuthGuard extends AuthGuard(AuthStrategy.JWT) {
     const token = this.jwtFromRequestFn(request)
 
     // 检查 token 是否在黑名单中
-    if (await this.redis.get(genTokenBlacklistKey(token)))
-      throw new BusinessException(ErrorEnum.INVALID_LOGIN)
+    if (await this.redis.get(genTokenBlacklistKey(token))) throw new BusinessException(ErrorEnum.INVALID_LOGIN)
 
     request.accessToken = token
 
@@ -78,7 +74,7 @@ export class JwtAuthGuard extends AuthGuard(AuthStrategy.JWT) {
       // 需要后置判断 这样携带了 token 的用户就能够解析到 request.user
       if (isPublic) return true
 
-      if (isEmpty(token)) throw new UnauthorizedException('未登录')
+      if (isEmpty(token)) throw new UnauthorizedException("未登录")
 
       // 在 handleRequest 中 user 为 null 时会抛出 UnauthorizedException
       if (err instanceof UnauthorizedException) throw new BusinessException(ErrorEnum.INVALID_LOGIN)
@@ -93,8 +89,7 @@ export class JwtAuthGuard extends AuthGuard(AuthStrategy.JWT) {
     if (isSse) {
       const { uid } = request.params
 
-      if (Number(uid) !== request.user.uid)
-        throw new UnauthorizedException('路径参数 uid 与当前 token 登录的用户 uid 不一致')
+      if (Number(uid) !== request.user.uid) throw new UnauthorizedException("路径参数 uid 与当前 token 登录的用户 uid 不一致")
     }
 
     const pv = await this.authService.getPasswordVersionByUid(request.user.uid)
@@ -118,7 +113,13 @@ export class JwtAuthGuard extends AuthGuard(AuthStrategy.JWT) {
 
   handleRequest(err, user, info) {
     // You can throw an exception based on either "info" or "err" arguments
-    if (err || !user) throw err || new UnauthorizedException()
+    if (err || !user) {
+      // 如果是 token 过期，返回 424 状态码
+      if (info && info.name === "TokenExpiredError") {
+        throw new HttpException("Token expired", HttpStatus.FAILED_DEPENDENCY)
+      }
+      throw err || new UnauthorizedException()
+    }
 
     return user
   }

@@ -57,9 +57,9 @@ export class AuthService {
 
   /**
    * 获取登录JWT
-   * 返回null则账号密码有误，不存在该用户
+   * 返回包含access_token和refresh_token的对象
    */
-  async login(username: string, password: string, ip: string, ua: string): Promise<string> {
+  async login(username: string, password: string, ip: string, ua: string): Promise<{ accessToken: string; refreshToken: string }> {
     const user = await this.userService.findUserByUserName(username)
     if (isEmpty(user)) throw new BusinessException(ErrorEnum.INVALID_USERNAME_PASSWORD)
 
@@ -90,7 +90,7 @@ export class AuthService {
 
     await this.loginLogService.create(user.id, ip, ua)
 
-    return token.accessToken
+    return token
   }
 
   /**
