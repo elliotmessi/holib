@@ -5,11 +5,11 @@ import { useModel } from '@umijs/max'
 import styles from './index.less'
 
 const HomePage: React.FC = () => {
-  const { name } = useModel('global')
+  const { userInfo } = useModel('global')
   return (
     <PageContainer ghost>
       <div className={styles.container}>
-        <Guide name={trim(name)} />
+        <Guide name={trim(userInfo.name || '')} />
         <div className="text-center text-red font-black">欢迎来到医药后台管理系统</div>
       </div>
     </PageContainer>

@@ -25,13 +25,11 @@ describe('PrescriptionController', () => {
     getPendingReview: vi.fn().mockResolvedValue([]),
     getStats: vi.fn().mockResolvedValue({ total: 0, amount: 0 }),
     create: vi.fn().mockResolvedValue({ id: 1, prescriptionNumber: 'RX001' }),
-    findOne: vi
-      .fn()
-      .mockResolvedValue({
-        id: 1,
-        prescriptionNumber: 'RX001',
-        status: PrescriptionStatus.PENDING_REVIEW,
-      }),
+    findOne: vi.fn().mockResolvedValue({
+      id: 1,
+      prescriptionNumber: 'RX001',
+      status: PrescriptionStatus.PENDING_REVIEW,
+    }),
     review: vi.fn().mockResolvedValue(undefined),
     dispense: vi.fn().mockResolvedValue(undefined),
     cancel: vi.fn().mockResolvedValue(undefined),

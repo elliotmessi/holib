@@ -27,22 +27,18 @@ describe('InventoryController', () => {
     findAll: vi.fn().mockResolvedValue([]),
     getLowStock: vi.fn().mockResolvedValue([]),
     getExpiringWithinDays: vi.fn().mockResolvedValue([]),
-    create: vi
-      .fn()
-      .mockResolvedValue({
-        id: 1,
-        drugId: 1,
-        pharmacyId: 1,
-        batchNumber: 'BATCH001',
-      } as InventoryEntity),
-    findOne: vi
-      .fn()
-      .mockResolvedValue({
-        id: 1,
-        drugId: 1,
-        pharmacyId: 1,
-        batchNumber: 'BATCH001',
-      } as InventoryEntity),
+    create: vi.fn().mockResolvedValue({
+      id: 1,
+      drugId: 1,
+      pharmacyId: 1,
+      batchNumber: 'BATCH001',
+    } as InventoryEntity),
+    findOne: vi.fn().mockResolvedValue({
+      id: 1,
+      drugId: 1,
+      pharmacyId: 1,
+      batchNumber: 'BATCH001',
+    } as InventoryEntity),
     update: vi.fn().mockResolvedValue(undefined),
     adjustQuantity: vi.fn().mockResolvedValue({ id: 1, quantity: 100 } as InventoryEntity),
     toggleFrozen: vi.fn().mockResolvedValue(undefined),

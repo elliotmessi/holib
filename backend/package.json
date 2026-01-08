@@ -137,7 +137,7 @@
     "vitest": "^4.0.16"
   },
   "lint-staged": {
-    "*": [
+    "*.{js,jsx,ts,tsx}": [
       "oxfmt --write",
       "oxlint --fix"
     ]
