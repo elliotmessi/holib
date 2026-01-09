@@ -8,6 +8,7 @@ export default (initialState: { name?: string; userId?: string; token?: string; 
 
   // 判断是否有特定权限
   const hasPermission = (permission: string) => {
+    console.log('initialState?.permissions:', initialState?.permissions)
     return initialState?.permissions?.includes(permission) || false
   }
 

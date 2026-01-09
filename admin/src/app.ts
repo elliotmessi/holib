@@ -1,10 +1,10 @@
 // 运行时配置
 import { clearAuth, getToken, getUserInfo, isAuthenticated } from "@/utils/auth"
-import { UserInfo } from "./services/account"
+import { Menu, UserInfo } from "./services/account"
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
-export async function getInitialState(): Promise<Partial<UserInfo> & { permissions?: string[]; token?: string }> {
+export async function getInitialState(): Promise<Partial<UserInfo> & { permissions?: string[]; menus?: Menu[]; token?: string }> {
   // 从本地存储获取 token 和用户信息
   const token = getToken()
   const userInfo = getUserInfo()
@@ -23,6 +23,7 @@ export async function getInitialState(): Promise<Partial<UserInfo> & { permissio
     id: "",
     token: "",
     permissions: [],
+    menus: [],
   }
 }
 

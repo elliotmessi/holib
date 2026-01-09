@@ -10,7 +10,7 @@ export type LoginRequest = {
 export type RegisterRequest = {
   username: string
   password: string
-  confirmPassword: string
+  confirmPassword?: string
   email?: string
 }
 
@@ -31,4 +31,4 @@ export const register = (data: RegisterRequest) => http.post("/auth/register", d
 export const refreshToken = (data: { refreshToken: string }) => http.post<TokenResponse>("/auth/refresh", data, { meta: { authRole: "refreshToken" } })
 
 export const getCaptcha = (data: { width?: number; height?: number } = { width: 120, height: 40 }) =>
-  http.get<CaptchaResponse>("/auth/captcha/img", data, { cacheFor: 0 })
+  http.get<CaptchaResponse>("/auth/captcha/img", data, { cacheFor: 0, meta: { isVisitor: true } })

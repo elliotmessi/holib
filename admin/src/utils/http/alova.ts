@@ -16,6 +16,9 @@ const { onAuthRequired, onResponseRefreshToken } = createServerTokenAuthenticati
   typeof ReactHook,
   typeof axiosRequestAdapter
 >({
+  visitorMeta: {
+    isVisitor: true,
+  },
   refreshTokenOnError: {
     // 当服务端token过期
     isExpired(response) {

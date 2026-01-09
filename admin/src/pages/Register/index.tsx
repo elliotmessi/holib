@@ -1,9 +1,7 @@
-import { useState } from 'react'
 import { LockOutlined, UserOutlined, MailOutlined } from '@ant-design/icons'
-import { Button, Form, Input, Card, Typography, message } from 'antd'
-import { useRequest } from '@umijs/max'
+import { Button, Form, Input, Card, Typography } from 'antd'
+import { useModel } from '@umijs/max'
 import { Link, useNavigate } from '@umijs/max'
-import { register } from '@/services/auth'
 
 const { Title } = Typography
 
@@ -11,33 +9,24 @@ const RegisterPage = () => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
 
-  // 注册请求
-  const { run: submitRegister, loading } = useRequest(register, {
-    manual: true,
-    onSuccess: () => {
-      message.success('注册成功，请登录')
+  const { useRegister } = useModel('auth')
+  const { submitRegister, loading } = useRegister({
+    success: () => {
       navigate('/login')
-    },
-    onError: (error) => {
-      message.error(`注册失败: ${error.message}`)
-    },
+    }
   })
 
   // 处理注册表单提交
-  const handleRegister = () => {
-    form
-      .validateFields()
-      .then((values) => {
-        submitRegister({
-          username: values.username,
-          password: values.password,
-          confirmPassword: values.confirmPassword,
-          email: values.email,
-        })
-      })
-      .catch((errorInfo) => {
-        console.log('表单验证失败:', errorInfo)
-      })
+  const handleRegister = async () => {
+    const values = await form.validateFields()
+    if (values) {
+    submitRegister({
+      username: values.username,
+      password: values.password,
+      // confirmPassword: values.confirmPassword,
+      email: values.email,
+    })
+    }
   }
 
   return (

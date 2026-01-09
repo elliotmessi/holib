@@ -1,4 +1,5 @@
-import { login, LoginRequest } from "@/services/auth"
+import { logout } from "@/services/account"
+import { login, LoginRequest, register, RegisterRequest } from "@/services/auth"
 import { clearAuth, setRefreshToken, setToken } from "@/utils/auth"
 import { useModel } from "@umijs/max"
 import { useRequest } from "alova/client"
@@ -7,7 +8,7 @@ import { message } from "antd"
 export default () => {
   const { initProfile } = useModel("user")
 
-  const useLogin = (options?: { success: () => void; error: () => void }) => {
+  const useLogin = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     // 登录请求
     const { send, loading } = useRequest(login, {
@@ -45,7 +46,55 @@ export default () => {
       loading,
     }
   }
+  const useRegister = (options?: { success?: () => void; error?: () => void }) => {
+    const { success = () => {}, error = () => {} } = options || {}
+    // 注册请求
+    const { send, loading } = useRequest(register, {
+      immediate: false,
+    })
+      .onSuccess(() => {
+        message.success("注册成功")
+        success()
+      })
+      .onError(({ error: err }) => {
+        message.error(`注册失败: ${err.message}`)
+        error()
+      })
+
+    const submitRegister = (data: RegisterRequest) => {
+      send(data)
+    }
+
+    return {
+      submitRegister,
+      loading,
+    }
+  }
+  const useLogout = () => {
+    const { send, loading } = useRequest(logout, {
+      immediate: false,
+    })
+      .onSuccess(() => {
+        clearAuth()
+        initProfile()
+        message.success("退出成功")
+      })
+      .onError(({ error: err }) => {
+        message.error(`退出失败: ${err.message}`)
+      })
+
+    const submitLogout = () => {
+      send()
+    }
+
+    return {
+      submitLogout,
+      loading,
+    }
+  }
   return {
     useLogin,
+    useLogout,
+    useRegister,
   }
 }

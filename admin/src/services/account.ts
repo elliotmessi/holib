@@ -7,6 +7,17 @@ export type UserInfo = {
   email: string
 }
 
+export type Menu = {
+  id: string
+  name: string
+  path: string
+  component: string
+  meta: {
+    title: string
+    icon: string
+  }
+}
+
 // 获取用户信息
 export const getProfile = () => http.get<UserInfo>("/account/profile", undefined, { cacheFor: 0 })
 
@@ -14,7 +25,7 @@ export const getProfile = () => http.get<UserInfo>("/account/profile", undefined
 export const getPermissions = () => http.get<string[]>("/account/permissions")
 
 // 获取菜单列表
-export const getMenus = () => http.get<unknown[]>("/account/menus")
+export const getMenus = () => http.get<Menu[]>("/system/menus")
 
 // 登出
 export const logout = () => http.get<boolean>("/account/logout")
