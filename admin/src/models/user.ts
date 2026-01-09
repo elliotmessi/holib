@@ -11,32 +11,23 @@ export default () => {
     data: userInfo,
     loading,
   } = useRequest(getProfile, {
-    manual: true,
+    immediate: false,
+  }).onError(({ error }) => {
+    message.error(`获取用户信息失败: ${error.message}`)
   })
-    .onSuccess(({ data }) => {
-      // 存储用户信息
-      localStorage.setItem("userInfo", JSON.stringify(data))
-    })
-    .onError(({ error }) => {
-      message.error(`获取用户信息失败: ${error.message}`)
-    })
 
   const { send: getPermissionsRequest, data: permissions } = useRequest(getPermissions, {
-    manual: true,
+    immediate: false,
+  }).onError(({ error }) => {
+    message.error(`获取权限列表失败: ${error.message}`)
   })
-    .onSuccess(({ data }) => {
-      // 存储权限列表
-      localStorage.setItem("permissions", JSON.stringify(data))
-    })
-    .onError(({ error }) => {
-      message.error(`获取权限列表失败: ${error.message}`)
-    })
 
   const initProfile = () => {
     Promise.all([getProfileRequest(), getPermissionsRequest()])
   }
 
   useEffect(() => {
+    console.log('userInfo && permissions:', userInfo, permissions)
     if (userInfo && permissions) {
       setUserInfo({ ...userInfo, permissions })
     }

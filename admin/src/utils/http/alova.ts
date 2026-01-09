@@ -34,10 +34,12 @@ const { onAuthRequired, onResponseRefreshToken } = createServerTokenAuthenticati
     },
   },
   login(response) {
-    setToken(response.data.accessToken)
+    console.log('response.data.token:', response.data.token)
+    setToken(response.data.token)
   },
   assignToken: (method) => {
     const token = getToken()
+    console.log('set token:', token)
     method.meta?.authRole !== 'refreshToken' &&
       (method.config.headers.Authorization = formatToken(token))
   },

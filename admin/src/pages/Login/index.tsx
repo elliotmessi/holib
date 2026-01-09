@@ -78,12 +78,13 @@ const LoginPage = () => {
           >
             <div className="flex gap-2">
               <Input placeholder="验证码" style={{ flex: 1 }} />
-              <img
+              { captchaLoading ? null : (
+                <img
                 src={captchaImg}
                 onClick={() => getCaptcha()}
                 className="cursor-pointer border rounded bg-white flex items-center justify-center"
                 style={{ width: 120, height: 40 }}
-              />
+              /> )}
             </div>
           </Form.Item>
 

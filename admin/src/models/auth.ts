@@ -1,5 +1,5 @@
 import { login, LoginRequest } from "@/services/auth"
-import { clearAuth } from "@/utils/auth"
+import { clearAuth, setRefreshToken, setToken } from "@/utils/auth"
 import { useModel } from "@umijs/max"
 import { useRequest } from "alova/client"
 import { message } from "antd"
@@ -10,17 +10,18 @@ export default () => {
   let error = () => {}
   // 登录请求
   const { send, onSuccess, onError, loading } = useRequest(login, {
-    manual: true,
+    immediate: false,
   })
-  onSuccess(async ({ data: loginData }) => {
+  onSuccess(async ({ data }) => {
     try {
       // useRequest 直接返回 data 字段的值
       // 存储 token
-      const token = loginData.token
-      localStorage.setItem("token", token)
+      const { accessToken, refreshToken } = data
+      setToken(accessToken)
+      setRefreshToken(refreshToken)
 
       // 获取用户信息
-      await initProfile()
+      initProfile()
 
       message.success("登录成功")
       success()

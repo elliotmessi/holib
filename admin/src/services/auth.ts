@@ -14,14 +14,9 @@ export type RegisterRequest = {
   email?: string
 }
 
-export type LoginResponse = {
-  token: string
-}
-
-export type RefreshTokenResponse = {
+export type TokenResponse = {
   accessToken: string
   refreshToken: string
-  expiresIn: number
 }
 
 export type CaptchaResponse = {
@@ -29,11 +24,11 @@ export type CaptchaResponse = {
   img: string
 }
 
-export const login = (data: LoginRequest) => http.post<LoginResponse>("/auth/login", data)
+export const login = (data: LoginRequest) => http.post<TokenResponse>("/auth/login", data)
 
 export const register = (data: RegisterRequest) => http.post("/auth/register", data)
 
-export const refreshToken = (data: { refreshToken: string }) => http.post<RefreshTokenResponse>("/auth/refresh", data)
+export const refreshToken = (data: { refreshToken: string }) => http.post<TokenResponse>("/auth/refresh", data)
 
 export const getCaptcha = (data: { width?: number; height?: number } = { width: 120, height: 40 }) =>
   http.get<CaptchaResponse>("/auth/captcha/img", data, { cacheFor: 0 })

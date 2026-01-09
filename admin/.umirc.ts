@@ -6,9 +6,6 @@ export default defineConfig({
   access: {},
   model: {},
   initialState: {},
-  request: {
-    dataField: 'data', // 配置 dataField 为 'data'，方便 useRequest 直接消费数据
-  },
   layout: {
     title: '医药后台管理系统',
   },
