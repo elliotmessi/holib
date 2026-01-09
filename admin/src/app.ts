@@ -1,5 +1,5 @@
 // 运行时配置
-import { clearAuth, getToken, getUserInfo } from "@/utils/auth"
+import { clearAuth, getToken, getUserInfo, isAuthenticated } from "@/utils/auth"
 import { UserInfo } from "./services/account"
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
@@ -28,18 +28,13 @@ export async function getInitialState(): Promise<Partial<UserInfo> & { permissio
 
 // 路由守卫
 export const onRouteChange = ({ location, routes, action }: { location: { pathname: string }; routes: any[]; action: string }) => {
-  const token = localStorage.getItem("token")
-  const userInfo = localStorage.getItem("userInfo")
-
   // 白名单路由，不需要认证
   const whiteList = ["/login", "/register", "/404"]
   const isWhiteList = whiteList.includes(location.pathname)
 
   // 如果没有 token 且不在白名单中，跳转到登录页
-  if (!token || !userInfo) {
-    if (!isWhiteList) {
-      window.location.href = "/login"
-    }
+  if (!isAuthenticated() && !isWhiteList) {
+    window.location.href = "/login"
   }
 }
 

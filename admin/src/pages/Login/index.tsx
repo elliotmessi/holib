@@ -15,17 +15,21 @@ const LoginPage = () => {
     loading: captchaLoading,
   } = useModel('captcha')
 
-  const { submitLogin, loading } = useModel('auth')
+  const { useLogin } = useModel('auth')
+  const { submitLogin, loading } = useLogin({
+    success: () => {
+      navigate('/')
+    },
+    error: () => {
+      getCaptcha()
+    },
+  })
 
   // 处理登录表单提交
   const handleLogin = async () => {
     const values = await form.validateFields()
     if (values) {
-      submitLogin({...values, captchaId }, () => {
-        navigate('/')
-      }, () => {
-        getCaptcha()
-      })
+      submitLogin({...values, captchaId })
     } else {
       console.log('表单验证失败:')
     }
