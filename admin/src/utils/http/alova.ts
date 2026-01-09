@@ -46,7 +46,7 @@ const { onAuthRequired, onResponseRefreshToken } = createServerTokenAuthenticati
 })
 
 const alovaInstance = createAlova({
-  baseURL: '/api',
+  baseURL: '/api/v1',
   timeout: 50000,
   statesHook: ReactHook,
   requestAdapter: axiosRequestAdapter({

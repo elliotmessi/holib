@@ -2,7 +2,7 @@ import type { ConfigKeyPaths } from './config'
 import cluster from 'node:cluster'
 
 import path from 'node:path'
-import { HttpStatus, Logger, UnprocessableEntityException, ValidationPipe } from '@nestjs/common'
+import { HttpStatus, Logger, UnprocessableEntityException, ValidationPipe, VersioningType } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 
@@ -33,6 +33,11 @@ async function bootstrap() {
 
   // class-validator 的 DTO 类中注入 nest 容器的依赖 (用于自定义验证器)
   useContainer(app.select(AppModule), { fallbackOnErrors: true })
+
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  })
 
   // 允许跨域
   app.enableCors({
