@@ -1,29 +1,28 @@
 // 运行时配置
 import { clearAuth, getToken, getUserInfo, isAuthenticated } from "@/utils/auth"
-import { Menu, UserInfo } from "./services/account"
+import { UserInfo } from "./services/account"
+import { message } from "antd"
+import { RunTimeLayoutConfig, useModel } from "@umijs/max"
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
-export async function getInitialState(): Promise<Partial<UserInfo> & { permissions?: string[]; menus?: Menu[]; token?: string }> {
-  // 从本地存储获取 token 和用户信息
+export async function getInitialState(): Promise<{ user?: UserInfo, permissions?: string[]; token?: string }> {
+  // 从本地存储获取 token
   const token = getToken()
-  const userInfo = getUserInfo()
-
-  if (token && userInfo) {
+  console.log('token:', token)
+  
+  if (token) {
     return {
       token,
-      ...userInfo, // 包含完整的用户信息
     }
   } else {
     clearAuth()
   }
 
   return {
-    name: "",
-    id: "",
+    user: undefined,
     token: "",
     permissions: [],
-    menus: [],
   }
 }
 
@@ -39,11 +38,12 @@ export const onRouteChange = ({ location, routes, action }: { location: { pathna
   }
 }
 
-export const layout = () => {
+export const layout: RunTimeLayoutConfig = () => {
   return {
     logo: "https://img.alicdn.com/tfs/TB1YHEpwUT1gK0jSZFhXXaAtVXa-28-27.svg",
-    menu: {
-      locale: false,
-    },
+    menuDataRender: (menuData) => {
+      console.log('menuData:', menuData)
+      return menuData
+    }
   }
 }

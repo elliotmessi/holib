@@ -7,7 +7,6 @@ import { useModel } from "@umijs/max"
 
 export default () => {
   const [loading, setLoading] = useState(false)
-  const { menus, send: getMenus, loading: mLoading } = useModel("menu")
   // 获取用户信息
   const {
     send: getProfileRequest,
@@ -30,30 +29,36 @@ export default () => {
   })
 
   // 获取 initialState 和更新方法
-  const { setInitialState } = useModel("@@initialState")
+  const { setInitialState, initialState, } = useModel("@@initialState")
 
-  const initProfile = () => {
-    Promise.all([getProfileRequest(), getPermissionsRequest(), getMenus()])
+  const initProfile = async () => {
+    console.log('user init profile')
+    const [result1, result2] = await Promise.all([getProfileRequest(), getPermissionsRequest()])
+    console.log('result: ', result1, result2)
   }
 
   useEffect(() => {
-    console.log("userInfo && permissions:", userInfo, permissions)
+    const token = getToken()
+    if (token) {
+      initProfile()
+    }
+  }, [])
+
+  useEffect(() => {
     if (userInfo && permissions) {
-      const updatedUserInfo = { ...userInfo, permissions }
-      const token = getToken()
+      const updatedUserInfo = { user: userInfo, permissions }
       setUserInfo(updatedUserInfo)
       // 更新 initialState
       setInitialState({
+        ...initialState,
         ...updatedUserInfo,
-        token,
-        menus,
       })
     }
-  }, [userInfo, permissions, menus, setInitialState])
+  }, [userInfo, permissions, setInitialState])
 
   useEffect(() => {
-    setLoading(uLoading || mLoading || permissionsLoading)
-  }, [uLoading, mLoading, permissionsLoading])
+    setLoading(uLoading || permissionsLoading)
+  }, [uLoading, permissionsLoading])
 
   return {
     getProfileRequest,

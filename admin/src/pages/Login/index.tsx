@@ -2,6 +2,7 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Form, Input, Card, Typography, message, Image } from 'antd'
 import { useModel } from '@umijs/max'
 import { Link, useNavigate } from '@umijs/max'
+import { useEffect } from 'react'
 
 const { Title } = Typography
 
@@ -34,6 +35,10 @@ const LoginPage = () => {
       console.log('表单验证失败:')
     }
   }
+
+  useEffect(() => {
+    getCaptcha()
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
