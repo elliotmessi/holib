@@ -45,9 +45,34 @@ const newRoutes = [
   {
     name: "药品管理",
     path: "/drug",
-    component: "./Drug",
     access: "hospital:drug:list",
     icon: "MedicineBoxOutlined",
+    routes: [
+      {
+        name: "药品列表",
+        path: "/drug",
+        component: "./Drug/list",
+        access: "hospital:drug:list",
+      },
+      {
+        name: "新建药品",
+        path: "/drug/create",
+        component: "./Drug/create",
+        access: "hospital:drug:create",
+      },
+      {
+        name: "编辑药品",
+        path: "/drug/edit/:id",
+        component: "./Drug/edit",
+        access: "hospital:drug:update",
+      },
+      {
+        name: "药品详情",
+        path: "/drug/detail/:id",
+        component: "./Drug/detail",
+        access: "hospital:drug:detail",
+      },
+    ],
   },
   {
     name: "处方管理",
