@@ -29,12 +29,10 @@ export default () => {
   })
 
   // 获取 initialState 和更新方法
-  const { setInitialState, initialState, } = useModel("@@initialState")
+  const { setInitialState } = useModel("@@initialState")
 
   const initProfile = async () => {
-    console.log('user init profile')
-    const [result1, result2] = await Promise.all([getProfileRequest(), getPermissionsRequest()])
-    console.log('result: ', result1, result2)
+    Promise.all([getProfileRequest(), getPermissionsRequest()])
   }
 
   useEffect(() => {
@@ -49,10 +47,10 @@ export default () => {
       const updatedUserInfo = { user: userInfo, permissions }
       setUserInfo(updatedUserInfo)
       // 更新 initialState
-      setInitialState({
+      setInitialState(initialState => ({
         ...initialState,
         ...updatedUserInfo,
-      })
+      }))
     }
   }, [userInfo, permissions, setInitialState])
 

@@ -7,6 +7,7 @@ import { message } from "antd"
 
 export default () => {
   const { initProfile } = useModel("user")
+  const { setInitialState, initialState } = useModel("@@initialState")
 
   const useLogin = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
@@ -21,6 +22,12 @@ export default () => {
           const { accessToken, refreshToken } = data
           setToken(accessToken)
           setRefreshToken(refreshToken)
+
+          // 更新 initialState 中的 token
+          setInitialState({
+            ...initialState,
+            token: accessToken,
+          })
 
           // 获取用户信息
           initProfile()
@@ -76,6 +83,13 @@ export default () => {
     })
       .onSuccess(() => {
         clearAuth()
+        // 更新 initialState，清除 token
+        setInitialState({
+          ...initialState,
+          token: "",
+          user: undefined,
+          permissions: [],
+        })
         initProfile()
         message.success("退出成功")
       })

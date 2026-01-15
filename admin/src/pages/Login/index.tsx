@@ -32,7 +32,7 @@ const LoginPage = () => {
     if (values) {
       submitLogin({...values, captchaId })
     } else {
-      console.log('表单验证失败:')
+      message.error('表单验证失败')
     }
   }
 

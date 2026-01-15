@@ -20,7 +20,6 @@ export default (initialState: { user?: UserInfo, token?: string; permissions?: s
     return prev
   }, {} as Record<string, boolean>)
 
-  console.log('permissions:', permissions, canAccess, initialState?.token)
   return {
     canAccess,
     canSeeAdmin,

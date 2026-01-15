@@ -4,7 +4,7 @@ import { axiosRequestAdapter } from '@alova/adapter-axios'
 import ReactHook from 'alova/react'
 import { createServerTokenAuthentication } from 'alova/client'
 import { stringify } from 'qs'
-import { formatToken, getRefreshToken, getToken, setToken } from '@/utils/auth'
+import { clearAuth, formatToken, getRefreshToken, getToken, setToken } from '@/utils/auth'
 import { refreshToken } from '@/services/auth'
 import { useNavigate } from '@umijs/max'
 
@@ -37,12 +37,10 @@ const { onAuthRequired, onResponseRefreshToken } = createServerTokenAuthenticati
     },
   },
   login({ data }) {
-    console.log('data.accessToken:', data.data.accessToken)
     setToken(data.data.accessToken)
   },
   assignToken: (method) => {
     const token = getToken()
-    console.log('get token:', token)
     method.meta?.authRole !== 'refreshToken' &&
       (method.config.headers.Authorization = formatToken(token))
   },
@@ -57,12 +55,11 @@ const alovaInstance = createAlova({
   }),
   /** request 拦截器 */
   beforeRequest: onAuthRequired((method) => {
-    const { config, data, meta } = method
-    console.log('method:', config, data, meta)
+    // const { config, data, meta } = method
+    // console.log('method:', config, data, meta)
   }),
   responded: onResponseRefreshToken({
     onSuccess: async (response, method) => {
-      console.log('response:', response)
       if (method.meta?.blob) {
         return response.data
       }
@@ -76,10 +73,11 @@ const alovaInstance = createAlova({
     },
     onError: (error, method) => {
       // error.status 服务端返回的状态码
-      console.log('error.status:', error.status)
+      console.error('error.status:', error.status)
       if (error.status === 401) {
+        clearAuth()
         // 处理401错误，调用带token的接口则跳转到登录页
-        method.meta?.authRole === null && useNavigate()('/login')
+        !method.meta?.authRole && (location.href = '/login')
       }
       // error.status 服务端返回的状态码
       if ([403, 404, 500].includes(error.status)) {

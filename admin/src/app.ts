@@ -1,15 +1,13 @@
 // 运行时配置
-import { clearAuth, getToken, getUserInfo, isAuthenticated } from "@/utils/auth"
+import { clearAuth, getToken, isAuthenticated } from "@/utils/auth"
 import { UserInfo } from "./services/account"
-import { message } from "antd"
-import { RunTimeLayoutConfig, useModel } from "@umijs/max"
+import { RunTimeLayoutConfig } from "@umijs/max"
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
 export async function getInitialState(): Promise<{ user?: UserInfo, permissions?: string[]; token?: string }> {
   // 从本地存储获取 token
   const token = getToken()
-  console.log('token:', token)
   
   if (token) {
     return {
@@ -41,9 +39,5 @@ export const onRouteChange = ({ location, routes, action }: { location: { pathna
 export const layout: RunTimeLayoutConfig = () => {
   return {
     logo: "https://img.alicdn.com/tfs/TB1YHEpwUT1gK0jSZFhXXaAtVXa-28-27.svg",
-    menuDataRender: (menuData) => {
-      console.log('menuData:', menuData)
-      return menuData
-    }
   }
 }
