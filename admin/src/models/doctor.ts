@@ -1,16 +1,6 @@
 import { useRequest, usePagination } from "alova/client"
 import { message } from "antd"
-import { 
-  getDoctorList, 
-  getDoctorById, 
-  createDoctor, 
-  updateDoctor, 
-  deleteDoctor, 
-  batchDeleteDoctor,
-  DoctorQueryParams,
-  DoctorCreateRequest,
-  DoctorUpdateRequest
-} from "@/services/doctor"
+import { doctor, DoctorQueryParams, DoctorCreateRequest, DoctorUpdateRequest } from "@/services/doctor"
 
 export default () => {
   // 医生列表
@@ -22,12 +12,12 @@ export default () => {
       pageSize,
       fetching: loading,
       refresh,
-      reload
-    } = usePagination((page, pageSize) => getDoctorList({ ...params, page, pageSize }), {
+      reload,
+    } = usePagination((page, pageSize) => doctor.getList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: (response) => response?.list || [],
-      total: (response) => response?.total || 0
+      data: (response: any) => response?.list || [],
+      total: (response: any) => response?.total || 0,
     })
 
     return {
@@ -40,31 +30,31 @@ export default () => {
         total: total || 0,
         onChange: (newPage: number, newPageSize: number) => {
           reload()
-        }
+        },
       },
       refresh,
-      reload
+      reload,
     }
   }
 
   // 获取医生详情
   const useDoctorDetail = (id?: string) => {
-    const { data, loading, send } = useRequest(() => getDoctorById(id || ""), {
-      immediate: !!id
+    const { data, loading, send } = useRequest(() => doctor.getDetail(id || ""), {
+      immediate: !!id,
     })
 
     return {
       doctorDetail: data,
       loading,
-      fetchDetail: send
+      fetchDetail: send,
     }
   }
 
   // 创建医生
   const useCreateDoctor = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(createDoctor, {
-      immediate: false
+    const { send, loading } = useRequest(doctor.create, {
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("医生创建成功")
@@ -81,15 +71,15 @@ export default () => {
 
     return {
       submitCreate,
-      loading
+      loading,
     }
   }
 
   // 更新医生
   const useUpdateDoctor = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: DoctorUpdateRequest) => updateDoctor(id, data), {
-      immediate: false
+    const { send, loading } = useRequest((id: string, data: DoctorUpdateRequest) => doctor.update(id, data), {
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("医生更新成功")
@@ -106,15 +96,15 @@ export default () => {
 
     return {
       submitUpdate,
-      loading
+      loading,
     }
   }
 
   // 删除医生
   const useDeleteDoctor = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(deleteDoctor, {
-      immediate: false
+    const { send, loading } = useRequest(doctor.delete, {
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("医生删除成功")
@@ -131,15 +121,15 @@ export default () => {
 
     return {
       submitDelete,
-      loading
+      loading,
     }
   }
 
   // 批量删除医生
   const useBatchDeleteDoctor = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(batchDeleteDoctor, {
-      immediate: false
+    const { send, loading } = useRequest(doctor.batchDelete, {
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("医生批量删除成功")
@@ -156,7 +146,7 @@ export default () => {
 
     return {
       submitBatchDelete,
-      loading
+      loading,
     }
   }
 
@@ -166,6 +156,6 @@ export default () => {
     useCreateDoctor,
     useUpdateDoctor,
     useDeleteDoctor,
-    useBatchDeleteDoctor
+    useBatchDeleteDoctor,
   }
 }

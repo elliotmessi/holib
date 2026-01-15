@@ -1,63 +1,99 @@
-import http from "@/utils/http"
+import { createAlova } from "alova"
+import fetch from "alova/fetch"
+
+const alovaInstance = createAlova({
+  baseURL: "/api/v1",
+  requestAdapter: fetch(),
+})
 
 export type Doctor = {
-  id: string
+  doctorId: string
+  doctorCode: string
   name: string
-  code: string
-  gender: number
+  gender: string
+  title: string
+  practiceType: string
+  practiceScope: string
+  departmentId: string
   phone: string
   email: string
-  departmentId: string
-  departmentName: string
-  title: string
-  specialty: string
-  status: number
+  avatar: string
+  signature: string
+  status: string
   createdAt: string
   updatedAt: string
 }
 
 export type DoctorQueryParams = {
-  name?: string
-  code?: string
-  departmentId?: string
-  title?: string
-  status?: number
   page?: number
   pageSize?: number
+  sort?: string
+  order?: string
+  filter?: string
+  keyword?: string
 }
 
 export type DoctorCreateRequest = {
+  doctorCode: string
   name: string
-  code: string
-  gender: number
+  gender: string
+  title: string
+  practiceType: string
+  practiceScope: string
+  departmentId: string
   phone: string
   email?: string
-  departmentId: string
-  title: string
-  specialty: string
-  status?: number
+  avatar?: string
+  signature?: string
+  status?: string
 }
 
 export type DoctorUpdateRequest = {
   name?: string
-  code?: string
-  gender?: number
+  gender?: string
+  title?: string
+  practiceType?: string
+  practiceScope?: string
+  departmentId?: string
   phone?: string
   email?: string
-  departmentId?: string
-  title?: string
-  specialty?: string
-  status?: number
+  avatar?: string
+  signature?: string
+  status?: string
 }
 
-export const getDoctorList = (params: DoctorQueryParams) => http.get<{ list: Doctor[]; total: number }>("/hospital/doctors", params)
+export const doctor = {
+  // 获取医生列表
+  getList: (params: DoctorQueryParams) => {
+    return alovaInstance.Get("/doctors", {
+      params,
+    })
+  },
 
-export const getDoctorById = (id: string) => http.get<Doctor>(`/hospital/doctors/${id}`)
+  // 获取医生详情
+  getDetail: (id: string) => {
+    return alovaInstance.Get(`/doctors/${id}`)
+  },
 
-export const createDoctor = (data: DoctorCreateRequest) => http.post<Doctor>("/hospital/doctors", data)
+  // 创建医生
+  create: (data: DoctorCreateRequest) => {
+    return alovaInstance.Post("/doctors", data)
+  },
 
-export const updateDoctor = (id: string, data: DoctorUpdateRequest) => http.put<Doctor>(`/hospital/doctors/${id}`, data)
+  // 更新医生
+  update: (id: string, data: DoctorUpdateRequest) => {
+    return alovaInstance.Put(`/doctors/${id}`, data)
+  },
 
-export const deleteDoctor = (id: string) => http.delete(`/hospital/doctors/${id}`)
+  // 删除医生
+  delete: (id: string) => {
+    return alovaInstance.Delete(`/doctors/${id}`)
+  },
 
-export const batchDeleteDoctor = (ids: string[]) => http.delete("/hospital/doctors", { data: { ids } })
+  // 批量删除医生
+  batchDelete: (ids: string[]) => {
+    return alovaInstance.Delete("/doctors", {
+      params: { ids: ids.join(",") },
+    })
+  },
+}

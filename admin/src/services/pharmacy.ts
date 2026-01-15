@@ -1,56 +1,89 @@
-import http from "@/utils/http"
+import { createAlova } from "alova"
+import fetch from "alova/fetch"
+
+const alovaInstance = createAlova({
+  baseURL: "/api/v1",
+  requestAdapter: fetch(),
+})
 
 export type Pharmacy = {
-  id: string
+  pharmacyId: string
+  pharmacyCode: string
   name: string
-  code: string
   hospitalId: string
-  hospitalName: string
-  address: string
-  contact: string
+  pharmacyType: string
+  departmentId: string
+  floor: string
+  contactPerson: string
   phone: string
-  status: number
+  description: string
   createdAt: string
   updatedAt: string
 }
 
 export type PharmacyQueryParams = {
-  name?: string
-  code?: string
-  hospitalId?: string
-  status?: number
   page?: number
   pageSize?: number
+  sort?: string
+  order?: string
+  filter?: string
+  keyword?: string
 }
 
 export type PharmacyCreateRequest = {
+  pharmacyCode: string
   name: string
-  code: string
   hospitalId: string
-  address: string
-  contact: string
-  phone: string
-  status?: number
+  pharmacyType: string
+  departmentId: string
+  floor?: string
+  contactPerson?: string
+  phone?: string
+  description?: string
 }
 
 export type PharmacyUpdateRequest = {
   name?: string
-  code?: string
-  hospitalId?: string
-  address?: string
-  contact?: string
+  pharmacyType?: string
+  departmentId?: string
+  floor?: string
+  contactPerson?: string
   phone?: string
-  status?: number
+  description?: string
 }
 
-export const getPharmacyList = (params: PharmacyQueryParams) => http.get<{ list: Pharmacy[]; total: number }>("/hospital/pharmacies", params)
+export const pharmacy = {
+  // 获取药房列表
+  getList: (params: PharmacyQueryParams) => {
+    return alovaInstance.Get("/pharmacies", {
+      params,
+    })
+  },
 
-export const getPharmacyById = (id: string) => http.get<Pharmacy>(`/hospital/pharmacies/${id}`)
+  // 获取药房详情
+  getDetail: (id: string) => {
+    return alovaInstance.Get(`/pharmacies/${id}`)
+  },
 
-export const createPharmacy = (data: PharmacyCreateRequest) => http.post<Pharmacy>("/hospital/pharmacies", data)
+  // 创建药房
+  create: (data: PharmacyCreateRequest) => {
+    return alovaInstance.Post("/pharmacies", data)
+  },
 
-export const updatePharmacy = (id: string, data: PharmacyUpdateRequest) => http.put<Pharmacy>(`/hospital/pharmacies/${id}`, data)
+  // 更新药房
+  update: (id: string, data: PharmacyUpdateRequest) => {
+    return alovaInstance.Put(`/pharmacies/${id}`, data)
+  },
 
-export const deletePharmacy = (id: string) => http.delete(`/hospital/pharmacies/${id}`)
+  // 删除药房
+  delete: (id: string) => {
+    return alovaInstance.Delete(`/pharmacies/${id}`)
+  },
 
-export const batchDeletePharmacy = (ids: string[]) => http.delete("/hospital/pharmacies", { data: { ids } })
+  // 批量删除药房
+  batchDelete: (ids: string[]) => {
+    return alovaInstance.Delete("/pharmacies", {
+      params: { ids: ids.join(",") },
+    })
+  },
+}

@@ -1,39 +1,115 @@
-import http from "@/utils/http"
+import { createAlova } from "alova"
+import fetch from "alova/fetch"
+
+const alovaInstance = createAlova({
+  baseURL: "/api/v1",
+  requestAdapter: fetch(),
+})
+
+export type PrescriptionDrug = {
+  drugId: string
+  dosage: number
+  dosageUnit: string
+  frequency: string
+  administrationRoute: string
+  duration: number
+  quantity: number
+  unitPrice: number
+  totalPrice?: number
+}
 
 export type Prescription = {
-  id: string
-  code: string
+  prescriptionId: string
+  prescriptionNumber: string
   patientId: string
-  patientName: string
   doctorId: string
-  doctorName: string
   departmentId: string
-  departmentName: string
   diagnosis: string
   totalAmount: number
-  status: number
-  reviewStatus: number
-  reviewOpinion?: string
+  status: string
   createdAt: string
   updatedAt: string
+  prescriptionDrugs?: PrescriptionDrug[]
+  patient?: {
+    name: string
+    gender: string
+    age: number
+    medicalRecordNumber: string
+  }
+  doctor?: {
+    name: string
+    doctorCode: string
+    title: string
+  }
+  department?: {
+    name: string
+  }
 }
 
 export type PrescriptionQueryParams = {
-  code?: string
-  patientName?: string
-  doctorName?: string
-  status?: number
-  reviewStatus?: number
   page?: number
   pageSize?: number
+  sort?: string
+  order?: string
+  filter?: string
+  keyword?: string
 }
 
-export const getPrescriptionList = (params: PrescriptionQueryParams) => http.get<{ list: Prescription[]; total: number }>("/hospital/prescriptions", params)
+export type PrescriptionCreateRequest = {
+  patientId: string
+  departmentId: string
+  diagnosis: string
+  prescriptionDrugs: PrescriptionDrug[]
+}
 
-export const getPrescriptionById = (id: string) => http.get<Prescription>(`/hospital/prescriptions/${id}`)
+export type PrescriptionUpdateRequest = {
+  diagnosis?: string
+  prescriptionDrugs?: PrescriptionDrug[]
+  status?: string
+}
 
-export const reviewPrescription = (id: string, data: { reviewStatus: number; reviewOpinion?: string }) => http.put(`/hospital/prescriptions/${id}/review`, data)
+export const prescription = {
+  // 获取处方列表
+  getList: (params: PrescriptionQueryParams) => {
+    return alovaInstance.Get("/prescriptions", {
+      params,
+    })
+  },
 
-export const cancelPrescription = (id: string) => http.post(`/hospital/prescriptions/${id}/cancel`)
+  // 获取处方详情
+  getDetail: (id: string) => {
+    return alovaInstance.Get(`/prescriptions/${id}`)
+  },
 
-export const getPendingReviewPrescriptions = (params: { pharmacyId?: string; page?: number; pageSize?: number }) => http.get<{ list: Prescription[]; total: number }>("/hospital/prescriptions/pending-review", params)
+  // 创建处方
+  create: (data: PrescriptionCreateRequest) => {
+    return alovaInstance.Post("/prescriptions", data)
+  },
+
+  // 更新处方
+  update: (id: string, data: PrescriptionUpdateRequest) => {
+    return alovaInstance.Put(`/prescriptions/${id}`, data)
+  },
+
+  // 删除处方
+  delete: (id: string) => {
+    return alovaInstance.Delete(`/prescriptions/${id}`)
+  },
+
+  // 批量删除处方
+  batchDelete: (ids: string[]) => {
+    return alovaInstance.Delete("/prescriptions", {
+      params: { ids: ids.join(",") },
+    })
+  },
+
+  // 审核处方
+  review: (id: string, data: { status: string; reviewOpinion?: string }) => {
+    return alovaInstance.Put(`/prescriptions/${id}/review`, data)
+  },
+
+  // 取消处方
+  cancel: (id: string) => {
+    return alovaInstance.Post(`/prescriptions/${id}/cancel`)
+  },
+}

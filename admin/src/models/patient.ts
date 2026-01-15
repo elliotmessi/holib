@@ -1,16 +1,6 @@
 import { useRequest, usePagination } from "alova/client"
 import { message } from "antd"
-import { 
-  getPatientList, 
-  getPatientById, 
-  createPatient, 
-  updatePatient, 
-  deletePatient, 
-  batchDeletePatient,
-  PatientQueryParams,
-  PatientCreateRequest,
-  PatientUpdateRequest
-} from "@/services/patient"
+import { patient, PatientQueryParams, PatientCreateRequest, PatientUpdateRequest } from "@/services/patient"
 
 export default () => {
   // 患者列表
@@ -22,12 +12,12 @@ export default () => {
       pageSize,
       fetching: loading,
       refresh,
-      reload
-    } = usePagination((page, pageSize) => getPatientList({ ...params, page, pageSize }), {
+      reload,
+    } = usePagination((page, pageSize) => patient.getList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: (response) => response?.list || [],
-      total: (response) => response?.total || 0
+      data: (response: any) => response?.list || [],
+      total: (response: any) => response?.total || 0,
     })
 
     return {
@@ -40,31 +30,31 @@ export default () => {
         total: total || 0,
         onChange: (newPage: number, newPageSize: number) => {
           reload()
-        }
+        },
       },
       refresh,
-      reload
+      reload,
     }
   }
 
   // 获取患者详情
   const usePatientDetail = (id?: string) => {
-    const { data, loading, send } = useRequest(() => getPatientById(id || ""), {
-      immediate: !!id
+    const { data, loading, send } = useRequest(() => patient.getDetail(id || ""), {
+      immediate: !!id,
     })
 
     return {
       patientDetail: data,
       loading,
-      fetchDetail: send
+      fetchDetail: send,
     }
   }
 
   // 创建患者
   const useCreatePatient = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(createPatient, {
-      immediate: false
+    const { send, loading } = useRequest(patient.create, {
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("患者创建成功")
@@ -81,15 +71,15 @@ export default () => {
 
     return {
       submitCreate,
-      loading
+      loading,
     }
   }
 
   // 更新患者
   const useUpdatePatient = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: PatientUpdateRequest) => updatePatient(id, data), {
-      immediate: false
+    const { send, loading } = useRequest((id: string, data: PatientUpdateRequest) => patient.update(id, data), {
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("患者更新成功")
@@ -106,15 +96,15 @@ export default () => {
 
     return {
       submitUpdate,
-      loading
+      loading,
     }
   }
 
   // 删除患者
   const useDeletePatient = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(deletePatient, {
-      immediate: false
+    const { send, loading } = useRequest(patient.delete, {
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("患者删除成功")
@@ -131,15 +121,15 @@ export default () => {
 
     return {
       submitDelete,
-      loading
+      loading,
     }
   }
 
   // 批量删除患者
   const useBatchDeletePatient = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(batchDeletePatient, {
-      immediate: false
+    const { send, loading } = useRequest(patient.batchDelete, {
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("患者批量删除成功")
@@ -156,7 +146,7 @@ export default () => {
 
     return {
       submitBatchDelete,
-      loading
+      loading,
     }
   }
 
@@ -166,6 +156,6 @@ export default () => {
     useCreatePatient,
     useUpdatePatient,
     useDeletePatient,
-    useBatchDeletePatient
+    useBatchDeletePatient,
   }
 }

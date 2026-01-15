@@ -1,18 +1,6 @@
 import { useRequest, usePagination } from "alova/client"
 import { message } from "antd"
-import { 
-  getInventoryList, 
-  getInventoryById, 
-  updateInventory, 
-  inventoryInbound, 
-  inventoryOutbound,
-  getLowStockInventory,
-  getExpiringInventory,
-  InventoryQueryParams,
-  InventoryUpdateRequest,
-  InventoryInboundRequest,
-  InventoryOutboundRequest
-} from "@/services/inventory"
+import { inventory, InventoryQueryParams, InventoryUpdateRequest, InventoryInboundRequest, InventoryOutboundRequest } from "@/services/inventory"
 
 export default () => {
   // 库存列表
@@ -24,12 +12,12 @@ export default () => {
       pageSize,
       fetching: loading,
       refresh,
-      reload
-    } = usePagination((page, pageSize) => getInventoryList({ ...params, page, pageSize }), {
+      reload,
+    } = usePagination((page, pageSize) => inventory.getList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: (response) => response?.list || [],
-      total: (response) => response?.total || 0
+      data: (response: any) => response?.list || [],
+      total: (response: any) => response?.total || 0,
     })
 
     return {
@@ -42,23 +30,23 @@ export default () => {
         total: total || 0,
         onChange: (newPage: number, newPageSize: number) => {
           reload()
-        }
+        },
       },
       refresh,
-      reload
+      reload,
     }
   }
 
   // 获取库存详情
   const useInventoryDetail = (id?: string) => {
-    const { data, loading, send } = useRequest(() => getInventoryById(id || ""), {
-      immediate: !!id
+    const { data, loading, send } = useRequest(() => inventory.getDetail(id || ""), {
+      immediate: !!id,
     })
 
     return {
       inventoryDetail: data,
       loading,
-      fetchDetail: send
+      fetchDetail: send,
     }
   }
 
@@ -71,12 +59,12 @@ export default () => {
       pageSize,
       fetching: loading,
       refresh,
-      reload
-    } = usePagination((page, pageSize) => getLowStockInventory({ ...params, page, pageSize }), {
+      reload,
+    } = usePagination((page, pageSize) => inventory.getList({ ...params, page, pageSize, filter: "stockLevel:lt:minThreshold" }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: (response) => response?.list || [],
-      total: (response) => response?.total || 0
+      data: (response: any) => response?.list || [],
+      total: (response: any) => response?.total || 0,
     })
 
     return {
@@ -89,10 +77,10 @@ export default () => {
         total: total || 0,
         onChange: (newPage: number, newPageSize: number) => {
           reload()
-        }
+        },
       },
       refresh,
-      reload
+      reload,
     }
   }
 
@@ -105,12 +93,12 @@ export default () => {
       pageSize,
       fetching: loading,
       refresh,
-      reload
-    } = usePagination((page, pageSize) => getExpiringInventory({ ...params, page, pageSize }), {
+      reload,
+    } = usePagination((page, pageSize) => inventory.getList({ ...params, page, pageSize, filter: 'expiring:true' }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: (response) => response?.list || [],
-      total: (response) => response?.total || 0
+      data: (response: any) => response?.list || [],
+      total: (response: any) => response?.total || 0,
     })
 
     return {
@@ -123,18 +111,18 @@ export default () => {
         total: total || 0,
         onChange: (newPage: number, newPageSize: number) => {
           reload()
-        }
+        },
       },
       refresh,
-      reload
+      reload,
     }
   }
 
   // 更新库存
   const useUpdateInventory = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: InventoryUpdateRequest) => updateInventory(id, data), {
-      immediate: false
+    const { send, loading } = useRequest((id: string, data: InventoryUpdateRequest) => inventory.update(id, data), {
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("库存更新成功")
@@ -151,15 +139,15 @@ export default () => {
 
     return {
       submitUpdate,
-      loading
+      loading,
     }
   }
 
   // 库存入库
   const useInventoryInbound = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(inventoryInbound, {
-      immediate: false
+    const { send, loading } = useRequest(inventory.inbound, {
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("库存入库成功")
@@ -176,15 +164,15 @@ export default () => {
 
     return {
       submitInbound,
-      loading
+      loading,
     }
   }
 
   // 库存出库
   const useInventoryOutbound = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(inventoryOutbound, {
-      immediate: false
+    const { send, loading } = useRequest(inventory.outbound, {
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("库存出库成功")
@@ -201,7 +189,57 @@ export default () => {
 
     return {
       submitOutbound,
-      loading
+      loading,
+    }
+  }
+
+  // 删除库存
+  const useDeleteInventory = (options?: { success?: () => void; error?: () => void }) => {
+    const { success = () => {}, error = () => {} } = options || {}
+    const { send, loading } = useRequest((id: string) => inventory.delete(id), {
+      immediate: false,
+    })
+      .onSuccess(() => {
+        message.success("库存删除成功")
+        success()
+      })
+      .onError(({ error: err }) => {
+        message.error(`库存删除失败: ${err.message}`)
+        error()
+      })
+
+    const submitDelete = (id: string) => {
+      send(id)
+    }
+
+    return {
+      submitDelete,
+      loading,
+    }
+  }
+
+  // 批量删除库存
+  const useBatchDeleteInventory = (options?: { success?: () => void; error?: () => void }) => {
+    const { success = () => {}, error = () => {} } = options || {}
+    const { send, loading } = useRequest((ids: string[]) => inventory.batchDelete(ids), {
+      immediate: false,
+    })
+      .onSuccess(() => {
+        message.success("库存批量删除成功")
+        success()
+      })
+      .onError(({ error: err }) => {
+        message.error(`库存批量删除失败: ${err.message}`)
+        error()
+      })
+
+    const submitBatchDelete = (ids: string[]) => {
+      send(ids)
+    }
+
+    return {
+      submitBatchDelete,
+      loading,
     }
   }
 
@@ -212,6 +250,8 @@ export default () => {
     useExpiringInventory,
     useUpdateInventory,
     useInventoryInbound,
-    useInventoryOutbound
+    useInventoryOutbound,
+    useDeleteInventory,
+    useBatchDeleteInventory,
   }
 }

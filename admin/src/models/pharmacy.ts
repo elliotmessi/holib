@@ -1,16 +1,6 @@
 import { useRequest, usePagination } from "alova/client"
 import { message } from "antd"
-import { 
-  getPharmacyList, 
-  getPharmacyById, 
-  createPharmacy, 
-  updatePharmacy, 
-  deletePharmacy, 
-  batchDeletePharmacy,
-  PharmacyQueryParams,
-  PharmacyCreateRequest,
-  PharmacyUpdateRequest
-} from "@/services/pharmacy"
+import { pharmacy, PharmacyQueryParams, PharmacyCreateRequest, PharmacyUpdateRequest } from "@/services/pharmacy"
 
 export default () => {
   // 药房列表
@@ -22,12 +12,12 @@ export default () => {
       pageSize,
       fetching: loading,
       refresh,
-      reload
-    } = usePagination((page, pageSize) => getPharmacyList({ ...params, page, pageSize }), {
+      reload,
+    } = usePagination((page, pageSize) => pharmacy.getList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: (response) => response?.list || [],
-      total: (response) => response?.total || 0
+      data: (response: any) => response?.list || [],
+      total: (response: any) => response?.total || 0,
     })
 
     return {
@@ -40,31 +30,31 @@ export default () => {
         total: total || 0,
         onChange: (newPage: number, newPageSize: number) => {
           reload()
-        }
+        },
       },
       refresh,
-      reload
+      reload,
     }
   }
 
   // 获取药房详情
   const usePharmacyDetail = (id?: string) => {
-    const { data, loading, send } = useRequest(() => getPharmacyById(id || ""), {
-      immediate: !!id
+    const { data, loading, send } = useRequest(() => pharmacy.getDetail(id || ""), {
+      immediate: !!id,
     })
 
     return {
       pharmacyDetail: data,
       loading,
-      fetchDetail: send
+      fetchDetail: send,
     }
   }
 
   // 创建药房
   const useCreatePharmacy = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(createPharmacy, {
-      immediate: false
+    const { send, loading } = useRequest(pharmacy.create, {
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("药房创建成功")
@@ -81,15 +71,15 @@ export default () => {
 
     return {
       submitCreate,
-      loading
+      loading,
     }
   }
 
   // 更新药房
   const useUpdatePharmacy = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: PharmacyUpdateRequest) => updatePharmacy(id, data), {
-      immediate: false
+    const { send, loading } = useRequest((id: string, data: PharmacyUpdateRequest) => pharmacy.update(id, data), {
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("药房更新成功")
@@ -106,15 +96,15 @@ export default () => {
 
     return {
       submitUpdate,
-      loading
+      loading,
     }
   }
 
   // 删除药房
   const useDeletePharmacy = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(deletePharmacy, {
-      immediate: false
+    const { send, loading } = useRequest(pharmacy.delete, {
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("药房删除成功")
@@ -131,15 +121,15 @@ export default () => {
 
     return {
       submitDelete,
-      loading
+      loading,
     }
   }
 
   // 批量删除药房
   const useBatchDeletePharmacy = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(batchDeletePharmacy, {
-      immediate: false
+    const { send, loading } = useRequest(pharmacy.batchDelete, {
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("药房批量删除成功")
@@ -156,7 +146,7 @@ export default () => {
 
     return {
       submitBatchDelete,
-      loading
+      loading,
     }
   }
 
@@ -166,6 +156,6 @@ export default () => {
     useCreatePharmacy,
     useUpdatePharmacy,
     useDeletePharmacy,
-    useBatchDeletePharmacy
+    useBatchDeletePharmacy,
   }
 }

@@ -30,16 +30,66 @@ const newRoutes = [
   {
     name: "医生管理",
     path: "/doctor",
-    component: "./Doctor",
     access: "hospital:doctor:list",
     icon: "UsergroupAddOutlined",
+    routes: [
+      {
+        name: "医生列表",
+        path: "/doctor",
+        component: "./Doctor/list",
+        access: "hospital:doctor:list",
+      },
+      {
+        name: "新建医生",
+        path: "/doctor/create",
+        component: "./Doctor/create",
+        access: "hospital:doctor:create",
+      },
+      {
+        name: "编辑医生",
+        path: "/doctor/edit/:id",
+        component: "./Doctor/edit",
+        access: "hospital:doctor:update",
+      },
+      {
+        name: "医生详情",
+        path: "/doctor/detail/:id",
+        component: "./Doctor/detail",
+        access: "hospital:doctor:detail",
+      },
+    ],
   },
   {
     name: "患者管理",
     path: "/patient",
-    component: "./Patient",
     access: "hospital:patient:list",
     icon: "idcardOutlined",
+    routes: [
+      {
+        name: "患者列表",
+        path: "/patient",
+        component: "./Patient/list",
+        access: "hospital:patient:list",
+      },
+      {
+        name: "新建患者",
+        path: "/patient/create",
+        component: "./Patient/create",
+        access: "hospital:patient:create",
+      },
+      {
+        name: "编辑患者",
+        path: "/patient/edit/:id",
+        component: "./Patient/edit",
+        access: "hospital:patient:update",
+      },
+      {
+        name: "患者详情",
+        path: "/patient/detail/:id",
+        component: "./Patient/detail",
+        access: "hospital:patient:detail",
+      },
+    ],
   },
 
   {
@@ -77,23 +127,110 @@ const newRoutes = [
   {
     name: "处方管理",
     path: "/prescription",
-    component: "./Prescription",
     access: "hospital:prescription:list",
     icon: "FileTextOutlined",
+    routes: [
+      {
+        name: "处方列表",
+        path: "/prescription",
+        component: "./Prescription/list",
+        access: "hospital:prescription:list",
+      },
+      {
+        name: "新建处方",
+        path: "/prescription/create",
+        component: "./Prescription/create",
+        access: "hospital:prescription:create",
+      },
+      {
+        name: "编辑处方",
+        path: "/prescription/edit/:id",
+        component: "./Prescription/edit",
+        access: "hospital:prescription:update",
+      },
+      {
+        name: "处方详情",
+        path: "/prescription/detail/:id",
+        component: "./Prescription/detail",
+        access: "hospital:prescription:detail",
+      },
+    ],
   },
   {
     name: "药房管理",
     path: "/pharmacy",
-    component: "./Pharmacy",
     access: "hospital:pharmacy:list",
     icon: "shop",
+    routes: [
+      {
+        name: "药房列表",
+        path: "/pharmacy",
+        component: "./Pharmacy/list",
+        access: "hospital:pharmacy:list",
+      },
+      {
+        name: "新建药房",
+        path: "/pharmacy/create",
+        component: "./Pharmacy/create",
+        access: "hospital:pharmacy:create",
+      },
+      {
+        name: "编辑药房",
+        path: "/pharmacy/edit/:id",
+        component: "./Pharmacy/edit",
+        access: "hospital:pharmacy:update",
+      },
+      {
+        name: "药房详情",
+        path: "/pharmacy/detail/:id",
+        component: "./Pharmacy/detail",
+        access: "hospital:pharmacy:detail",
+      },
+    ],
   },
   {
     name: "库存管理",
     path: "/inventory",
-    component: "./Inventory",
     access: "hospital:inventory:list",
     icon: "database",
+    routes: [
+      {
+        name: "库存列表",
+        path: "/inventory",
+        component: "./Inventory/list",
+        access: "hospital:inventory:list",
+      },
+      {
+        name: "新建库存",
+        path: "/inventory/create",
+        component: "./Inventory/create",
+        access: "hospital:inventory:create",
+      },
+      {
+        name: "编辑库存",
+        path: "/inventory/edit/:id",
+        component: "./Inventory/edit",
+        access: "hospital:inventory:update",
+      },
+      {
+        name: "库存详情",
+        path: "/inventory/detail/:id",
+        component: "./Inventory/detail",
+        access: "hospital:inventory:detail",
+      },
+      {
+        name: "入库管理",
+        path: "/inventory/inbound",
+        component: "./Inventory/inbound",
+        access: "hospital:inventory:inbound",
+      },
+      {
+        name: "出库管理",
+        path: "/inventory/outbound",
+        component: "./Inventory/outbound",
+        access: "hospital:inventory:outbound",
+      },
+    ],
   },
   {
     name: "系统管理",
