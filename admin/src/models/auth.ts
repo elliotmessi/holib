@@ -6,7 +6,7 @@ import { useRequest } from "alova/client"
 import { message } from "antd"
 
 export default () => {
-  const { initProfile } = useModel("user")
+  const { initProfile } = useModel("profile")
   const { setInitialState, initialState } = useModel("@@initialState")
 
   const useLogin = (options?: { success?: () => void; error?: () => void }) => {

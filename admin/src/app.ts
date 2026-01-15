@@ -1,14 +1,14 @@
 // 运行时配置
 import { clearAuth, getToken, isAuthenticated } from "@/utils/auth"
 import { UserInfo } from "./services/account"
-import { RunTimeLayoutConfig } from "@umijs/max"
+import type { RunTimeLayoutConfig } from "@umijs/max"
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
-export async function getInitialState(): Promise<{ user?: UserInfo, permissions?: string[]; token?: string }> {
+export async function getInitialState(): Promise<{ user?: UserInfo; permissions?: string[]; token?: string }> {
   // 从本地存储获取 token
   const token = getToken()
-  
+
   if (token) {
     return {
       token,

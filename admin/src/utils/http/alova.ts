@@ -1,21 +1,17 @@
-import { createAlova } from 'alova'
-import Axios from 'axios'
-import { axiosRequestAdapter } from '@alova/adapter-axios'
-import ReactHook from 'alova/react'
-import { createServerTokenAuthentication } from 'alova/client'
-import { stringify } from 'qs'
-import { clearAuth, formatToken, getRefreshToken, getToken, setToken } from '@/utils/auth'
-import { refreshToken } from '@/services/auth'
-import { useNavigate } from '@umijs/max'
+import { createAlova } from "alova"
+import Axios from "axios"
+import { axiosRequestAdapter } from "@alova/adapter-axios"
+import ReactHook from "alova/react"
+import { createServerTokenAuthentication } from "alova/client"
+import { stringify } from "qs"
+import { clearAuth, formatToken, getRefreshToken, getToken, setToken } from "@/utils/auth"
+import { refreshToken } from "@/services/auth"
 
 const AxiosInstance = Axios.create({
-  paramsSerializer: (params) => stringify(params, { arrayFormat: 'repeat' }),
+  paramsSerializer: params => stringify(params, { arrayFormat: "repeat" }),
 })
 
-const { onAuthRequired, onResponseRefreshToken } = createServerTokenAuthentication<
-  typeof ReactHook,
-  typeof axiosRequestAdapter
->({
+const { onAuthRequired, onResponseRefreshToken } = createServerTokenAuthentication<typeof ReactHook, typeof axiosRequestAdapter>({
   visitorMeta: {
     isVisitor: true,
   },
@@ -39,22 +35,21 @@ const { onAuthRequired, onResponseRefreshToken } = createServerTokenAuthenticati
   login({ data }) {
     setToken(data.data.accessToken)
   },
-  assignToken: (method) => {
+  assignToken: method => {
     const token = getToken()
-    method.meta?.authRole !== 'refreshToken' &&
-      (method.config.headers.Authorization = formatToken(token))
+    method.meta?.authRole !== "refreshToken" && (method.config.headers.Authorization = formatToken(token))
   },
 })
 
 const alovaInstance = createAlova({
-  baseURL: '/api/v1',
+  baseURL: "/api/v1",
   timeout: 50000,
   statesHook: ReactHook,
   requestAdapter: axiosRequestAdapter({
     axios: AxiosInstance,
   }),
   /** request 拦截器 */
-  beforeRequest: onAuthRequired((method) => {
+  beforeRequest: onAuthRequired(method => {
     // const { config, data, meta } = method
     // console.log('method:', config, data, meta)
   }),
@@ -73,11 +68,11 @@ const alovaInstance = createAlova({
     },
     onError: (error, method) => {
       // error.status 服务端返回的状态码
-      console.error('error.status:', error.status)
+      console.error("error.status:", error.status)
       if (error.status === 401) {
         clearAuth()
         // 处理401错误，调用带token的接口则跳转到登录页
-        !method.meta?.authRole && (location.href = '/login')
+        !method.meta?.authRole && (location.href = "/login")
       }
       // error.status 服务端返回的状态码
       if ([403, 404, 500].includes(error.status)) {

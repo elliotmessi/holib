@@ -1,67 +1,198 @@
-import { getPermissions, getProfile } from "@/services/account"
-import { getToken, setUserInfo } from "@/utils/auth"
-import { useRequest } from "alova/client"
+import { useRequest, usePagination } from "alova/client"
 import { message } from "antd"
-import { useEffect, useState } from "react"
-import { useModel } from "@umijs/max"
+import {
+  getUserList,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
+  batchDeleteUser,
+  updateUserPassword,
+  UserQueryParams,
+  UserCreateRequest,
+  UserUpdateRequest
+} from "@/services/user"
 
 export default () => {
-  const [loading, setLoading] = useState(false)
-  // 获取用户信息
-  const {
-    send: getProfileRequest,
-    data: userInfo,
-    loading: uLoading,
-  } = useRequest(getProfile, {
-    immediate: false,
-  }).onError(({ error }) => {
-    message.error(`获取用户信息失败: ${error.message}`)
-  })
+  // 用户列表
+  const useUserList = (params?: UserQueryParams) => {
+    const {
+      data: userList,
+      total,
+      page,
+      pageSize,
+      fetching: loading,
+      refresh,
+      reload
+    } = usePagination((page, pageSize) => getUserList({ ...params, page, pageSize }), {
+      initialPage: 1,
+      initialPageSize: 10,
+      data: (response) => response?.list || [],
+      total: (response) => response?.total || 0
+    })
 
-  const {
-    send: getPermissionsRequest,
-    data: permissions,
-    loading: permissionsLoading,
-  } = useRequest(getPermissions, {
-    immediate: false,
-  }).onError(({ error }) => {
-    message.error(`获取权限列表失败: ${error.message}`)
-  })
-
-  // 获取 initialState 和更新方法
-  const { setInitialState } = useModel("@@initialState")
-
-  const initProfile = async () => {
-    Promise.all([getProfileRequest(), getPermissionsRequest()])
+    return {
+      userList: userList || [],
+      total: total || 0,
+      loading,
+      pagination: {
+        page,
+        pageSize,
+        total: total || 0,
+        onChange: (newPage: number, newPageSize: number) => {
+          reload()
+        }
+      },
+      refresh,
+      reload
+    }
   }
 
-  useEffect(() => {
-    const token = getToken()
-    if (token) {
-      initProfile()
-    }
-  }, [])
+  // 获取用户详情
+  const useUserDetail = (id?: string) => {
+    const { data, loading, send } = useRequest(() => getUserById(id || ''), {
+      immediate: !!id
+    })
 
-  useEffect(() => {
-    if (userInfo && permissions) {
-      const updatedUserInfo = { user: userInfo, permissions }
-      setUserInfo(updatedUserInfo)
-      // 更新 initialState
-      setInitialState(initialState => ({
-        ...initialState,
-        ...updatedUserInfo,
-      }))
+    return {
+      userDetail: data,
+      loading,
+      fetchDetail: send
     }
-  }, [userInfo, permissions, setInitialState])
+  }
 
-  useEffect(() => {
-    setLoading(uLoading || permissionsLoading)
-  }, [uLoading, permissionsLoading])
+  // 创建用户
+  const useCreateUser = (options?: { success?: () => void; error?: () => void }) => {
+    const { success = () => {}, error = () => {} } = options || {}
+    const { send, loading } = useRequest(createUser, {
+      immediate: false
+    })
+      .onSuccess(() => {
+        message.success("用户创建成功")
+        success()
+      })
+      .onError(({ error: err }) => {
+        message.error(`用户创建失败: ${err.message}`)
+        error()
+      })
+
+    const submitCreate = (data: UserCreateRequest) => {
+      send(data)
+    }
+
+    return {
+      submitCreate,
+      loading
+    }
+  }
+
+  // 更新用户
+  const useUpdateUser = (options?: { success?: () => void; error?: () => void }) => {
+    const { success = () => {}, error = () => {} } = options || {}
+    const { send, loading } = useRequest((id: string, data: UserUpdateRequest) => updateUser(id, data), {
+      immediate: false
+    })
+      .onSuccess(() => {
+        message.success("用户更新成功")
+        success()
+      })
+      .onError(({ error: err }) => {
+        message.error(`用户更新失败: ${err.message}`)
+        error()
+      })
+
+    const submitUpdate = (id: string, data: UserUpdateRequest) => {
+      send(id, data)
+    }
+
+    return {
+      submitUpdate,
+      loading
+    }
+  }
+
+  // 删除用户
+  const useDeleteUser = (options?: { success?: () => void; error?: () => void }) => {
+    const { success = () => {}, error = () => {} } = options || {}
+    const { send, loading } = useRequest(deleteUser, {
+      immediate: false
+    })
+      .onSuccess(() => {
+        message.success("用户删除成功")
+        success()
+      })
+      .onError(({ error: err }) => {
+        message.error(`用户删除失败: ${err.message}`)
+        error()
+      })
+
+    const submitDelete = (id: string) => {
+      send(id)
+    }
+
+    return {
+      submitDelete,
+      loading
+    }
+  }
+
+  // 批量删除用户
+  const useBatchDeleteUser = (options?: { success?: () => void; error?: () => void }) => {
+    const { success = () => {}, error = () => {} } = options || {}
+    const { send, loading } = useRequest(batchDeleteUser, {
+      immediate: false
+    })
+      .onSuccess(() => {
+        message.success("用户批量删除成功")
+        success()
+      })
+      .onError(({ error: err }) => {
+        message.error(`用户批量删除失败: ${err.message}`)
+        error()
+      })
+
+    const submitBatchDelete = (ids: string[]) => {
+      send(ids)
+    }
+
+    return {
+      submitBatchDelete,
+      loading
+    }
+  }
+
+  // 更新用户密码
+  const useUpdateUserPassword = (options?: { success?: () => void; error?: () => void }) => {
+    const { success = () => {}, error = () => {} } = options || {}
+    const { send, loading } = useRequest((id: string, data: { password: string }) => updateUserPassword(id, data), {
+      immediate: false
+    })
+      .onSuccess(() => {
+        message.success("密码更新成功")
+        success()
+      })
+      .onError(({ error: err }) => {
+        message.error(`密码更新失败: ${err.message}`)
+        error()
+      })
+
+    const submitUpdatePassword = (id: string, password: string) => {
+      send(id, { password })
+    }
+
+    return {
+      submitUpdatePassword,
+      loading
+    }
+  }
 
   return {
-    getProfileRequest,
-    userInfo,
-    loading,
-    initProfile,
+    useUserList,
+    useUserDetail,
+    useCreateUser,
+    useUpdateUser,
+    useDeleteUser,
+    useBatchDeleteUser,
+    useUpdateUserPassword
   }
 }
