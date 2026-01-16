@@ -2,14 +2,13 @@ import { PageContainer, ProDescriptions } from '@ant-design/pro-components';
 import React from 'react';
 import { Button } from 'antd';
 import { useNavigate, useParams } from '@umijs/max';
+import { useModel } from '@umijs/max';
 import { Hospital } from '@/services/hospital';
-import useHospitalModel from '@/models/hospital';
 
 const HospitalDetail: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const hospitalModel = useHospitalModel();
-  const { useHospitalDetail } = hospitalModel;
+  const { useHospitalDetail } = useModel('hospital');
   const { hospitalDetail, loading } = useHospitalDetail(id);
 
   return (

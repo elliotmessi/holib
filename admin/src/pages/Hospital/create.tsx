@@ -2,14 +2,12 @@ import { PageContainer, ProForm, ProFormText, ProFormSelect } from '@ant-design/
 import React from 'react';
 import { Button } from 'antd';
 import { useNavigate } from '@umijs/max';
-import { Access, useAccess } from '@umijs/max';
+import { useModel } from '@umijs/max';
 import { HospitalCreateRequest } from '@/services/hospital';
-import useHospitalModel from '@/models/hospital';
 
 const HospitalCreate: React.FC = () => {
   const navigate = useNavigate();
-  const hospitalModel = useHospitalModel();
-  const { useCreateHospital } = hospitalModel;
+  const { useCreateHospital } = useModel('hospital');
   const { submitCreate, loading } = useCreateHospital({
     success: () => navigate('/hospital/list'),
   });

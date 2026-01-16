@@ -3,15 +3,14 @@ import React from 'react';
 import { Button } from 'antd';
 import { useNavigate, useParams } from '@umijs/max';
 import { Access, useAccess } from '@umijs/max';
+import { useModel } from '@umijs/max';
 import { HospitalUpdateRequest } from '@/services/hospital';
-import useHospitalModel from '@/models/hospital';
 
 const HospitalEdit: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const access = useAccess();
-  const hospitalModel = useHospitalModel();
-  const { useHospitalDetail, useUpdateHospital } = hospitalModel;
+  const { useHospitalDetail, useUpdateHospital } = useModel('hospital');
   const { hospitalDetail, loading: detailLoading } = useHospitalDetail(id);
   const { submitUpdate, loading: updateLoading } = useUpdateHospital({
     success: () => navigate('/hospital/list'),
@@ -33,7 +32,7 @@ const HospitalEdit: React.FC = () => {
         ],
       }}
     >
-      <Access accessible={access.hasPermission('hospital:edit')}>
+      <Access accessible={access.hasPermission('hospital:hospital:update')}>
         <ProForm
           onFinish={handleSubmit}
           layout="vertical"

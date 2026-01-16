@@ -4,14 +4,13 @@ import { Button, Modal } from 'antd';
 import { PlusOutlined, DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from '@umijs/max';
 import { Access, useAccess } from '@umijs/max';
+import { useModel } from '@umijs/max';
 import { Hospital } from '@/services/hospital';
-import useHospitalModel from '@/models/hospital';
 
 const HospitalList: React.FC = () => {
   const navigate = useNavigate();
   const access = useAccess();
-  const hospitalModel = useHospitalModel();
-  const { useHospitalList, useDeleteHospital } = hospitalModel;
+  const { useHospitalList, useDeleteHospital } = useModel('hospital');
   const { hospitalList, loading, pagination, refresh } = useHospitalList();
   const { submitDelete, loading: deleteLoading } = useDeleteHospital({
     success: () => refresh(),
@@ -79,7 +78,7 @@ const HospitalList: React.FC = () => {
           >
             详情
           </Button>
-          <Access accessible={access.hasPermission('hospital:edit')}>
+          <Access accessible={access.hasPermission('hospital:hospital:update')}>
             <Button
               type="text"
               icon={<EditOutlined />}
@@ -88,7 +87,7 @@ const HospitalList: React.FC = () => {
               编辑
             </Button>
           </Access>
-          <Access accessible={access.hasPermission('hospital:delete')}>
+          <Access accessible={access.hasPermission('hospital:hospital:delete')}>
             <Button
               type="text"
               danger
@@ -110,7 +109,7 @@ const HospitalList: React.FC = () => {
       header={{
         title: '医院管理',
         extra: [
-          <Access key="create" accessible={access.hasPermission('hospital:create')}>
+          <Access key="create" accessible={access.hasPermission('hospital:hospital:create')}>
             <Button
               type="primary"
               icon={<PlusOutlined />}
