@@ -1,7 +1,7 @@
-import { PageContainer, ProForm } from '@ant-design/pro-components';
+import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormTextArea } from '@ant-design/pro-components';
 import React from 'react';
 import { Button, message } from 'antd';
-import { useNavigate } from 'umi';
+import { useNavigate } from '@umijs/max';
 
 const DictItemCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ const DictItemCreate: React.FC = () => {
         onFinish={handleSubmit}
         layout="vertical"
       >
-        <ProForm.Select
+        <ProFormSelect
           name="dictId"
           label="所属字典"
           options={[
@@ -35,17 +35,17 @@ const DictItemCreate: React.FC = () => {
           ]}
           rules={[{ required: true, message: '请选择所属字典' }]}
         />
-        <ProForm.Text
+        <ProFormText
           name="itemName"
           label="字典项名称"
           rules={[{ required: true, message: '请输入字典项名称' }]}
         />
-        <ProForm.Text
+        <ProFormText
           name="itemValue"
           label="字典项值"
           rules={[{ required: true, message: '请输入字典项值' }]}
         />
-        <ProForm.Select
+        <ProFormSelect
           name="status"
           label="状态"
           options={[
@@ -55,14 +55,14 @@ const DictItemCreate: React.FC = () => {
           initialValue="1"
           rules={[{ required: true, message: '请选择状态' }]}
         />
-        <ProForm.TextArea
+        <ProFormTextArea
           name="remark"
           label="备注"
           rows={4}
         />
-        <ProForm.Submit>
+        <Button type="primary" htmlType="submit">
           保存
-        </ProForm.Submit>
+        </Button>
       </ProForm>
     </PageContainer>
   );

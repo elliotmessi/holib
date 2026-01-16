@@ -1,7 +1,7 @@
-import { PageContainer, ProForm } from '@ant-design/pro-components';
+import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormTextArea } from '@ant-design/pro-components';
 import React from 'react';
 import { Button, message } from 'antd';
-import { useNavigate } from 'umi';
+import { useNavigate } from '@umijs/max';
 
 const ParamConfigCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -26,22 +26,22 @@ const ParamConfigCreate: React.FC = () => {
         onFinish={handleSubmit}
         layout="vertical"
       >
-        <ProForm.Text
+        <ProFormText
           name="paramName"
           label="参数名称"
           rules={[{ required: true, message: '请输入参数名称' }]}
         />
-        <ProForm.Text
+        <ProFormText
           name="paramKey"
           label="参数键"
           rules={[{ required: true, message: '请输入参数键' }]}
         />
-        <ProForm.Text
+        <ProFormText
           name="paramValue"
           label="参数值"
           rules={[{ required: true, message: '请输入参数值' }]}
         />
-        <ProForm.Select
+        <ProFormSelect
           name="status"
           label="状态"
           options={[
@@ -51,14 +51,14 @@ const ParamConfigCreate: React.FC = () => {
           initialValue="1"
           rules={[{ required: true, message: '请选择状态' }]}
         />
-        <ProForm.TextArea
+        <ProFormTextArea
           name="remark"
           label="备注"
           rows={4}
         />
-        <ProForm.Submit>
+        <Button type="primary" htmlType="submit">
           保存
-        </ProForm.Submit>
+        </Button>
       </ProForm>
     </PageContainer>
   );

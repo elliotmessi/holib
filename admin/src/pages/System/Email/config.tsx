@@ -1,7 +1,7 @@
-import { PageContainer, ProForm } from '@ant-design/pro-components';
-import React from 'react';
+import { PageContainer, ProForm, ProFormText } from '@ant-design/pro-components';
+import React, { useState, useEffect } from 'react';
 import { Button, message } from 'antd';
-import { useNavigate } from 'umi';
+import { useNavigate } from '@umijs/max';
 
 const EmailConfig: React.FC = () => {
   const navigate = useNavigate();
@@ -29,34 +29,34 @@ const EmailConfig: React.FC = () => {
           from: 'admin@example.com',
         }}
       >
-        <ProForm.Text
+        <ProFormText
           name="host"
           label="SMTP服务器"
           rules={[{ required: true, message: '请输入SMTP服务器' }]}
         />
-        <ProForm.Text
+        <ProFormText
           name="port"
           label="端口"
           rules={[{ required: true, message: '请输入端口' }]}
         />
-        <ProForm.Text
+        <ProFormText
           name="username"
           label="用户名"
           rules={[{ required: true, message: '请输入用户名' }]}
         />
-        <ProForm.Password
+        <ProFormText.Password
           name="password"
           label="密码"
           rules={[{ required: true, message: '请输入密码' }]}
         />
-        <ProForm.Text
+        <ProFormText
           name="from"
           label="发件人邮箱"
           rules={[{ required: true, message: '请输入发件人邮箱' }]}
         />
-        <ProForm.Submit>
+        <Button type="primary" htmlType="submit">
           保存配置
-        </ProForm.Submit>
+        </Button>
       </ProForm>
     </PageContainer>
   );

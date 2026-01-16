@@ -1,4 +1,4 @@
-import { PageContainer, ProForm } from '@ant-design/pro-components';
+import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormDatePicker, ProFormTextArea } from '@ant-design/pro-components';
 import { Button, message } from 'antd';
 import React, { useEffect } from 'react';
 import { useModel } from '@umijs/max';
@@ -43,95 +43,89 @@ const DrugEdit: React.FC = () => {
           ],
         }}
       >
-        <ProForm.Item
+        <ProFormText
           name="genericName"
           label="通用名"
           rules={[{ required: true, message: '请输入通用名' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="tradeName"
           label="商品名"
         />
-        <ProForm.Item
+        <ProFormText
           name="specification"
           label="规格"
           rules={[{ required: true, message: '请输入规格' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="dosageForm"
           label="剂型"
           rules={[{ required: true, message: '请输入剂型' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="manufacturer"
           label="生产厂家"
           rules={[{ required: true, message: '请输入生产厂家' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="approvalNumber"
           label="批准文号"
           rules={[{ required: true, message: '请输入批准文号' }]}
         />
-        <ProForm.Item
+        <ProFormSelect
           name="drugType"
           label="药品类型"
           rules={[{ required: true, message: '请选择药品类型' }]}
-          valueEnum={{
-            chinese_medicine: { text: '中药' },
-            western_medicine: { text: '西药' },
-            proprietary_chinese_medicine: { text: '中成药' },
-          }}
+          options={[
+            { value: 'chinese_medicine', label: '中药' },
+            { value: 'western_medicine', label: '西药' },
+            { value: 'proprietary_chinese_medicine', label: '中成药' },
+          ]}
         />
-        <ProForm.Item
+        <ProFormText
           name="usePurpose"
           label="药品用途"
         />
-        <ProForm.Item
+        <ProFormText
           name="usageMethod"
           label="使用方式"
         />
-        <ProForm.Item
+        <ProFormDatePicker
           name="validFrom"
           label="有效期起始日期"
           rules={[{ required: true, message: '请选择有效期起始日期' }]}
-          valueType="date"
         />
-        <ProForm.Item
+        <ProFormDatePicker
           name="validTo"
           label="有效期截止日期"
           rules={[{ required: true, message: '请选择有效期截止日期' }]}
-          valueType="date"
         />
-        <ProForm.Item
+        <ProFormText
           name="retailPrice"
           label="零售价"
           rules={[{ required: true, message: '请输入零售价' }]}
-          valueType="money"
         />
-        <ProForm.Item
+        <ProFormText
           name="wholesalePrice"
           label="批发价"
           rules={[{ required: true, message: '请输入批发价' }]}
-          valueType="money"
         />
-        <ProForm.Item
+        <ProFormText
           name="medicalInsuranceRate"
           label="医保报销比例"
-          valueType="percent"
         />
-        <ProForm.Item
+        <ProFormSelect
           name="status"
           label="状态"
-          valueEnum={{
-            normal: { text: '正常' },
-            stopped: { text: '停用' },
-            out_of_stock: { text: '缺货' },
-          }}
+          options={[
+            { value: 'normal', label: '正常' },
+            { value: 'stopped', label: '停用' },
+            { value: 'out_of_stock', label: '缺货' },
+          ]}
         />
-        <ProForm.Item
+        <ProFormTextArea
           name="description"
           label="药品描述"
-          valueType="textarea"
         />
       </ProForm>
     </PageContainer>

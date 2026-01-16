@@ -1,7 +1,7 @@
-import { PageContainer, ProForm } from '@ant-design/pro-components';
+import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormTextArea } from '@ant-design/pro-components';
 import React from 'react';
 import { Button, message } from 'antd';
-import { useNavigate } from 'umi';
+import { useNavigate } from '@umijs/max';
 
 const StorageCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -26,12 +26,12 @@ const StorageCreate: React.FC = () => {
         onFinish={handleSubmit}
         layout="vertical"
       >
-        <ProForm.Text
+        <ProFormText
           name="storageName"
           label="存储名称"
           rules={[{ required: true, message: '请输入存储名称' }]}
         />
-        <ProForm.Select
+        <ProFormSelect
           name="storageType"
           label="存储类型"
           options={[
@@ -41,12 +41,12 @@ const StorageCreate: React.FC = () => {
           initialValue="local"
           rules={[{ required: true, message: '请选择存储类型' }]}
         />
-        <ProForm.Text
+        <ProFormText
           name="storagePath"
           label="存储路径"
           rules={[{ required: true, message: '请输入存储路径' }]}
         />
-        <ProForm.Select
+        <ProFormSelect
           name="status"
           label="状态"
           options={[
@@ -56,14 +56,14 @@ const StorageCreate: React.FC = () => {
           initialValue="1"
           rules={[{ required: true, message: '请选择状态' }]}
         />
-        <ProForm.TextArea
+        <ProFormTextArea
           name="remark"
           label="备注"
           rows={4}
         />
-        <ProForm.Submit>
+        <Button type="primary" htmlType="submit">
           保存
-        </ProForm.Submit>
+        </Button>
       </ProForm>
     </PageContainer>
   );

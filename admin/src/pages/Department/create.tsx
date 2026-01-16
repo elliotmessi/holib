@@ -1,7 +1,7 @@
-import { PageContainer, ProForm } from '@ant-design/pro-components';
+import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormTextArea } from '@ant-design/pro-components';
 import React from 'react';
 import { Button, message } from 'antd';
-import { useNavigate } from 'umi';
+import { useNavigate } from '@umijs/max';
 
 const DepartmentCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -26,12 +26,12 @@ const DepartmentCreate: React.FC = () => {
         onFinish={handleSubmit}
         layout="vertical"
       >
-        <ProForm.Text
+        <ProFormText
           name="departmentName"
           label="科室名称"
           rules={[{ required: true, message: '请输入科室名称' }]}
         />
-        <ProForm.Select
+        <ProFormSelect
           name="hospitalId"
           label="所属医院"
           options={[
@@ -40,7 +40,7 @@ const DepartmentCreate: React.FC = () => {
           ]}
           rules={[{ required: true, message: '请选择所属医院' }]}
         />
-        <ProForm.Select
+        <ProFormSelect
           name="status"
           label="状态"
           options={[
@@ -50,14 +50,14 @@ const DepartmentCreate: React.FC = () => {
           initialValue="1"
           rules={[{ required: true, message: '请选择状态' }]}
         />
-        <ProForm.TextArea
+        <ProFormTextArea
           name="remark"
           label="备注"
           rows={4}
         />
-        <ProForm.Submit>
+        <Button type="primary" htmlType="submit">
           保存
-        </ProForm.Submit>
+        </Button>
       </ProForm>
     </PageContainer>
   );

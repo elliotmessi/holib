@@ -1,4 +1,4 @@
-import { PageContainer, Descriptions } from '@ant-design/pro-components';
+import { PageContainer, ProDescriptions } from '@ant-design/pro-components';
 import React, { useState, useEffect } from 'react';
 import { Button } from 'antd';
 import { useNavigate, useParams } from 'umi';
@@ -32,16 +32,16 @@ const TaskDetail: React.FC = () => {
         ],
       }}
     >
-      <Descriptions column={2} title="任务信息">
-        <Descriptions.Item label="任务名称">{detailData.taskName}</Descriptions.Item>
-        <Descriptions.Item label="任务组">{detailData.taskGroup}</Descriptions.Item>
-        <Descriptions.Item label="Cron表达式">{detailData.taskCron}</Descriptions.Item>
-        <Descriptions.Item label="任务类">{detailData.taskClass}</Descriptions.Item>
-        <Descriptions.Item label="状态">{detailData.status === '1' ? '启用' : '禁用'}</Descriptions.Item>
-        <Descriptions.Item label="创建人">{detailData.createBy}</Descriptions.Item>
-        <Descriptions.Item label="创建时间">{detailData.createTime}</Descriptions.Item>
-        <Descriptions.Item label="备注">{detailData.remark}</Descriptions.Item>
-      </Descriptions>
+      <ProDescriptions column={2} title="任务信息">
+        <ProDescriptions.Item label="任务名称">{detailData.taskName}</ProDescriptions.Item>
+        <ProDescriptions.Item label="任务组">{detailData.taskGroup}</ProDescriptions.Item>
+        <ProDescriptions.Item label="Cron表达式">{detailData.taskCron}</ProDescriptions.Item>
+        <ProDescriptions.Item label="任务类">{detailData.taskClass}</ProDescriptions.Item>
+        <ProDescriptions.Item label="状态">{detailData.status === '1' ? '启用' : '禁用'}</ProDescriptions.Item>
+        <ProDescriptions.Item label="创建人">{detailData.createBy}</ProDescriptions.Item>
+        <ProDescriptions.Item label="创建时间">{detailData.createTime}</ProDescriptions.Item>
+        <ProDescriptions.Item label="备注">{detailData.remark}</ProDescriptions.Item>
+      </ProDescriptions>
     </PageContainer>
   );
 };

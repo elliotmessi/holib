@@ -1,4 +1,4 @@
-import { PageContainer, Descriptions } from '@ant-design/pro-components';
+import { PageContainer, ProDescriptions } from '@ant-design/pro-components';
 import React, { useState, useEffect } from 'react';
 import { Button } from 'antd';
 import { useNavigate, useParams } from 'umi';
@@ -30,14 +30,14 @@ const DictTypeDetail: React.FC = () => {
         ],
       }}
     >
-      <Descriptions column={2} title="字典信息">
-        <Descriptions.Item label="字典名称">{detailData.dictName}</Descriptions.Item>
-        <Descriptions.Item label="字典类型">{detailData.dictType}</Descriptions.Item>
-        <Descriptions.Item label="状态">{detailData.status === '1' ? '启用' : '禁用'}</Descriptions.Item>
-        <Descriptions.Item label="创建人">{detailData.createBy}</Descriptions.Item>
-        <Descriptions.Item label="创建时间">{detailData.createTime}</Descriptions.Item>
-        <Descriptions.Item label="备注">{detailData.remark}</Descriptions.Item>
-      </Descriptions>
+      <ProDescriptions column={2} title="字典信息">
+        <ProDescriptions.Item label="字典名称">{detailData.dictName}</ProDescriptions.Item>
+        <ProDescriptions.Item label="字典类型">{detailData.dictType}</ProDescriptions.Item>
+        <ProDescriptions.Item label="状态">{detailData.status === '1' ? '启用' : '禁用'}</ProDescriptions.Item>
+        <ProDescriptions.Item label="创建人">{detailData.createBy}</ProDescriptions.Item>
+        <ProDescriptions.Item label="创建时间">{detailData.createTime}</ProDescriptions.Item>
+        <ProDescriptions.Item label="备注">{detailData.remark}</ProDescriptions.Item>
+      </ProDescriptions>
     </PageContainer>
   );
 };

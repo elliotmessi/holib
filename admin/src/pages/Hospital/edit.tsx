@@ -1,28 +1,26 @@
-import { PageContainer, ProForm } from '@ant-design/pro-components';
-import React, { useState, useEffect } from 'react';
-import { Button, message } from 'antd';
-import { useNavigate, useParams } from 'umi';
+import { PageContainer, ProForm, ProFormText, ProFormSelect } from '@ant-design/pro-components';
+import React from 'react';
+import { Button } from 'antd';
+import { useNavigate, useParams } from '@umijs/max';
+import { Access, useAccess } from '@umijs/max';
+import { HospitalUpdateRequest } from '@/services/hospital';
+import useHospitalModel from '@/models/hospital';
 
 const HospitalEdit: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const [formData, setFormData] = useState<any>({});
+  const access = useAccess();
+  const hospitalModel = useHospitalModel();
+  const { useHospitalDetail, useUpdateHospital } = hospitalModel;
+  const { hospitalDetail, loading: detailLoading } = useHospitalDetail(id);
+  const { submitUpdate, loading: updateLoading } = useUpdateHospital({
+    success: () => navigate('/hospital/list'),
+  });
 
-  // 模拟获取数据
-  useEffect(() => {
-    setFormData({
-      hospitalName: '中心医院',
-      address: '北京市海淀区',
-      phone: '010-12345678',
-      status: '1',
-      remark: '综合医院',
-    });
-  }, [id]);
-
-  const handleSubmit = (values: any) => {
-    console.log('提交数据:', values);
-    message.success('编辑成功');
-    navigate('/hospital/list');
+  const handleSubmit = (values: HospitalUpdateRequest) => {
+    if (id) {
+      submitUpdate(id, values);
+    }
   };
 
   return (
@@ -35,44 +33,54 @@ const HospitalEdit: React.FC = () => {
         ],
       }}
     >
-      <ProForm
-        onFinish={handleSubmit}
-        layout="vertical"
-        initialValues={formData}
-      >
-        <ProForm.Text
-          name="hospitalName"
-          label="医院名称"
-          rules={[{ required: true, message: '请输入医院名称' }]}
-        />
-        <ProForm.Text
-          name="address"
-          label="地址"
-          rules={[{ required: true, message: '请输入地址' }]}
-        />
-        <ProForm.Text
-          name="phone"
-          label="电话"
-          rules={[{ required: true, message: '请输入电话' }]}
-        />
-        <ProForm.Select
-          name="status"
-          label="状态"
-          options={[
-            { value: '1', label: '启用' },
-            { value: '0', label: '禁用' },
-          ]}
-          rules={[{ required: true, message: '请选择状态' }]}
-        />
-        <ProForm.TextArea
-          name="remark"
-          label="备注"
-          rows={4}
-        />
-        <ProForm.Submit>
-          保存
-        </ProForm.Submit>
-      </ProForm>
+      <Access accessible={access.hasPermission('hospital:edit')}>
+        <ProForm
+          onFinish={handleSubmit}
+          layout="vertical"
+          initialValues={hospitalDetail}
+          loading={detailLoading || updateLoading}
+        >
+          <ProFormText
+            name="name"
+            label="医院名称"
+            rules={[{ required: true, message: '请输入医院名称' }]}
+          />
+          <ProFormText
+            name="code"
+            label="医院编码"
+            rules={[{ required: true, message: '请输入医院编码' }]}
+          />
+          <ProFormText
+            name="address"
+            label="地址"
+            rules={[{ required: true, message: '请输入地址' }]}
+          />
+          <ProFormText
+            name="contact"
+            label="联系人"
+            rules={[{ required: true, message: '请输入联系人' }]}
+          />
+          <ProFormText
+            name="phone"
+            label="电话"
+            rules={[{ required: true, message: '请输入电话' }]}
+          />
+          <ProFormText
+            name="email"
+            label="邮箱"
+            rules={[{ type: 'email', message: '请输入正确的邮箱格式' }]}
+          />
+          <ProFormSelect
+            name="status"
+            label="状态"
+            options={[
+              { value: 1, label: '启用' },
+              { value: 0, label: '禁用' },
+            ]}
+            rules={[{ required: true, message: '请选择状态' }]}
+          />
+        </ProForm>
+      </Access>
     </PageContainer>
   );
 };

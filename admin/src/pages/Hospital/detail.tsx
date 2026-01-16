@@ -1,25 +1,16 @@
-import { PageContainer, Descriptions } from '@ant-design/pro-components';
-import React, { useState, useEffect } from 'react';
+import { PageContainer, ProDescriptions } from '@ant-design/pro-components';
+import React from 'react';
 import { Button } from 'antd';
-import { useNavigate, useParams } from 'umi';
+import { useNavigate, useParams } from '@umijs/max';
+import { Hospital } from '@/services/hospital';
+import useHospitalModel from '@/models/hospital';
 
 const HospitalDetail: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const [detailData, setDetailData] = useState<any>({});
-
-  // 模拟获取数据
-  useEffect(() => {
-    setDetailData({
-      hospitalName: '中心医院',
-      address: '北京市海淀区',
-      phone: '010-12345678',
-      status: '1',
-      createBy: 'admin',
-      createTime: '2026-01-01 10:00:00',
-      remark: '综合医院',
-    });
-  }, [id]);
+  const hospitalModel = useHospitalModel();
+  const { useHospitalDetail } = hospitalModel;
+  const { hospitalDetail, loading } = useHospitalDetail(id);
 
   return (
     <PageContainer
@@ -31,15 +22,17 @@ const HospitalDetail: React.FC = () => {
         ],
       }}
     >
-      <Descriptions column={2} title="医院信息">
-        <Descriptions.Item label="医院名称">{detailData.hospitalName}</Descriptions.Item>
-        <Descriptions.Item label="地址">{detailData.address}</Descriptions.Item>
-        <Descriptions.Item label="电话">{detailData.phone}</Descriptions.Item>
-        <Descriptions.Item label="状态">{detailData.status === '1' ? '启用' : '禁用'}</Descriptions.Item>
-        <Descriptions.Item label="创建人">{detailData.createBy}</Descriptions.Item>
-        <Descriptions.Item label="创建时间">{detailData.createTime}</Descriptions.Item>
-        <Descriptions.Item label="备注">{detailData.remark}</Descriptions.Item>
-      </Descriptions>
+      <ProDescriptions column={2} title="医院信息" loading={loading}>
+        <ProDescriptions.Item label="医院名称">{hospitalDetail?.name}</ProDescriptions.Item>
+        <ProDescriptions.Item label="医院编码">{hospitalDetail?.code}</ProDescriptions.Item>
+        <ProDescriptions.Item label="地址">{hospitalDetail?.address}</ProDescriptions.Item>
+        <ProDescriptions.Item label="联系人">{hospitalDetail?.contact}</ProDescriptions.Item>
+        <ProDescriptions.Item label="电话">{hospitalDetail?.phone}</ProDescriptions.Item>
+        <ProDescriptions.Item label="邮箱">{hospitalDetail?.email}</ProDescriptions.Item>
+        <ProDescriptions.Item label="状态">{hospitalDetail?.status === 1 ? '启用' : '禁用'}</ProDescriptions.Item>
+        <ProDescriptions.Item label="创建时间">{hospitalDetail?.createdAt}</ProDescriptions.Item>
+        <ProDescriptions.Item label="更新时间">{hospitalDetail?.updatedAt}</ProDescriptions.Item>
+      </ProDescriptions>
     </PageContainer>
   );
 };

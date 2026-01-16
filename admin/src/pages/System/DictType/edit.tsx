@@ -1,7 +1,7 @@
-import { PageContainer, ProForm } from '@ant-design/pro-components';
+import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormTextArea } from '@ant-design/pro-components';
 import React, { useState, useEffect } from 'react';
 import { Button, message } from 'antd';
-import { useNavigate, useParams } from 'umi';
+import { useNavigate, useParams } from '@umijs/max';
 
 const DictTypeEdit: React.FC = () => {
   const navigate = useNavigate();
@@ -39,17 +39,17 @@ const DictTypeEdit: React.FC = () => {
         layout="vertical"
         initialValues={formData}
       >
-        <ProForm.Text
+        <ProFormText
           name="dictName"
           label="字典名称"
           rules={[{ required: true, message: '请输入字典名称' }]}
         />
-        <ProForm.Text
+        <ProFormText
           name="dictType"
           label="字典类型"
           rules={[{ required: true, message: '请输入字典类型' }]}
         />
-        <ProForm.Select
+        <ProFormSelect
           name="status"
           label="状态"
           options={[
@@ -58,14 +58,14 @@ const DictTypeEdit: React.FC = () => {
           ]}
           rules={[{ required: true, message: '请选择状态' }]}
         />
-        <ProForm.TextArea
+        <ProFormTextArea
           name="remark"
           label="备注"
           rows={4}
         />
-        <ProForm.Submit>
+        <Button type="primary" htmlType="submit">
           保存
-        </ProForm.Submit>
+        </Button>
       </ProForm>
     </PageContainer>
   );

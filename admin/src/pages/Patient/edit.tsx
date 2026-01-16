@@ -1,4 +1,4 @@
-import { PageContainer, ProForm } from '@ant-design/pro-components';
+import { PageContainer, ProForm, ProFormText, ProFormRadio, ProFormTextArea, ProFormSelect } from '@ant-design/pro-components';
 import { Button, message, Radio } from 'antd';
 import React from 'react';
 import { useModel } from '@umijs/max';
@@ -43,17 +43,17 @@ const PatientEdit: React.FC = () => {
           ],
         }}
       >
-        <ProForm.Item
+        <ProFormText
           name="name"
           label="患者姓名"
           rules={[{ required: true, message: '请输入患者姓名' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="medicalRecordNumber"
           label="病历号"
           rules={[{ required: true, message: '请输入病历号' }]}
         />
-        <ProForm.Item
+        <ProFormRadio
           name="gender"
           label="性别"
           rules={[{ required: true, message: '请选择性别' }]}
@@ -62,34 +62,37 @@ const PatientEdit: React.FC = () => {
             <Radio value={1}>男</Radio>
             <Radio value={2}>女</Radio>
           </Radio.Group>
-        </ProForm.Item>
-        <ProForm.Item
+        </ProFormRadio>
+        <ProFormText
           name="age"
           label="年龄"
           rules={[{ required: true, message: '请输入年龄' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="phone"
           label="联系电话"
           rules={[{ required: true, message: '请输入联系电话' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="idCard"
           label="身份证号"
           rules={[{ required: true, message: '请输入身份证号' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="address"
           label="地址"
         />
-        <ProForm.Item
+        <ProFormTextArea
           name="medicalHistory"
           label="病史"
-          valueType="textarea"
         />
-        <ProForm.Item
+        <ProFormSelect
           name="status"
           label="状态"
+          options={[
+            { value: '1', label: '正常' },
+            { value: '0', label: '禁用' },
+          ]}
         />
       </ProForm>
     </PageContainer>

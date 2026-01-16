@@ -1,4 +1,4 @@
-import { PageContainer, Descriptions } from '@ant-design/pro-components';
+import { PageContainer, ProDescriptions } from '@ant-design/pro-components';
 import React, { useState, useEffect } from 'react';
 import { Button } from 'antd';
 import { useNavigate, useParams } from 'umi';
@@ -11,9 +11,8 @@ const DepartmentDetail: React.FC = () => {
   // 模拟获取数据
   useEffect(() => {
     setDetailData({
-      departmentName: '内科',
-      hospitalId: '1',
-      hospitalName: '中心医院',
+      deptName: '内科',
+      deptCode: 'internal',
       status: '1',
       createBy: 'admin',
       createTime: '2026-01-01 10:00:00',
@@ -31,14 +30,14 @@ const DepartmentDetail: React.FC = () => {
         ],
       }}
     >
-      <Descriptions column={2} title="科室信息">
-        <Descriptions.Item label="科室名称">{detailData.departmentName}</Descriptions.Item>
-        <Descriptions.Item label="所属医院">{detailData.hospitalName}</Descriptions.Item>
-        <Descriptions.Item label="状态">{detailData.status === '1' ? '启用' : '禁用'}</Descriptions.Item>
-        <Descriptions.Item label="创建人">{detailData.createBy}</Descriptions.Item>
-        <Descriptions.Item label="创建时间">{detailData.createTime}</Descriptions.Item>
-        <Descriptions.Item label="备注">{detailData.remark}</Descriptions.Item>
-      </Descriptions>
+      <ProDescriptions column={2} title="科室信息">
+        <ProDescriptions.Item label="科室名称">{detailData.deptName}</ProDescriptions.Item>
+        <ProDescriptions.Item label="科室编码">{detailData.deptCode}</ProDescriptions.Item>
+        <ProDescriptions.Item label="状态">{detailData.status === '1' ? '启用' : '禁用'}</ProDescriptions.Item>
+        <ProDescriptions.Item label="创建人">{detailData.createBy}</ProDescriptions.Item>
+        <ProDescriptions.Item label="创建时间">{detailData.createTime}</ProDescriptions.Item>
+        <ProDescriptions.Item label="备注">{detailData.remark}</ProDescriptions.Item>
+      </ProDescriptions>
     </PageContainer>
   );
 };

@@ -1,7 +1,7 @@
-import { PageContainer, Descriptions } from '@ant-design/pro-components';
+import { PageContainer, ProDescriptions } from '@ant-design/pro-components';
 import React, { useState, useEffect } from 'react';
 import { Button } from 'antd';
-import { useNavigate, useParams } from 'umi';
+import { useNavigate, useParams } from '@umijs/max';
 
 const UserDetail: React.FC = () => {
   const navigate = useNavigate();
@@ -32,16 +32,16 @@ const UserDetail: React.FC = () => {
         ],
       }}
     >
-      <Descriptions column={2} title="用户信息">
-        <Descriptions.Item label="用户名">{detailData.username}</Descriptions.Item>
-        <Descriptions.Item label="真实姓名">{detailData.realName}</Descriptions.Item>
-        <Descriptions.Item label="电话">{detailData.phone}</Descriptions.Item>
-        <Descriptions.Item label="邮箱">{detailData.email}</Descriptions.Item>
-        <Descriptions.Item label="状态">{detailData.status === '1' ? '启用' : '禁用'}</Descriptions.Item>
-        <Descriptions.Item label="创建人">{detailData.createBy}</Descriptions.Item>
-        <Descriptions.Item label="创建时间">{detailData.createTime}</Descriptions.Item>
-        <Descriptions.Item label="备注">{detailData.remark}</Descriptions.Item>
-      </Descriptions>
+      <ProDescriptions column={2} title="用户信息">
+        <ProDescriptions.Item label="用户名">{detailData.username}</ProDescriptions.Item>
+        <ProDescriptions.Item label="真实姓名">{detailData.realName}</ProDescriptions.Item>
+        <ProDescriptions.Item label="电话">{detailData.phone}</ProDescriptions.Item>
+        <ProDescriptions.Item label="邮箱">{detailData.email}</ProDescriptions.Item>
+        <ProDescriptions.Item label="状态">{detailData.status === '1' ? '启用' : '禁用'}</ProDescriptions.Item>
+        <ProDescriptions.Item label="创建人">{detailData.createBy}</ProDescriptions.Item>
+        <ProDescriptions.Item label="创建时间">{detailData.createTime}</ProDescriptions.Item>
+        <ProDescriptions.Item label="备注">{detailData.remark}</ProDescriptions.Item>
+      </ProDescriptions>
     </PageContainer>
   );
 };

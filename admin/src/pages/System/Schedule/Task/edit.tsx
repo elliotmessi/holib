@@ -1,7 +1,7 @@
-import { PageContainer, ProForm } from '@ant-design/pro-components';
+import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormTextArea } from '@ant-design/pro-components';
 import React, { useState, useEffect } from 'react';
 import { Button, message } from 'antd';
-import { useNavigate, useParams } from 'umi';
+import { useNavigate, useParams } from '@umijs/max';
 
 const TaskEdit: React.FC = () => {
   const navigate = useNavigate();
@@ -41,27 +41,27 @@ const TaskEdit: React.FC = () => {
         layout="vertical"
         initialValues={formData}
       >
-        <ProForm.Text
+        <ProFormText
           name="taskName"
           label="任务名称"
           rules={[{ required: true, message: '请输入任务名称' }]}
         />
-        <ProForm.Text
+        <ProFormText
           name="taskGroup"
           label="任务组"
           rules={[{ required: true, message: '请输入任务组' }]}
         />
-        <ProForm.Text
+        <ProFormText
           name="taskCron"
           label="Cron表达式"
           rules={[{ required: true, message: '请输入Cron表达式' }]}
         />
-        <ProForm.Text
+        <ProFormText
           name="taskClass"
           label="任务类"
           rules={[{ required: true, message: '请输入任务类' }]}
         />
-        <ProForm.Select
+        <ProFormSelect
           name="status"
           label="状态"
           options={[
@@ -70,14 +70,14 @@ const TaskEdit: React.FC = () => {
           ]}
           rules={[{ required: true, message: '请选择状态' }]}
         />
-        <ProForm.TextArea
+        <ProFormTextArea
           name="remark"
           label="备注"
           rows={4}
         />
-        <ProForm.Submit>
+        <Button type="primary" htmlType="submit">
           保存
-        </ProForm.Submit>
+        </Button>
       </ProForm>
     </PageContainer>
   );

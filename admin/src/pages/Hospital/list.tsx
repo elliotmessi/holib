@@ -1,41 +1,40 @@
-import { PageContainer, ProTable } from '@ant-design/pro-components';
+import { PageContainer, ProTable, ProColumns } from '@ant-design/pro-components';
 import React from 'react';
-import { Button, message } from 'antd';
+import { Button, Modal } from 'antd';
 import { PlusOutlined, DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
-import { useNavigate } from 'umi';
+import { useNavigate } from '@umijs/max';
+import { Access, useAccess } from '@umijs/max';
+import { Hospital } from '@/services/hospital';
+import useHospitalModel from '@/models/hospital';
 
 const HospitalList: React.FC = () => {
   const navigate = useNavigate();
+  const access = useAccess();
+  const hospitalModel = useHospitalModel();
+  const { useHospitalList, useDeleteHospital } = hospitalModel;
+  const { hospitalList, loading, pagination, refresh } = useHospitalList();
+  const { submitDelete, loading: deleteLoading } = useDeleteHospital({
+    success: () => refresh(),
+  });
 
-  // 模拟数据
-  const dataSource = [
-    {
-      id: '1',
-      hospitalName: '中心医院',
-      address: '北京市海淀区',
-      phone: '010-12345678',
-      status: '1',
-      createBy: 'admin',
-      createTime: '2026-01-01 10:00:00',
-      remark: '综合医院',
-    },
-    {
-      id: '2',
-      hospitalName: '人民医院',
-      address: '北京市东城区',
-      phone: '010-87654321',
-      status: '1',
-      createBy: 'admin',
-      createTime: '2026-01-02 11:00:00',
-      remark: '三甲医院',
-    },
-  ];
+  const handleDelete = (id: string) => {
+    Modal.confirm({
+      title: '确认删除',
+      content: '确定要删除该医院吗？此操作不可恢复。',
+      onOk: () => submitDelete(id),
+    });
+  };
 
-  const columns = [
+  const columns: ProColumns<Hospital>[] = [
     {
       title: '医院名称',
-      dataIndex: 'hospitalName',
-      key: 'hospitalName',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: '医院编码',
+      dataIndex: 'code',
+      key: 'code',
     },
     {
       title: '地址',
@@ -43,35 +42,35 @@ const HospitalList: React.FC = () => {
       key: 'address',
     },
     {
+      title: '联系人',
+      dataIndex: 'contact',
+      key: 'contact',
+    },
+    {
       title: '电话',
       dataIndex: 'phone',
       key: 'phone',
     },
     {
+      title: '邮箱',
+      dataIndex: 'email',
+      key: 'email',
+    },
+    {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => (status === '1' ? '启用' : '禁用'),
-    },
-    {
-      title: '创建人',
-      dataIndex: 'createBy',
-      key: 'createBy',
+      render: (_, { status }) => (status === 1 ? '启用' : '禁用'),
     },
     {
       title: '创建时间',
-      dataIndex: 'createTime',
-      key: 'createTime',
-    },
-    {
-      title: '备注',
-      dataIndex: 'remark',
-      key: 'remark',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
     },
     {
       title: '操作',
       key: 'action',
-      render: (_: any, record: any) => (
+      render: (_: any, record: Hospital) => (
         <div>
           <Button
             type="text"
@@ -80,21 +79,26 @@ const HospitalList: React.FC = () => {
           >
             详情
           </Button>
-          <Button
-            type="text"
-            icon={<EditOutlined />}
-            onClick={() => navigate(`/hospital/edit/${record.id}`)}
-          >
-            编辑
-          </Button>
-          <Button
-            type="text"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => message.success('删除成功')}
-          >
-            删除
-          </Button>
+          <Access accessible={access.hasPermission('hospital:edit')}>
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => navigate(`/hospital/edit/${record.id}`)}
+            >
+              编辑
+            </Button>
+          </Access>
+          <Access accessible={access.hasPermission('hospital:delete')}>
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              loading={deleteLoading}
+              onClick={() => handleDelete(record.id)}
+            >
+              删除
+            </Button>
+          </Access>
         </div>
       ),
     },
@@ -106,23 +110,24 @@ const HospitalList: React.FC = () => {
       header={{
         title: '医院管理',
         extra: [
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => navigate('/hospital/create')}
-          >
-            新建医院
-          </Button>,
+          <Access key="create" accessible={access.hasPermission('hospital:create')}>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => navigate('/hospital/create')}
+            >
+              新建医院
+            </Button>
+          </Access>,
         ],
       }}
     >
       <ProTable
         columns={columns}
-        dataSource={dataSource}
+        dataSource={hospitalList}
         rowKey="id"
-        pagination={{
-          pageSize: 10,
-        }}
+        loading={loading}
+        pagination={pagination}
       />
     </PageContainer>
   );

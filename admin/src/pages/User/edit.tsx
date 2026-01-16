@@ -1,7 +1,7 @@
-import { PageContainer, ProForm } from '@ant-design/pro-components';
+import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormTextArea } from '@ant-design/pro-components';
 import React, { useState, useEffect } from 'react';
 import { Button, message } from 'antd';
-import { useNavigate, useParams } from 'umi';
+import { useNavigate, useParams } from '@umijs/max';
 
 const UserEdit: React.FC = () => {
   const navigate = useNavigate();
@@ -41,32 +41,32 @@ const UserEdit: React.FC = () => {
         layout="vertical"
         initialValues={formData}
       >
-        <ProForm.Text
+        <ProFormText
           name="username"
           label="用户名"
           rules={[{ required: true, message: '请输入用户名' }]}
         />
-        <ProForm.Text
+        <ProFormText
           name="realName"
           label="真实姓名"
           rules={[{ required: true, message: '请输入真实姓名' }]}
         />
-        <ProForm.Password
+        <ProFormText.Password
           name="password"
           label="密码"
           placeholder="不修改请留空"
         />
-        <ProForm.Text
+        <ProFormText
           name="phone"
           label="电话"
           rules={[{ required: true, message: '请输入电话' }]}
         />
-        <ProForm.Text
+        <ProFormText
           name="email"
           label="邮箱"
           rules={[{ required: true, message: '请输入邮箱' }]}
         />
-        <ProForm.Select
+        <ProFormSelect
           name="status"
           label="状态"
           options={[
@@ -75,14 +75,14 @@ const UserEdit: React.FC = () => {
           ]}
           rules={[{ required: true, message: '请选择状态' }]}
         />
-        <ProForm.TextArea
+        <ProFormTextArea
           name="remark"
           label="备注"
           rows={4}
         />
-        <ProForm.Submit>
+        <Button type="primary" htmlType="submit">
           保存
-        </ProForm.Submit>
+        </Button>
       </ProForm>
     </PageContainer>
   );

@@ -1,7 +1,7 @@
-import { PageContainer, ProForm } from '@ant-design/pro-components';
+import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormTextArea } from '@ant-design/pro-components';
 import React from 'react';
 import { Button, message } from 'antd';
-import { useNavigate } from 'umi';
+import { useNavigate } from '@umijs/max';
 
 const EmailSend: React.FC = () => {
   const navigate = useNavigate();
@@ -22,25 +22,25 @@ const EmailSend: React.FC = () => {
         onFinish={handleSubmit}
         layout="vertical"
       >
-        <ProForm.Text
+        <ProFormText
           name="to"
           label="收件人"
           rules={[{ required: true, message: '请输入收件人邮箱' }]}
         />
-        <ProForm.Text
+        <ProFormText
           name="subject"
           label="主题"
           rules={[{ required: true, message: '请输入邮件主题' }]}
         />
-        <ProForm.TextArea
+        <ProFormTextArea
           name="content"
           label="邮件内容"
           rows={8}
           rules={[{ required: true, message: '请输入邮件内容' }]}
         />
-        <ProForm.Submit>
+        <Button type="primary" htmlType="submit">
           发送邮件
-        </ProForm.Submit>
+        </Button>
       </ProForm>
     </PageContainer>
   );

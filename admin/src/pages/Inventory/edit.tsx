@@ -1,4 +1,4 @@
-import { PageContainer, ProForm } from '@ant-design/pro-components';
+import { PageContainer, ProForm, ProFormText, ProFormSelect } from '@ant-design/pro-components';
 import { Button, message } from 'antd';
 import React from 'react';
 import { useModel } from '@umijs/max';
@@ -43,23 +43,23 @@ const InventoryEdit: React.FC = () => {
           ],
         }}
       >
-        <ProForm.Item
+        <ProFormText
           name="minQuantity"
           label="最低库存"
           rules={[{ required: true, message: '请输入最低库存' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="price"
           label="价格"
           rules={[{ required: true, message: '请输入价格' }]}
         />
-        <ProForm.Item
+        <ProFormSelect
           name="status"
           label="状态"
-          valueEnum={{
-            1: { text: '正常' },
-            0: { text: '禁用' },
-          }}
+          options={[
+            { value: '1', label: '正常' },
+            { value: '0', label: '禁用' },
+          ]}
         />
       </ProForm>
     </PageContainer>

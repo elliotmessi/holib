@@ -1,4 +1,4 @@
-import { PageContainer, ProForm } from '@ant-design/pro-components';
+import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio } from '@ant-design/pro-components';
 import { Button, message, Radio } from 'antd';
 import React from 'react';
 import { useModel } from '@umijs/max';
@@ -36,17 +36,17 @@ const DoctorCreate: React.FC = () => {
           ],
         }}
       >
-        <ProForm.Item
+        <ProFormText
           name="name"
           label="医生姓名"
           rules={[{ required: true, message: '请输入医生姓名' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="code"
           label="医生编码"
           rules={[{ required: true, message: '请输入医生编码' }]}
         />
-        <ProForm.Item
+        <ProFormRadio
           name="gender"
           label="性别"
           initialValue={1}
@@ -56,32 +56,32 @@ const DoctorCreate: React.FC = () => {
             <Radio value={1}>男</Radio>
             <Radio value={2}>女</Radio>
           </Radio.Group>
-        </ProForm.Item>
-        <ProForm.Item
+        </ProFormRadio>
+        <ProFormText
           name="phone"
           label="联系电话"
           rules={[{ required: true, message: '请输入联系电话' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="email"
           label="邮箱"
         />
-        <ProForm.Item
+        <ProFormSelect
           name="departmentId"
           label="所属科室"
           rules={[{ required: true, message: '请选择所属科室' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="title"
           label="职称"
           rules={[{ required: true, message: '请输入职称' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="specialty"
           label="专长"
           rules={[{ required: true, message: '请输入专长' }]}
         />
-        <ProForm.Item
+        <ProFormSelect
           name="status"
           label="状态"
           initialValue={1}

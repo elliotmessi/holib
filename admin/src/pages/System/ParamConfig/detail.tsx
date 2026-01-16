@@ -1,4 +1,4 @@
-import { PageContainer, Descriptions } from '@ant-design/pro-components';
+import { PageContainer, ProDescriptions } from '@ant-design/pro-components';
 import React, { useState, useEffect } from 'react';
 import { Button } from 'antd';
 import { useNavigate, useParams } from 'umi';
@@ -31,15 +31,15 @@ const ParamConfigDetail: React.FC = () => {
         ],
       }}
     >
-      <Descriptions column={2} title="参数信息">
-        <Descriptions.Item label="参数名称">{detailData.paramName}</Descriptions.Item>
-        <Descriptions.Item label="参数键">{detailData.paramKey}</Descriptions.Item>
-        <Descriptions.Item label="参数值">{detailData.paramValue}</Descriptions.Item>
-        <Descriptions.Item label="状态">{detailData.status === '1' ? '启用' : '禁用'}</Descriptions.Item>
-        <Descriptions.Item label="创建人">{detailData.createBy}</Descriptions.Item>
-        <Descriptions.Item label="创建时间">{detailData.createTime}</Descriptions.Item>
-        <Descriptions.Item label="备注">{detailData.remark}</Descriptions.Item>
-      </Descriptions>
+      <ProDescriptions column={2} title="参数信息">
+        <ProDescriptions.Item label="参数名称">{detailData.paramName}</ProDescriptions.Item>
+        <ProDescriptions.Item label="参数键">{detailData.paramKey}</ProDescriptions.Item>
+        <ProDescriptions.Item label="参数值">{detailData.paramValue}</ProDescriptions.Item>
+        <ProDescriptions.Item label="状态">{detailData.status === '1' ? '启用' : '禁用'}</ProDescriptions.Item>
+        <ProDescriptions.Item label="创建人">{detailData.createBy}</ProDescriptions.Item>
+        <ProDescriptions.Item label="创建时间">{detailData.createTime}</ProDescriptions.Item>
+        <ProDescriptions.Item label="备注">{detailData.remark}</ProDescriptions.Item>
+      </ProDescriptions>
     </PageContainer>
   );
 };

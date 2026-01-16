@@ -1,4 +1,4 @@
-import { PageContainer, ProForm } from '@ant-design/pro-components';
+import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormDatePicker, ProFormTextArea } from '@ant-design/pro-components';
 import { Button, message } from 'antd';
 import React from 'react';
 import { useModel } from '@umijs/max';
@@ -36,45 +36,43 @@ const InventoryInbound: React.FC = () => {
           ],
         }}
       >
-        <ProForm.Item
+        <ProFormSelect
           name="drugId"
           label="药品"
           rules={[{ required: true, message: '请选择药品' }]}
         />
-        <ProForm.Item
+        <ProFormSelect
           name="pharmacyId"
           label="药房"
           rules={[{ required: true, message: '请选择药房' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="batchNo"
           label="批次号"
           rules={[{ required: true, message: '请输入批次号' }]}
         />
-        <ProForm.Item
+        <ProFormDatePicker
           name="expirationDate"
           label="有效期"
           rules={[{ required: true, message: '请选择有效期' }]}
-          valueType="date"
         />
-        <ProForm.Item
+        <ProFormText
           name="quantity"
           label="入库数量"
           rules={[{ required: true, message: '请输入入库数量' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="price"
           label="入库价格"
           rules={[{ required: true, message: '请输入入库价格' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="supplier"
           label="供应商"
         />
-        <ProForm.Item
+        <ProFormTextArea
           name="remark"
           label="备注"
-          valueType="textarea"
         />
       </ProForm>
     </PageContainer>

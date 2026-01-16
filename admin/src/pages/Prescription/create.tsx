@@ -1,4 +1,4 @@
-import { PageContainer, ProForm } from '@ant-design/pro-components';
+import { PageContainer, ProForm, ProFormText, ProFormSelect } from '@ant-design/pro-components';
 import { Button, message } from 'antd';
 import React from 'react';
 import { useModel } from '@umijs/max';
@@ -36,22 +36,22 @@ const PrescriptionCreate: React.FC = () => {
           ],
         }}
       >
-        <ProForm.Item
+        <ProFormSelect
           name="patientId"
           label="患者"
           rules={[{ required: true, message: '请选择患者' }]}
         />
-        <ProForm.Item
+        <ProFormSelect
           name="departmentId"
           label="所属科室"
           rules={[{ required: true, message: '请选择科室' }]}
         />
-        <ProForm.Item
+        <ProFormText
           name="diagnosis"
           label="诊断"
           rules={[{ required: true, message: '请输入诊断' }]}
         />
-        <ProForm.Item
+        <ProFormSelect
           name="prescriptionDrugs"
           label="处方药品"
           rules={[{ required: true, message: '请添加药品' }]}
