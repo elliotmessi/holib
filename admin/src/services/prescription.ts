@@ -1,10 +1,4 @@
-import { createAlova } from "alova"
-import fetch from "alova/fetch"
-
-const alovaInstance = createAlova({
-  baseURL: "/api/v1",
-  requestAdapter: fetch(),
-})
+import http from "@/utils/http"
 
 export type PrescriptionDrug = {
   drugId: string
@@ -68,48 +62,23 @@ export type PrescriptionUpdateRequest = {
   status?: string
 }
 
-export const prescription = {
-  // 获取处方列表
-  getList: (params: PrescriptionQueryParams) => {
-    return alovaInstance.Get("/prescriptions", {
-      params,
-    })
-  },
-
-  // 获取处方详情
-  getDetail: (id: string) => {
-    return alovaInstance.Get(`/prescriptions/${id}`)
-  },
-
-  // 创建处方
-  create: (data: PrescriptionCreateRequest) => {
-    return alovaInstance.Post("/prescriptions", data)
-  },
-
-  // 更新处方
-  update: (id: string, data: PrescriptionUpdateRequest) => {
-    return alovaInstance.Put(`/prescriptions/${id}`, data)
-  },
-
-  // 删除处方
-  delete: (id: string) => {
-    return alovaInstance.Delete(`/prescriptions/${id}`)
-  },
-
-  // 批量删除处方
-  batchDelete: (ids: string[]) => {
-    return alovaInstance.Delete("/prescriptions", {
-      params: { ids: ids.join(",") },
-    })
-  },
-
-  // 审核处方
-  review: (id: string, data: { status: string; reviewOpinion?: string }) => {
-    return alovaInstance.Put(`/prescriptions/${id}/review`, data)
-  },
-
-  // 取消处方
-  cancel: (id: string) => {
-    return alovaInstance.Post(`/prescriptions/${id}/cancel`)
-  },
+export type PrescriptionReviewRequest = {
+  status: string
+  reviewOpinion?: string
 }
+
+export const getPrescriptionList = (params: PrescriptionQueryParams) => http.get<{ list: Prescription[]; total: number }>("/prescriptions", params)
+
+export const getPrescriptionById = (id: string) => http.get<Prescription>(`/prescriptions/${id}`)
+
+export const createPrescription = (data: PrescriptionCreateRequest) => http.post<Prescription>("/prescriptions", data)
+
+export const updatePrescription = (id: string, data: PrescriptionUpdateRequest) => http.put<Prescription>(`/prescriptions/${id}`, data)
+
+export const deletePrescription = (id: string) => http.delete(`/prescriptions/${id}`)
+
+export const batchDeletePrescription = (ids: string[]) => http.delete("/prescriptions", { data: { ids } })
+
+export const reviewPrescription = (id: string, data: PrescriptionReviewRequest) => http.put<Prescription>(`/prescriptions/${id}/review`, data)
+
+export const cancelPrescription = (id: string) => http.post(`/prescriptions/${id}/cancel`)

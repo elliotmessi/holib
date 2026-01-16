@@ -1,6 +1,6 @@
 import { useRequest, usePagination } from "alova/client"
 import { message } from "antd"
-import { prescription, PrescriptionQueryParams } from "@/services/prescription"
+import { getPrescriptionList, getPrescriptionById, createPrescription, updatePrescription, deletePrescription, batchDeletePrescription, reviewPrescription, cancelPrescription, PrescriptionQueryParams, PrescriptionCreateRequest, PrescriptionUpdateRequest, PrescriptionReviewRequest } from "@/services/prescription"
 
 export default () => {
   // 处方列表
@@ -13,7 +13,7 @@ export default () => {
       fetching: loading,
       refresh,
       reload,
-    } = usePagination((page, pageSize) => prescription.getList({ ...params, page, pageSize }), {
+    } = usePagination((page, pageSize) => getPrescriptionList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
       data: (response: any) => response?.list || [],
@@ -39,7 +39,7 @@ export default () => {
 
   // 获取处方详情
   const usePrescriptionDetail = (id?: string) => {
-    const { data, loading, send } = useRequest(() => prescription.getDetail(id || ""), {
+    const { data, loading, send } = useRequest(() => getPrescriptionById(id || ""), {
       immediate: !!id,
     })
 
@@ -60,7 +60,7 @@ export default () => {
       fetching: loading,
       refresh,
       reload,
-    } = usePagination((page, pageSize) => prescription.getList({ ...params, page, pageSize, filter: "status:eq:pending_review" }), {
+    } = usePagination((page, pageSize) => getPrescriptionList({ ...params, page, pageSize, filter: "status:eq:pending_review" }), {
       initialPage: 1,
       initialPageSize: 10,
       data: (response: any) => response?.list || [],
@@ -87,7 +87,7 @@ export default () => {
   // 审核处方
   const useReviewPrescription = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, status: string, reviewOpinion?: string) => prescription.review(id, { status, reviewOpinion }), {
+    const { send, loading } = useRequest((id: string, data: PrescriptionReviewRequest) => reviewPrescription(id, data), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -99,8 +99,8 @@ export default () => {
         error()
       })
 
-    const submitReview = (id: string, status: string, reviewOpinion?: string) => {
-      send(id, status, reviewOpinion)
+    const submitReview = (id: string, data: PrescriptionReviewRequest) => {
+      send(id, data)
     }
 
     return {
@@ -112,7 +112,7 @@ export default () => {
   // 取消处方
   const useCancelPrescription = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(prescription.cancel, {
+    const { send, loading } = useRequest((id: string) => cancelPrescription(id), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -137,7 +137,7 @@ export default () => {
   // 创建处方
   const useCreatePrescription = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(prescription.create, {
+    const { send, loading } = useRequest(createPrescription, {
       immediate: false,
     })
       .onSuccess(() => {
@@ -149,7 +149,7 @@ export default () => {
         error()
       })
 
-    const submitCreate = (data: any) => {
+    const submitCreate = (data: PrescriptionCreateRequest) => {
       send(data)
     }
 
@@ -162,7 +162,7 @@ export default () => {
   // 更新处方
   const useUpdatePrescription = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: any) => prescription.update(id, data), {
+    const { send, loading } = useRequest((id: string, data: PrescriptionUpdateRequest) => updatePrescription(id, data), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -174,7 +174,7 @@ export default () => {
         error()
       })
 
-    const submitUpdate = (id: string, data: any) => {
+    const submitUpdate = (id: string, data: PrescriptionUpdateRequest) => {
       send(id, data)
     }
 
@@ -187,7 +187,7 @@ export default () => {
   // 删除处方
   const useDeletePrescription = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(prescription.delete, {
+    const { send, loading } = useRequest((id: string) => deletePrescription(id), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -212,7 +212,7 @@ export default () => {
   // 批量删除处方
   const useBatchDeletePrescription = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((ids: string[]) => prescription.batchDelete(ids), {
+    const { send, loading } = useRequest((ids: string[]) => batchDeletePrescription(ids), {
       immediate: false,
     })
       .onSuccess(() => {

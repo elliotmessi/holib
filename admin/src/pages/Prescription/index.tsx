@@ -251,37 +251,25 @@ const PrescriptionList: React.FC = () => {
           prescriptionDetail && (
             <div>
               <Descriptions column={2} bordered>
-                <Descriptions.Item label="处方编号">{prescriptionDetail.code}</Descriptions.Item>
-                <Descriptions.Item label="患者姓名">{prescriptionDetail.patientName}</Descriptions.Item>
-                <Descriptions.Item label="医生姓名">{prescriptionDetail.doctorName}</Descriptions.Item>
-                <Descriptions.Item label="所属科室">{prescriptionDetail.departmentName}</Descriptions.Item>
+                <Descriptions.Item label="处方编号">{prescriptionDetail.prescriptionNumber}</Descriptions.Item>
+                <Descriptions.Item label="患者姓名">{prescriptionDetail.patient?.name}</Descriptions.Item>
+                <Descriptions.Item label="医生姓名">{prescriptionDetail.doctor?.name}</Descriptions.Item>
+                <Descriptions.Item label="所属科室">{prescriptionDetail.department?.name}</Descriptions.Item>
                 <Descriptions.Item label="诊断" span={2}>{prescriptionDetail.diagnosis}</Descriptions.Item>
                 <Descriptions.Item label="总金额">¥{prescriptionDetail.totalAmount.toFixed(2)}</Descriptions.Item>
                 <Descriptions.Item label="状态">
                   <Tag color={
-                    prescriptionDetail.status === 0 ? 'blue' :
-                    prescriptionDetail.status === 1 ? 'green' :
-                    prescriptionDetail.status === 2 ? 'red' : 'default'
+                    prescriptionDetail.status === 'pending_review' ? 'blue' :
+                    prescriptionDetail.status === 'approved' ? 'green' :
+                    prescriptionDetail.status === 'rejected' ? 'red' : 'default'
                   }>
                     {
-                      prescriptionDetail.status === 0 ? '待审核' :
-                      prescriptionDetail.status === 1 ? '已通过' :
-                      prescriptionDetail.status === 2 ? '已拒绝' : '已取消'
+                      prescriptionDetail.status === 'pending_review' ? '待审核' :
+                      prescriptionDetail.status === 'approved' ? '已通过' :
+                      prescriptionDetail.status === 'rejected' ? '已拒绝' : '已取消'
                     }
                   </Tag>
                 </Descriptions.Item>
-                <Descriptions.Item label="审核状态">
-                  <Tag color={
-                    prescriptionDetail.reviewStatus === 0 ? 'blue' : 'green'
-                  }>
-                    {
-                      prescriptionDetail.reviewStatus === 0 ? '待审核' : '已审核'
-                    }
-                  </Tag>
-                </Descriptions.Item>
-                {prescriptionDetail.reviewOpinion && (
-                  <Descriptions.Item label="审核意见" span={2}>{prescriptionDetail.reviewOpinion}</Descriptions.Item>
-                )}
                 <Descriptions.Item label="创建时间">{prescriptionDetail.createdAt}</Descriptions.Item>
                 <Descriptions.Item label="更新时间">{prescriptionDetail.updatedAt}</Descriptions.Item>
               </Descriptions>
@@ -307,7 +295,10 @@ const PrescriptionList: React.FC = () => {
             form={reviewForm}
             layout="vertical"
             onFinish={(values) => {
-              submitReview(selectedPrescription.id, values.reviewStatus, values.reviewOpinion);
+              submitReview(selectedPrescription.id, {
+                status: values.reviewStatus,
+                reviewOpinion: values.reviewOpinion
+              });
             }}
           >
             <ProDescriptions column={2} title="处方信息">

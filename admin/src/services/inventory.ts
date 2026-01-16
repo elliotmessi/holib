@@ -1,10 +1,4 @@
-import { createAlova } from "alova"
-import fetch from "alova/fetch"
-
-const alovaInstance = createAlova({
-  baseURL: "/api/v1",
-  requestAdapter: fetch(),
-})
+import http from "@/utils/http"
 
 export type Inventory = {
   inventoryId: string
@@ -86,50 +80,18 @@ export type InventoryOutboundRequest = {
   referenceId?: string
 }
 
-export const inventory = {
-  // 获取库存列表
-  getList: (params: InventoryQueryParams) => {
-    return alovaInstance.Get("/inventory", {
-      params,
-    })
-  },
+export const getInventoryList = (params: InventoryQueryParams) => http.get<{ list: Inventory[]; total: number }>("/inventory", params)
 
-  // 获取库存详情
-  getDetail: (id: string) => {
-    return alovaInstance.Get(`/inventory/${id}`)
-  },
+export const getInventoryById = (id: string) => http.get<Inventory>(`/inventory/${id}`)
 
-  // 更新库存
-  update: (id: string, data: InventoryUpdateRequest) => {
-    return alovaInstance.Put(`/inventory/${id}`, data)
-  },
+export const updateInventory = (id: string, data: InventoryUpdateRequest) => http.put<Inventory>(`/inventory/${id}`, data)
 
-  // 删除库存
-  delete: (id: string) => {
-    return alovaInstance.Delete(`/inventory/${id}`)
-  },
+export const deleteInventory = (id: string) => http.delete(`/inventory/${id}`)
 
-  // 批量删除库存
-  batchDelete: (ids: string[]) => {
-    return alovaInstance.Delete("/inventory", {
-      params: { ids: ids.join(",") },
-    })
-  },
+export const batchDeleteInventory = (ids: string[]) => http.delete("/inventory", { data: { ids } })
 
-  // 药品入库
-  inbound: (data: InventoryInboundRequest) => {
-    return alovaInstance.Post("/inventory/inbound", data)
-  },
+export const inventoryInbound = (data: InventoryInboundRequest) => http.post("/inventory/inbound", data)
 
-  // 药品出库
-  outbound: (data: InventoryOutboundRequest) => {
-    return alovaInstance.Post("/inventory/outbound", data)
-  },
+export const inventoryOutbound = (data: InventoryOutboundRequest) => http.post("/inventory/outbound", data)
 
-  // 查询出入库记录
-  getTransactions: (params: InventoryQueryParams) => {
-    return alovaInstance.Get("/inventory/transactions", {
-      params,
-    })
-  },
-}
+export const getInventoryTransactions = (params: InventoryQueryParams) => http.get<{ list: any[]; total: number }>("/inventory/transactions", params)

@@ -1,6 +1,6 @@
 import { useRequest, usePagination } from "alova/client"
 import { message } from "antd"
-import { inventory, InventoryQueryParams, InventoryUpdateRequest, InventoryInboundRequest, InventoryOutboundRequest } from "@/services/inventory"
+import { getInventoryList, getInventoryById, updateInventory, deleteInventory, batchDeleteInventory, inventoryInbound, inventoryOutbound, getInventoryTransactions, InventoryQueryParams, InventoryUpdateRequest, InventoryInboundRequest, InventoryOutboundRequest } from "@/services/inventory"
 
 export default () => {
   // 库存列表
@@ -13,7 +13,7 @@ export default () => {
       fetching: loading,
       refresh,
       reload,
-    } = usePagination((page, pageSize) => inventory.getList({ ...params, page, pageSize }), {
+    } = usePagination((page, pageSize) => getInventoryList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
       data: (response: any) => response?.list || [],
@@ -39,7 +39,7 @@ export default () => {
 
   // 获取库存详情
   const useInventoryDetail = (id?: string) => {
-    const { data, loading, send } = useRequest(() => inventory.getDetail(id || ""), {
+    const { data, loading, send } = useRequest(() => getInventoryById(id || ""), {
       immediate: !!id,
     })
 
@@ -60,7 +60,7 @@ export default () => {
       fetching: loading,
       refresh,
       reload,
-    } = usePagination((page, pageSize) => inventory.getList({ ...params, page, pageSize, filter: "stockLevel:lt:minThreshold" }), {
+    } = usePagination((page, pageSize) => getInventoryList({ ...params, page, pageSize, filter: "stockLevel:lt:minThreshold" }), {
       initialPage: 1,
       initialPageSize: 10,
       data: (response: any) => response?.list || [],
@@ -94,7 +94,7 @@ export default () => {
       fetching: loading,
       refresh,
       reload,
-    } = usePagination((page, pageSize) => inventory.getList({ ...params, page, pageSize, filter: 'expiring:true' }), {
+    } = usePagination((page, pageSize) => getInventoryList({ ...params, page, pageSize, filter: 'expiring:true' }), {
       initialPage: 1,
       initialPageSize: 10,
       data: (response: any) => response?.list || [],
@@ -121,7 +121,7 @@ export default () => {
   // 更新库存
   const useUpdateInventory = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: InventoryUpdateRequest) => inventory.update(id, data), {
+    const { send, loading } = useRequest((id: string, data: InventoryUpdateRequest) => updateInventory(id, data), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -146,7 +146,7 @@ export default () => {
   // 库存入库
   const useInventoryInbound = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(inventory.inbound, {
+    const { send, loading } = useRequest(inventoryInbound, {
       immediate: false,
     })
       .onSuccess(() => {
@@ -171,7 +171,7 @@ export default () => {
   // 库存出库
   const useInventoryOutbound = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(inventory.outbound, {
+    const { send, loading } = useRequest(inventoryOutbound, {
       immediate: false,
     })
       .onSuccess(() => {
@@ -196,7 +196,7 @@ export default () => {
   // 删除库存
   const useDeleteInventory = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string) => inventory.delete(id), {
+    const { send, loading } = useRequest((id: string) => deleteInventory(id), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -221,7 +221,7 @@ export default () => {
   // 批量删除库存
   const useBatchDeleteInventory = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((ids: string[]) => inventory.batchDelete(ids), {
+    const { send, loading } = useRequest((ids: string[]) => batchDeleteInventory(ids), {
       immediate: false,
     })
       .onSuccess(() => {

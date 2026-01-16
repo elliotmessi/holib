@@ -1,87 +1,152 @@
-import { drugs } from "@/services/drug"
+import { useRequest, usePagination } from "alova/client"
+import { message } from "antd"
+import { getDrugList, getDrugById, createDrug, updateDrug, deleteDrug, batchDeleteDrug, DrugQueryParams, DrugCreateRequest, DrugUpdateRequest } from "@/services/drug"
 
 export default () => {
   // 药品列表
-  const useDrugList = () => {
+  const useDrugList = (params?: DrugQueryParams) => {
+    const {
+      data: drugList,
+      total,
+      page,
+      pageSize,
+      fetching: loading,
+      refresh,
+      reload,
+    } = usePagination((page, pageSize) => getDrugList({ ...params, page, pageSize }), {
+      initialPage: 1,
+      initialPageSize: 10,
+      data: (response: any) => response?.list || [],
+      total: (response: any) => response?.total || 0,
+    })
+
     return {
-      drugList: [],
-      total: 0,
-      loading: false,
+      drugList: drugList || [],
+      total: total || 0,
+      loading,
       pagination: {
-        current: 1,
-        pageSize: 20,
-        onChange: () => {},
-        onShowSizeChange: () => {},
+        page,
+        pageSize,
+        total: total || 0,
+        onChange: (newPage: number, newPageSize: number) => {
+          reload()
+        },
       },
-      refresh: async () => {},
+      refresh,
+      reload,
     }
   }
 
-  // 药品详情
-  const useDrugDetail = (id: string) => {
+  // 获取药品详情
+  const useDrugDetail = (id?: string) => {
+    const { data, loading, send } = useRequest(() => getDrugById(id || ""), {
+      immediate: !!id,
+    })
+
     return {
-      drugDetail: {},
-      loading: false,
+      drugDetail: data,
+      loading,
+      fetchDetail: send,
     }
   }
 
   // 创建药品
-  const useCreateDrug = (options: { success?: () => void }) => {
+  const useCreateDrug = (options?: { success?: () => void; error?: () => void }) => {
+    const { success = () => {}, error = () => {} } = options || {}
+    const { send, loading } = useRequest(createDrug, {
+      immediate: false,
+    })
+      .onSuccess(() => {
+        message.success("药品创建成功")
+        success()
+      })
+      .onError(() => {
+        message.error("药品创建失败")
+        error()
+      })
+
+    const submitCreate = (data: DrugCreateRequest) => {
+      send(data)
+    }
+
     return {
-      submitCreate: async (data: any) => {
-        try {
-          await drugs.create(data)
-          options.success?.()
-        } catch (error) {
-          console.error("创建药品失败:", error)
-        }
-      },
-      loading: false,
+      submitCreate,
+      loading,
     }
   }
 
   // 更新药品
-  const useUpdateDrug = (options: { success?: () => void }) => {
+  const useUpdateDrug = (options?: { success?: () => void; error?: () => void }) => {
+    const { success = () => {}, error = () => {} } = options || {}
+    const { send, loading } = useRequest(updateDrug, {
+      immediate: false,
+    })
+      .onSuccess(() => {
+        message.success("药品更新成功")
+        success()
+      })
+      .onError(() => {
+        message.error("药品更新失败")
+        error()
+      })
+
+    const submitUpdate = (id: string, data: DrugUpdateRequest) => {
+      send(id, data)
+    }
+
     return {
-      submitUpdate: async (id: string, data: any) => {
-        try {
-          await drugs.update(id, data)
-          options.success?.()
-        } catch (error) {
-          console.error("更新药品失败:", error)
-        }
-      },
-      loading: false,
+      submitUpdate,
+      loading,
     }
   }
 
   // 删除药品
-  const useDeleteDrug = (options: { success?: () => void }) => {
+  const useDeleteDrug = (options?: { success?: () => void; error?: () => void }) => {
+    const { success = () => {}, error = () => {} } = options || {}
+    const { send, loading } = useRequest(deleteDrug, {
+      immediate: false,
+    })
+      .onSuccess(() => {
+        message.success("药品删除成功")
+        success()
+      })
+      .onError(() => {
+        message.error("药品删除失败")
+        error()
+      })
+
+    const submitDelete = (id: string) => {
+      send(id)
+    }
+
     return {
-      submitDelete: async (id: string) => {
-        try {
-          await drugs.delete(id)
-          options.success?.()
-        } catch (error) {
-          console.error("删除药品失败:", error)
-        }
-      },
-      loading: false,
+      submitDelete,
+      loading,
     }
   }
 
   // 批量删除药品
-  const useBatchDeleteDrug = (options: { success?: () => void }) => {
+  const useBatchDeleteDrug = (options?: { success?: () => void; error?: () => void }) => {
+    const { success = () => {}, error = () => {} } = options || {}
+    const { send, loading } = useRequest(batchDeleteDrug, {
+      immediate: false,
+    })
+      .onSuccess(() => {
+        message.success("药品批量删除成功")
+        success()
+      })
+      .onError(() => {
+        message.error("药品批量删除失败")
+        error()
+      })
+
+    const submitBatchDelete = (ids: string[]) => {
+      send(ids)
+    }
+
     return {
-      submitBatchDelete: async (ids: string[]) => {
-        try {
-          await drugs.batchDelete(ids)
-          options.success?.()
-        } catch (error) {
-          console.error("批量删除药品失败:", error)
-        }
-      },
-      loading: false,
+      submitBatchDelete,
+      loading,
     }
   }
 

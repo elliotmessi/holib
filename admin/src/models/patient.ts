@@ -1,6 +1,6 @@
 import { useRequest, usePagination } from "alova/client"
 import { message } from "antd"
-import { patient, PatientQueryParams, PatientCreateRequest, PatientUpdateRequest } from "@/services/patient"
+import { getPatientList, getPatientById, createPatient, updatePatient, deletePatient, batchDeletePatient, PatientQueryParams, PatientCreateRequest, PatientUpdateRequest } from "@/services/patient"
 
 export default () => {
   // 患者列表
@@ -13,7 +13,7 @@ export default () => {
       fetching: loading,
       refresh,
       reload,
-    } = usePagination((page, pageSize) => patient.getList({ ...params, page, pageSize }), {
+    } = usePagination((page, pageSize) => getPatientList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
       data: (response: any) => response?.list || [],
@@ -39,7 +39,7 @@ export default () => {
 
   // 获取患者详情
   const usePatientDetail = (id?: string) => {
-    const { data, loading, send } = useRequest(() => patient.getDetail(id || ""), {
+    const { data, loading, send } = useRequest(() => getPatientById(id || ""), {
       immediate: !!id,
     })
 
@@ -53,7 +53,7 @@ export default () => {
   // 创建患者
   const useCreatePatient = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(patient.create, {
+    const { send, loading } = useRequest(createPatient, {
       immediate: false,
     })
       .onSuccess(() => {
@@ -78,7 +78,7 @@ export default () => {
   // 更新患者
   const useUpdatePatient = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: PatientUpdateRequest) => patient.update(id, data), {
+    const { send, loading } = useRequest((id: string, data: PatientUpdateRequest) => updatePatient(id, data), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -103,7 +103,7 @@ export default () => {
   // 删除患者
   const useDeletePatient = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(patient.delete, {
+    const { send, loading } = useRequest(deletePatient, {
       immediate: false,
     })
       .onSuccess(() => {
@@ -128,7 +128,7 @@ export default () => {
   // 批量删除患者
   const useBatchDeletePatient = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(patient.batchDelete, {
+    const { send, loading } = useRequest(batchDeletePatient, {
       immediate: false,
     })
       .onSuccess(() => {

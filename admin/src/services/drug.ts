@@ -1,61 +1,91 @@
-import { createAlova } from "alova"
-import fetch from "alova/fetch"
+import http from "@/utils/http"
 
-const alovaInstance = createAlova({
-  baseURL: "/api/v1",
-  requestAdapter: fetch(),
-})
-
-export const drugs = {
-  // 获取药品列表
-  getList: (params: any) => {
-    return alovaInstance.Get("/drugs", {
-      params,
-    })
-  },
-
-  // 获取药品详情
-  getDetail: (id: string) => {
-    return alovaInstance.Get(`/drugs/${id}`)
-  },
-
-  // 创建药品
-  create: (data: any) => {
-    return alovaInstance.Post("/drugs", data)
-  },
-
-  // 更新药品
-  update: (id: string, data: any) => {
-    return alovaInstance.Put(`/drugs/${id}`, data)
-  },
-
-  // 删除药品
-  delete: (id: string) => {
-    return alovaInstance.Delete(`/drugs/${id}`)
-  },
-
-  // 批量删除药品
-  batchDelete: (ids: string[]) => {
-    return alovaInstance.Delete("/drugs", {
-      params: { ids: ids.join(",") },
-    })
-  },
-
-  // 导入药品
-  import: (file: File) => {
-    const formData = new FormData()
-    formData.append("file", file)
-    return alovaInstance.Post("/drugs/import", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    })
-  },
-
-  // 导出药品
-  export: (params: any) => {
-    return alovaInstance.Get("/drugs/export", {
-      params,
-    })
-  },
+export type Drug = {
+  id: string
+  genericName: string
+  tradeName: string
+  specification: string
+  dosageForm: string
+  manufacturer: string
+  approvalNumber: string
+  drugType: string
+  usePurpose: string
+  usageMethod: string
+  validFrom: string
+  validTo: string
+  retailPrice: number
+  wholesalePrice: number
+  medicalInsuranceRate: number
+  status: string
+  createdAt: string
+  updatedAt: string
 }
+
+export type DrugQueryParams = {
+  page?: number
+  pageSize?: number
+  sort?: string
+  order?: string
+  filter?: string
+  keyword?: string
+}
+
+export type DrugCreateRequest = {
+  genericName: string
+  tradeName?: string
+  specification: string
+  dosageForm: string
+  manufacturer: string
+  approvalNumber: string
+  drugType: string
+  usePurpose?: string
+  usageMethod?: string
+  validFrom: string
+  validTo: string
+  retailPrice: number
+  wholesalePrice: number
+  medicalInsuranceRate?: number
+  status?: string
+}
+
+export type DrugUpdateRequest = {
+  genericName?: string
+  tradeName?: string
+  specification?: string
+  dosageForm?: string
+  manufacturer?: string
+  approvalNumber?: string
+  drugType?: string
+  usePurpose?: string
+  usageMethod?: string
+  validFrom?: string
+  validTo?: string
+  retailPrice?: number
+  wholesalePrice?: number
+  medicalInsuranceRate?: number
+  status?: string
+}
+
+export const getDrugList = (params: DrugQueryParams) => http.get<{ list: Drug[]; total: number }>("/drugs", params)
+
+export const getDrugById = (id: string) => http.get<Drug>(`/drugs/${id}`)
+
+export const createDrug = (data: DrugCreateRequest) => http.post<Drug>("/drugs", data)
+
+export const updateDrug = (id: string, data: DrugUpdateRequest) => http.put<Drug>(`/drugs/${id}`, data)
+
+export const deleteDrug = (id: string) => http.delete(`/drugs/${id}`)
+
+export const batchDeleteDrug = (ids: string[]) => http.delete("/drugs", { data: { ids } })
+
+export const importDrug = (file: File) => {
+  const formData = new FormData()
+  formData.append("file", file)
+  return http.post("/drugs/import", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  })
+}
+
+export const exportDrug = (params: DrugQueryParams) => http.get("/drugs/export", params)
