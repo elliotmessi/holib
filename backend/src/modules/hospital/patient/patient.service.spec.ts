@@ -37,7 +37,12 @@ describe('PatientService', () => {
     createQueryBuilder: vi.fn().mockReturnValue({
       andWhere: vi.fn().mockReturnThis(),
       orderBy: vi.fn().mockReturnThis(),
+      take: vi.fn().mockReturnThis(),
+      skip: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
+      offset: vi.fn().mockReturnThis(),
       getMany: vi.fn().mockResolvedValue([mockPatientEntity as PatientEntity]),
+      getManyAndCount: vi.fn().mockResolvedValue([[mockPatientEntity as PatientEntity], 1]),
     }),
     findOne: vi.fn().mockResolvedValue(mockPatientEntity as PatientEntity),
     delete: vi.fn().mockResolvedValue({ affected: 1 }),
@@ -152,7 +157,7 @@ describe('PatientService', () => {
       const result = await service.findAll(query)
 
       expect(result).toBeDefined()
-      expect(result).toHaveLength(1)
+      expect(result.items).toHaveLength(1)
       expect(patientRepository.createQueryBuilder).toHaveBeenCalled()
     })
 

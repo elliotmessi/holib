@@ -46,10 +46,15 @@ describe('InventoryTransactionService', () => {
       where: vi.fn().mockReturnThis(),
       andWhere: vi.fn().mockReturnThis(),
       orderBy: vi.fn().mockReturnThis(),
+      take: vi.fn().mockReturnThis(),
+      skip: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
+      offset: vi.fn().mockReturnThis(),
       select: vi.fn().mockReturnThis(),
       addSelect: vi.fn().mockReturnThis(),
       groupBy: vi.fn().mockReturnThis(),
       getMany: vi.fn().mockResolvedValue([mockTransactionEntity as InventoryTransactionEntity]),
+      getManyAndCount: vi.fn().mockResolvedValue([[mockTransactionEntity as InventoryTransactionEntity], 1]),
       getRawMany: vi.fn().mockResolvedValue([
         {
           type: InventoryTransactionType.ADJUSTMENT,
@@ -119,7 +124,7 @@ describe('InventoryTransactionService', () => {
       const result = await service.findAll(query)
 
       expect(result).toBeDefined()
-      expect(result).toHaveLength(1)
+      expect(result.items).toHaveLength(1)
       expect(transactionRepository.createQueryBuilder).toHaveBeenCalled()
     })
 

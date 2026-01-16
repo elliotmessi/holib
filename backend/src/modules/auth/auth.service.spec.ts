@@ -136,7 +136,8 @@ describe('authService', () => {
 
       const result = await service.login('admin', '123456', '127.0.0.1', 'Mozilla/5.0')
 
-      expect(result).toBe('mock-access-token')
+      expect(result.accessToken).toBe('mock-access-token')
+      expect(result.refreshToken).toBe('mock-refresh-token')
       expect(mockUserService.findUserByUserName).toHaveBeenCalledWith('admin')
       expect(mockTokenService.generateAccessToken).toHaveBeenCalledWith(1, ['admin'])
       expect(mockRedis.set).toHaveBeenCalled()

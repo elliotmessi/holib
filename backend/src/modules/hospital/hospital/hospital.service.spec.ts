@@ -41,7 +41,12 @@ describe('HospitalService', () => {
     createQueryBuilder: vi.fn().mockReturnValue({
       andWhere: vi.fn().mockReturnThis(),
       orderBy: vi.fn().mockReturnThis(),
+      take: vi.fn().mockReturnThis(),
+      skip: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
+      offset: vi.fn().mockReturnThis(),
       getMany: vi.fn().mockResolvedValue([mockHospitalEntity as HospitalEntity]),
+      getManyAndCount: vi.fn().mockResolvedValue([[mockHospitalEntity as HospitalEntity], 1]),
     }),
     findOne: vi.fn().mockResolvedValue(mockHospitalEntity as HospitalEntity),
     delete: vi.fn().mockResolvedValue({ affected: 1 }),
@@ -117,7 +122,7 @@ describe('HospitalService', () => {
       const result = await service.findAll(query)
 
       expect(result).toBeDefined()
-      expect(result).toHaveLength(1)
+      expect(result.items).toHaveLength(1)
       expect(hospitalRepository.createQueryBuilder).toHaveBeenCalled()
     })
 

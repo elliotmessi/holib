@@ -115,7 +115,10 @@ describe('DepartmentController', () => {
 
       expect(response.body).toBeDefined()
       expect(response.body.items).toBeDefined()
-      expect(departmentService.findAll).toHaveBeenCalledWith(query)
+      expect(departmentService.findAll).toHaveBeenCalledWith(expect.objectContaining({
+        name: '内科',
+        type: DepartmentType.CLINICAL,
+      }))
     })
 
     it('should handle service errors', async () => {

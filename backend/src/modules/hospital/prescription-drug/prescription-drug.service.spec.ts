@@ -48,7 +48,12 @@ describe('PrescriptionDrugService', () => {
       leftJoinAndSelect: vi.fn().mockReturnThis(),
       andWhere: vi.fn().mockReturnThis(),
       orderBy: vi.fn().mockReturnThis(),
+      take: vi.fn().mockReturnThis(),
+      skip: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
+      offset: vi.fn().mockReturnThis(),
       getMany: vi.fn().mockResolvedValue([mockPrescriptionDrugEntity as PrescriptionDrugEntity]),
+      getManyAndCount: vi.fn().mockResolvedValue([[mockPrescriptionDrugEntity as PrescriptionDrugEntity], 1]),
       select: vi.fn().mockReturnThis(),
       where: vi.fn().mockReturnThis(),
       getRawOne: vi.fn().mockResolvedValue({ total: '105.00' }),
@@ -139,7 +144,7 @@ describe('PrescriptionDrugService', () => {
       const result = await service.findAll(query)
 
       expect(result).toBeDefined()
-      expect(result).toHaveLength(1)
+      expect(result.items).toHaveLength(1)
       expect(prescriptionDrugRepository.createQueryBuilder).toHaveBeenCalled()
     })
 

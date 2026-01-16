@@ -100,7 +100,7 @@ describe('HospitalController', () => {
       const response = await request(app.getHttpServer()).get('/hospitals').query(query).expect(200)
 
       expect(response.body).toBeDefined()
-      expect(hospitalService.findAll).toHaveBeenCalledWith(query)
+      expect(hospitalService.findAll).toHaveBeenCalledWith(expect.objectContaining({ name: '人民医院' }))
     })
 
     it('should handle service errors', async () => {

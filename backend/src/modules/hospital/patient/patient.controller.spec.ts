@@ -107,7 +107,7 @@ describe('PatientController', () => {
 
       expect(response.body).toBeDefined()
       expect(response.body.items).toBeDefined()
-      expect(patientService.findAll).toHaveBeenCalledWith(query)
+      expect(patientService.findAll).toHaveBeenCalledWith(expect.objectContaining({ name: '张三' }))
     })
 
     it('should handle service errors', async () => {

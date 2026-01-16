@@ -100,7 +100,10 @@ describe('PharmacyController', () => {
         .expect(200)
 
       expect(response.body).toBeDefined()
-      expect(pharmacyService.findAll).toHaveBeenCalledWith(query)
+      expect(pharmacyService.findAll).toHaveBeenCalledWith(expect.objectContaining({
+        name: '门诊药房',
+        pharmacyType: PharmacyType.WESTERN_MEDICINE,
+      }))
     })
 
     it('should handle service errors', async () => {

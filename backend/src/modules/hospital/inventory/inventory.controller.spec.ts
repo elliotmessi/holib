@@ -114,7 +114,10 @@ describe('InventoryController', () => {
       const response = await request(app.getHttpServer()).get('/inventory').query(query).expect(200)
 
       expect(response.body).toBeDefined()
-      expect(inventoryService.findAll).toHaveBeenCalledWith(query)
+      expect(inventoryService.findAll).toHaveBeenCalledWith(expect.objectContaining({
+        drugId: 1,
+        pharmacyId: 1,
+      }))
     })
 
     it('should handle service errors', async () => {

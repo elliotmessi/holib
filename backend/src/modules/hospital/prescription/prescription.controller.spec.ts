@@ -99,7 +99,10 @@ describe('PrescriptionController', () => {
         .expect(200)
 
       expect(response.body).toBeDefined()
-      expect(prescriptionService.findAll).toHaveBeenCalledWith(query)
+      expect(prescriptionService.findAll).toHaveBeenCalledWith(expect.objectContaining({
+        patientId: 1,
+        status: PrescriptionStatus.PENDING_REVIEW,
+      }))
     })
 
     it('should handle service errors', async () => {
