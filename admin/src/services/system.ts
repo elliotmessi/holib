@@ -2,7 +2,7 @@ import http from "@/utils/http"
 
 // 字典类型
 export type DictType = {
-  id: string
+  id: number
   code: string
   name: string
   description: string
@@ -13,7 +13,7 @@ export type DictType = {
 
 // 字典项
 export type DictItem = {
-  id: string
+  id: number
   typeCode: string
   code: string
   name: string
@@ -38,7 +38,7 @@ export type OnlineUser = {
 
 // 登录日志
 export type LoginLog = {
-  id: string
+  id: number
   username: string
   ip: string
   location: string
@@ -51,7 +51,7 @@ export type LoginLog = {
 
 // 系统参数
 export type SystemParam = {
-  id: string
+  id: number
   code: string
   name: string
   value: string
@@ -159,36 +159,36 @@ export type SystemParamUpdateRequest = {
 }
 
 // 字典类型相关接口
-export const getDictTypeList = (params: DictTypeQueryParams) => http.get<{ list: DictType[]; total: number }>("/system/dict-types", params)
-export const getDictTypeById = (id: string) => http.get<DictType>(`/system/dict-types/${id}`)
+export const getDictTypeList = (params: DictTypeQueryParams) => http.get<DictType[]>("/system/dict-types", params)
+export const getDictTypeById = (id: number) => http.get<DictType>(`/system/dict-types/${id}`)
 export const createDictType = (data: DictTypeCreateRequest) => http.post<DictType>("/system/dict-types", data)
-export const updateDictType = (id: string, data: DictTypeUpdateRequest) => http.put<DictType>(`/system/dict-types/${id}`, data)
-export const deleteDictType = (id: string) => http.delete(`/system/dict-types/${id}`)
-export const batchDeleteDictType = (ids: string[]) => http.delete("/system/dict-types", { data: { ids } })
+export const updateDictType = (id: number, data: DictTypeUpdateRequest) => http.put<DictType>(`/system/dict-types/${id}`, data)
+export const deleteDictType = (id: number) => http.delete(`/system/dict-types/${id}`)
+export const batchDeleteDictType = (ids: number[]) => http.delete("/system/dict-types", { data: { ids } })
 
 // 字典项相关接口
-export const getDictItemList = (params: DictItemQueryParams) => http.get<{ list: DictItem[]; total: number }>("/system/dict-items", params)
+export const getDictItemList = (params: DictItemQueryParams) => http.get<DictItem[]>("/system/dict-items", params)
 export const getDictItemByType = (typeCode: string) => http.get<DictItem[]>(`/system/dict-items/by-type/${typeCode}`)
-export const getDictItemById = (id: string) => http.get<DictItem>(`/system/dict-items/${id}`)
+export const getDictItemById = (id: number) => http.get<DictItem>(`/system/dict-items/${id}`)
 export const createDictItem = (data: DictItemCreateRequest) => http.post<DictItem>("/system/dict-items", data)
-export const updateDictItem = (id: string, data: DictItemUpdateRequest) => http.put<DictItem>(`/system/dict-items/${id}`, data)
-export const deleteDictItem = (id: string) => http.delete(`/system/dict-items/${id}`)
-export const batchDeleteDictItem = (ids: string[]) => http.delete("/system/dict-items", { data: { ids } })
+export const updateDictItem = (id: number, data: DictItemUpdateRequest) => http.put<DictItem>(`/system/dict-items/${id}`, data)
+export const deleteDictItem = (id: number) => http.delete(`/system/dict-items/${id}`)
+export const batchDeleteDictItem = (ids: number[]) => http.delete("/system/dict-items", { data: { ids } })
 
 // 在线用户相关接口
-export const getOnlineUserList = (params: OnlineUserQueryParams) => http.get<{ list: OnlineUser[]; total: number }>("/system/monitor/online", params)
+export const getOnlineUserList = (params: OnlineUserQueryParams) => http.get<OnlineUser[]>("/system/monitor/online", params)
 export const forceLogout = (userId: string) => http.delete(`/system/monitor/online/${userId}`)
 
 // 登录日志相关接口
-export const getLoginLogList = (params: LoginLogQueryParams) => http.get<{ list: LoginLog[]; total: number }>("/system/monitor/login-log", params)
-export const deleteLoginLog = (id: string) => http.delete(`/system/monitor/login-log/${id}`)
-export const batchDeleteLoginLog = (ids: string[]) => http.delete("/system/monitor/login-log", { data: { ids } })
+export const getLoginLogList = (params: LoginLogQueryParams) => http.get<LoginLog[]>("/system/monitor/login-log", params)
+export const deleteLoginLog = (id: number) => http.delete(`/system/monitor/login-log/${id}`)
+export const batchDeleteLoginLog = (ids: number[]) => http.delete("/system/monitor/login-log", { data: { ids } })
 export const clearLoginLog = () => http.delete("/system/monitor/login-log/clear")
 
 // 系统参数相关接口
-export const getSystemParamList = (params: SystemParamQueryParams) => http.get<{ list: SystemParam[]; total: number }>("/system/parameters", params)
-export const getSystemParamById = (id: string) => http.get<SystemParam>(`/system/parameters/${id}`)
+export const getSystemParamList = (params: SystemParamQueryParams) => http.get<SystemParam[]>("/system/parameters", params)
+export const getSystemParamById = (id: number) => http.get<SystemParam>(`/system/parameters/${id}`)
 export const createSystemParam = (data: SystemParamCreateRequest) => http.post<SystemParam>("/system/parameters", data)
-export const updateSystemParam = (id: string, data: SystemParamUpdateRequest) => http.put<SystemParam>(`/system/parameters/${id}`, data)
-export const deleteSystemParam = (id: string) => http.delete(`/system/parameters/${id}`)
-export const batchDeleteSystemParam = (ids: string[]) => http.delete("/system/parameters", { data: { ids } })
+export const updateSystemParam = (id: number, data: SystemParamUpdateRequest) => http.put<SystemParam>(`/system/parameters/${id}`, data)
+export const deleteSystemParam = (id: number) => http.delete(`/system/parameters/${id}`)
+export const batchDeleteSystemParam = (ids: number[]) => http.delete("/system/parameters", { data: { ids } })

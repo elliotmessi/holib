@@ -10,7 +10,7 @@ const DoctorDetail: React.FC = () => {
   const { useDoctorDetail } = useModel('doctor');
   
   // 获取医生详情
-  const { doctorDetail, loading: detailLoading } = useDoctorDetail(id || '');
+  const { doctorDetail, loading: detailLoading } = useDoctorDetail(id ? Number(id) : undefined);
   
   return (
     <PageContainer title="医生详情">

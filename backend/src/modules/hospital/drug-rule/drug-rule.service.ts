@@ -1,18 +1,20 @@
-import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { Injectable } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+import { Repository } from "typeorm"
 
-import { BusinessException } from '~/common/exceptions/biz.exception'
-import { ErrorEnum } from '~/constants/error-code.constant'
+import { paginate } from "~/helper/paginate"
+import { Pagination } from "~/helper/paginate/pagination"
+import { BusinessException } from "~/common/exceptions/biz.exception"
+import { ErrorEnum } from "~/constants/error-code.constant"
 
-import { DrugPrescriptionRuleEntity, DrugRuleType } from './drug-rule.entity'
-import { CreateDrugRuleDto, UpdateDrugRuleDto, DrugRuleQueryDto } from './drug-rule.dto'
+import { DrugPrescriptionRuleEntity, DrugRuleType } from "./drug-rule.entity"
+import { CreateDrugRuleDto, UpdateDrugRuleDto, DrugRuleQueryDto } from "./drug-rule.dto"
 
 @Injectable()
 export class DrugRuleService {
   constructor(
     @InjectRepository(DrugPrescriptionRuleEntity)
-    private ruleRepository: Repository<DrugPrescriptionRuleEntity>,
+    private ruleRepository: Repository<DrugPrescriptionRuleEntity>
   ) {}
 
   async create(createDto: CreateDrugRuleDto): Promise<DrugPrescriptionRuleEntity> {
@@ -20,29 +22,32 @@ export class DrugRuleService {
     return this.ruleRepository.save(rule)
   }
 
-  async findAll(query: DrugRuleQueryDto): Promise<DrugPrescriptionRuleEntity[]> {
-    const queryBuilder = this.ruleRepository.createQueryBuilder('rule')
-    queryBuilder.leftJoinAndSelect('rule.drug', 'drug')
-    queryBuilder.leftJoinAndSelect('rule.interactionDrug', 'interactionDrug')
+  async findAll(query: DrugRuleQueryDto): Promise<Pagination<DrugPrescriptionRuleEntity>> {
+    const queryBuilder = this.ruleRepository.createQueryBuilder("rule")
+    queryBuilder.leftJoinAndSelect("rule.drug", "drug")
+    queryBuilder.leftJoinAndSelect("rule.interactionDrug", "interactionDrug")
 
     if (query.drugId) {
-      queryBuilder.andWhere('rule.drugId = :drugId', { drugId: query.drugId })
+      queryBuilder.andWhere("rule.drugId = :drugId", { drugId: query.drugId })
     }
     if (query.ruleType) {
-      queryBuilder.andWhere('rule.ruleType = :ruleType', { ruleType: query.ruleType })
+      queryBuilder.andWhere("rule.ruleType = :ruleType", { ruleType: query.ruleType })
     }
     if (query.activeOnly) {
-      queryBuilder.andWhere('rule.isActive = :isActive', { isActive: true })
+      queryBuilder.andWhere("rule.isActive = :isActive", { isActive: true })
     }
 
-    queryBuilder.orderBy('rule.createdAt', 'DESC')
-    return queryBuilder.getMany()
+    queryBuilder.orderBy("rule.createdAt", "DESC")
+    return paginate<DrugPrescriptionRuleEntity>(queryBuilder, {
+      page: query.page,
+      pageSize: query.pageSize,
+    })
   }
 
   async findOne(id: number): Promise<DrugPrescriptionRuleEntity> {
     const rule = await this.ruleRepository.findOne({
       where: { id },
-      relations: ['drug', 'interactionDrug'],
+      relations: ["drug", "interactionDrug"],
     })
     if (!rule) {
       throw new BusinessException(ErrorEnum.DATA_NOT_FOUND)
@@ -51,12 +56,12 @@ export class DrugRuleService {
   }
 
   async findByDrugId(drugId: number, activeOnly = true): Promise<DrugPrescriptionRuleEntity[]> {
-    const queryBuilder = this.ruleRepository.createQueryBuilder('rule')
-    queryBuilder.leftJoinAndSelect('rule.interactionDrug', 'interactionDrug')
-    queryBuilder.where('rule.drugId = :drugId', { drugId })
+    const queryBuilder = this.ruleRepository.createQueryBuilder("rule")
+    queryBuilder.leftJoinAndSelect("rule.interactionDrug", "interactionDrug")
+    queryBuilder.where("rule.drugId = :drugId", { drugId })
 
     if (activeOnly) {
-      queryBuilder.andWhere('rule.isActive = :isActive', { isActive: true })
+      queryBuilder.andWhere("rule.isActive = :isActive", { isActive: true })
     }
 
     return queryBuilder.getMany()

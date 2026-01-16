@@ -16,8 +16,8 @@ export default () => {
     } = usePagination((page, pageSize) => getPharmacyList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: (response: any) => response?.list || [],
-      total: (response: any) => response?.total || 0,
+      data: (response: any) => response || [],
+      total: (response: any) => response?.length || 0,
     })
 
     return {
@@ -38,8 +38,8 @@ export default () => {
   }
 
   // 获取药房详情
-  const usePharmacyDetail = (id?: string) => {
-    const { data, loading, send } = useRequest(() => getPharmacyById(id || ""), {
+  const usePharmacyDetail = (id?: number) => {
+    const { data, loading, send } = useRequest(() => getPharmacyById(id || 0), {
       immediate: !!id,
     })
 
@@ -78,7 +78,7 @@ export default () => {
   // 更新药房
   const useUpdatePharmacy = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: PharmacyUpdateRequest) => updatePharmacy(id, data), {
+    const { send, loading } = useRequest((id: number, data: PharmacyUpdateRequest) => updatePharmacy(id, data), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -90,7 +90,7 @@ export default () => {
         error()
       })
 
-    const submitUpdate = (id: string, data: PharmacyUpdateRequest) => {
+    const submitUpdate = (id: number, data: PharmacyUpdateRequest) => {
       send(id, data)
     }
 
@@ -115,7 +115,7 @@ export default () => {
         error()
       })
 
-    const submitDelete = (id: string) => {
+    const submitDelete = (id: number) => {
       send(id)
     }
 
@@ -140,7 +140,7 @@ export default () => {
         error()
       })
 
-    const submitBatchDelete = (ids: string[]) => {
+    const submitBatchDelete = (ids: number[]) => {
       send(ids)
     }
 

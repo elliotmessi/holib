@@ -1,7 +1,7 @@
 import http from "@/utils/http"
 
 export type PrescriptionDrug = {
-  drugId: string
+  drugId: number
   dosage: number
   dosageUnit: string
   frequency: string
@@ -13,11 +13,11 @@ export type PrescriptionDrug = {
 }
 
 export type Prescription = {
-  prescriptionId: string
+  id: number
   prescriptionNumber: string
-  patientId: string
-  doctorId: string
-  departmentId: string
+  patientId: number
+  doctorId: number
+  departmentId: number
   diagnosis: string
   totalAmount: number
   status: string
@@ -50,8 +50,8 @@ export type PrescriptionQueryParams = {
 }
 
 export type PrescriptionCreateRequest = {
-  patientId: string
-  departmentId: string
+  patientId: number
+  departmentId: number
   diagnosis: string
   prescriptionDrugs: PrescriptionDrug[]
 }
@@ -67,18 +67,18 @@ export type PrescriptionReviewRequest = {
   reviewOpinion?: string
 }
 
-export const getPrescriptionList = (params: PrescriptionQueryParams) => http.get<{ list: Prescription[]; total: number }>("/prescriptions", params)
+export const getPrescriptionList = (params: PrescriptionQueryParams) => http.get<Prescription[]>("/prescriptions", params)
 
-export const getPrescriptionById = (id: string) => http.get<Prescription>(`/prescriptions/${id}`)
+export const getPrescriptionById = (id: number) => http.get<Prescription>(`/prescriptions/${id}`)
 
 export const createPrescription = (data: PrescriptionCreateRequest) => http.post<Prescription>("/prescriptions", data)
 
-export const updatePrescription = (id: string, data: PrescriptionUpdateRequest) => http.put<Prescription>(`/prescriptions/${id}`, data)
+export const updatePrescription = (id: number, data: PrescriptionUpdateRequest) => http.put<Prescription>(`/prescriptions/${id}`, data)
 
-export const deletePrescription = (id: string) => http.delete(`/prescriptions/${id}`)
+export const deletePrescription = (id: number) => http.delete(`/prescriptions/${id}`)
 
-export const batchDeletePrescription = (ids: string[]) => http.delete("/prescriptions", { data: { ids } })
+export const batchDeletePrescription = (ids: number[]) => http.delete("/prescriptions", { data: { ids } })
 
-export const reviewPrescription = (id: string, data: PrescriptionReviewRequest) => http.put<Prescription>(`/prescriptions/${id}/review`, data)
+export const reviewPrescription = (id: number, data: PrescriptionReviewRequest) => http.put<Prescription>(`/prescriptions/${id}/review`, data)
 
-export const cancelPrescription = (id: string) => http.post(`/prescriptions/${id}/cancel`)
+export const cancelPrescription = (id: number) => http.post(`/prescriptions/${id}/cancel`)

@@ -1,18 +1,20 @@
-import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { Injectable } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+import { Repository } from "typeorm"
 
-import { BusinessException } from '~/common/exceptions/biz.exception'
-import { ErrorEnum } from '~/constants/error-code.constant'
+import { paginate } from "~/helper/paginate"
+import { Pagination } from "~/helper/paginate/pagination"
+import { BusinessException } from "~/common/exceptions/biz.exception"
+import { ErrorEnum } from "~/constants/error-code.constant"
 
-import { HospitalEntity } from './hospital.entity'
-import { CreateHospitalDto, UpdateHospitalDto, HospitalQueryDto } from './hospital.dto'
+import { HospitalEntity } from "./hospital.entity"
+import { CreateHospitalDto, UpdateHospitalDto, HospitalQueryDto } from "./hospital.dto"
 
 @Injectable()
 export class HospitalService {
   constructor(
     @InjectRepository(HospitalEntity)
-    private hospitalRepository: Repository<HospitalEntity>,
+    private hospitalRepository: Repository<HospitalEntity>
   ) {}
 
   async create(createDto: CreateHospitalDto): Promise<HospitalEntity> {
@@ -26,27 +28,30 @@ export class HospitalService {
     return this.hospitalRepository.save(hospital)
   }
 
-  async findAll(query: HospitalQueryDto): Promise<HospitalEntity[]> {
-    const queryBuilder = this.hospitalRepository.createQueryBuilder('hospital')
+  async findAll(query: HospitalQueryDto): Promise<Pagination<HospitalEntity>> {
+    const queryBuilder = this.hospitalRepository.createQueryBuilder("hospital")
     if (query.name) {
-      queryBuilder.andWhere('hospital.name LIKE :name', { name: `%${query.name}%` })
+      queryBuilder.andWhere("hospital.name LIKE :name", { name: `%${query.name}%` })
     }
     if (query.hospitalCode) {
-      queryBuilder.andWhere('hospital.hospitalCode LIKE :hospitalCode', {
+      queryBuilder.andWhere("hospital.hospitalCode LIKE :hospitalCode", {
         hospitalCode: `%${query.hospitalCode}%`,
       })
     }
     if (query.level) {
-      queryBuilder.andWhere('hospital.level = :level', { level: query.level })
+      queryBuilder.andWhere("hospital.level = :level", { level: query.level })
     }
-    queryBuilder.orderBy('hospital.createdAt', 'DESC')
-    return queryBuilder.getMany()
+    queryBuilder.orderBy("hospital.createdAt", "DESC")
+    return paginate<HospitalEntity>(queryBuilder, {
+      page: query.page,
+      pageSize: query.pageSize,
+    })
   }
 
   async findOne(id: number): Promise<HospitalEntity> {
     const hospital = await this.hospitalRepository.findOne({
       where: { id },
-      relations: ['departments', 'pharmacies'],
+      relations: ["departments", "pharmacies"],
     })
     if (!hospital) {
       throw new BusinessException(ErrorEnum.DATA_NOT_FOUND)

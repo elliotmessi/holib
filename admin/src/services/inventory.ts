@@ -1,9 +1,9 @@
 import http from "@/utils/http"
 
 export type Inventory = {
-  inventoryId: string
-  drugId: string
-  pharmacyId: string
+  id: number
+  drugId: number
+  pharmacyId: number
   batchNumber: string
   quantity: number
   minimumThreshold: number
@@ -40,8 +40,8 @@ export type InventoryQueryParams = {
 }
 
 export type InventoryCreateRequest = {
-  drugId: string
-  pharmacyId: string
+  drugId: number
+  pharmacyId: number
   batchNumber: string
   quantity: number
   unitPrice: number
@@ -59,8 +59,8 @@ export type InventoryUpdateRequest = {
 }
 
 export type InventoryInboundRequest = {
-  drugId: string
-  pharmacyId: string
+  drugId: number
+  pharmacyId: number
   batchNumber: string
   quantity: number
   unitPrice: number
@@ -71,8 +71,8 @@ export type InventoryInboundRequest = {
 }
 
 export type InventoryOutboundRequest = {
-  drugId: string
-  pharmacyId: string
+  drugId: number
+  pharmacyId: number
   batchNumber: string
   quantity: number
   unitPrice: number
@@ -80,18 +80,18 @@ export type InventoryOutboundRequest = {
   referenceId?: string
 }
 
-export const getInventoryList = (params: InventoryQueryParams) => http.get<{ list: Inventory[]; total: number }>("/inventory", params)
+export const getInventoryList = (params: InventoryQueryParams) => http.get<Inventory[]>("/inventory", params)
 
-export const getInventoryById = (id: string) => http.get<Inventory>(`/inventory/${id}`)
+export const getInventoryById = (id: number) => http.get<Inventory>(`/inventory/${id}`)
 
-export const updateInventory = (id: string, data: InventoryUpdateRequest) => http.put<Inventory>(`/inventory/${id}`, data)
+export const updateInventory = (id: number, data: InventoryUpdateRequest) => http.put<Inventory>(`/inventory/${id}`, data)
 
-export const deleteInventory = (id: string) => http.delete(`/inventory/${id}`)
+export const deleteInventory = (id: number) => http.delete(`/inventory/${id}`)
 
-export const batchDeleteInventory = (ids: string[]) => http.delete("/inventory", { data: { ids } })
+export const batchDeleteInventory = (ids: number[]) => http.delete("/inventory", { data: { ids } })
 
 export const inventoryInbound = (data: InventoryInboundRequest) => http.post("/inventory/inbound", data)
 
 export const inventoryOutbound = (data: InventoryOutboundRequest) => http.post("/inventory/outbound", data)
 
-export const getInventoryTransactions = (params: InventoryQueryParams) => http.get<{ list: any[]; total: number }>("/inventory/transactions", params)
+export const getInventoryTransactions = (params: InventoryQueryParams) => http.get<any[]>("/inventory/transactions", params)

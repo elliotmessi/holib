@@ -2,6 +2,8 @@ import { ApiProperty } from '@nestjs/swagger'
 import { IsString, IsOptional, IsInt, Min, MinLength, MaxLength, IsEmail } from 'class-validator'
 import { PartialType } from '@nestjs/mapped-types'
 
+import { PagerDto } from '~/common/dto/pager.dto'
+
 export class CreateDoctorDto {
   @ApiProperty({ description: '医生工号' })
   @IsString()
@@ -75,7 +77,7 @@ export class UpdateDoctorDto extends PartialType(CreateDoctorDto) {
   status?: string
 }
 
-export class DoctorQueryDto {
+export class DoctorQueryDto extends PagerDto {
   @ApiProperty({ description: '医生姓名', required: false })
   @IsString()
   @IsOptional()

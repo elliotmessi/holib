@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger'
 import { IsString, IsOptional, IsInt, Min, MinLength, MaxLength, IsEnum } from 'class-validator'
 import { PartialType } from '@nestjs/mapped-types'
 
+import { PagerDto } from '~/common/dto/pager.dto'
 import { DepartmentType } from './department.entity'
 
 export class CreateDepartmentDto {
@@ -55,7 +56,7 @@ export class CreateDepartmentDto {
 
 export class UpdateDepartmentDto extends PartialType(CreateDepartmentDto) {}
 
-export class DepartmentQueryDto {
+export class DepartmentQueryDto extends PagerDto {
   @ApiProperty({ description: '科室名称', required: false })
   @IsString()
   @IsOptional()

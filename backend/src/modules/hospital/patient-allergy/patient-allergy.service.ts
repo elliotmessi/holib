@@ -1,22 +1,20 @@
-import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { Injectable } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+import { Repository } from "typeorm"
 
-import { BusinessException } from '~/common/exceptions/biz.exception'
-import { ErrorEnum } from '~/constants/error-code.constant'
+import { paginate } from "~/helper/paginate"
+import { Pagination } from "~/helper/paginate/pagination"
+import { BusinessException } from "~/common/exceptions/biz.exception"
+import { ErrorEnum } from "~/constants/error-code.constant"
 
-import { PatientAllergyEntity } from './patient-allergy.entity'
-import {
-  CreatePatientAllergyDto,
-  UpdatePatientAllergyDto,
-  PatientAllergyQueryDto,
-} from './patient-allergy.dto'
+import { PatientAllergyEntity } from "./patient-allergy.entity"
+import { CreatePatientAllergyDto, UpdatePatientAllergyDto, PatientAllergyQueryDto } from "./patient-allergy.dto"
 
 @Injectable()
 export class PatientAllergyService {
   constructor(
     @InjectRepository(PatientAllergyEntity)
-    private allergyRepository: Repository<PatientAllergyEntity>,
+    private allergyRepository: Repository<PatientAllergyEntity>
   ) {}
 
   async create(createDto: CreatePatientAllergyDto): Promise<PatientAllergyEntity> {
@@ -27,31 +25,34 @@ export class PatientAllergyService {
     return this.allergyRepository.save(allergy)
   }
 
-  async findAll(query: PatientAllergyQueryDto): Promise<PatientAllergyEntity[]> {
-    const queryBuilder = this.allergyRepository.createQueryBuilder('allergy')
-    queryBuilder.leftJoinAndSelect('allergy.patient', 'patient')
-    queryBuilder.leftJoinAndSelect('allergy.drug', 'drug')
+  async findAll(query: PatientAllergyQueryDto): Promise<Pagination<PatientAllergyEntity>> {
+    const queryBuilder = this.allergyRepository.createQueryBuilder("allergy")
+    queryBuilder.leftJoinAndSelect("allergy.patient", "patient")
+    queryBuilder.leftJoinAndSelect("allergy.drug", "drug")
 
     if (query.patientId) {
-      queryBuilder.andWhere('allergy.patientId = :patientId', { patientId: query.patientId })
+      queryBuilder.andWhere("allergy.patientId = :patientId", { patientId: query.patientId })
     }
     if (query.allergyType) {
-      queryBuilder.andWhere('allergy.allergyType = :allergyType', {
+      queryBuilder.andWhere("allergy.allergyType = :allergyType", {
         allergyType: query.allergyType,
       })
     }
     if (query.severity) {
-      queryBuilder.andWhere('allergy.severity = :severity', { severity: query.severity })
+      queryBuilder.andWhere("allergy.severity = :severity", { severity: query.severity })
     }
 
-    queryBuilder.orderBy('allergy.createdAt', 'DESC')
-    return queryBuilder.getMany()
+    queryBuilder.orderBy("allergy.createdAt", "DESC")
+    return paginate<PatientAllergyEntity>(queryBuilder, {
+      page: query.page,
+      pageSize: query.pageSize,
+    })
   }
 
   async findOne(id: number): Promise<PatientAllergyEntity> {
     const allergy = await this.allergyRepository.findOne({
       where: { id },
-      relations: ['patient', 'drug'],
+      relations: ["patient", "drug"],
     })
     if (!allergy) {
       throw new BusinessException(ErrorEnum.DATA_NOT_FOUND)
@@ -62,15 +63,15 @@ export class PatientAllergyService {
   async findByPatientId(patientId: number): Promise<PatientAllergyEntity[]> {
     return this.allergyRepository.find({
       where: { patientId },
-      relations: ['drug'],
-      order: { severity: 'DESC', createdAt: 'DESC' },
+      relations: ["drug"],
+      order: { severity: "DESC", createdAt: "DESC" },
     })
   }
 
   async findDrugAllergiesByPatientId(patientId: number): Promise<PatientAllergyEntity[]> {
     return this.allergyRepository.find({
       where: { patientId, drugId: undefined as any },
-      order: { severity: 'DESC' },
+      order: { severity: "DESC" },
     })
   }
 
@@ -79,9 +80,7 @@ export class PatientAllergyService {
 
     Object.assign(allergy, {
       ...updateDto,
-      occurrenceDate: updateDto.occurrenceDate
-        ? new Date(updateDto.occurrenceDate)
-        : allergy.occurrenceDate,
+      occurrenceDate: updateDto.occurrenceDate ? new Date(updateDto.occurrenceDate) : allergy.occurrenceDate,
     })
     await this.allergyRepository.save(allergy)
   }
@@ -91,14 +90,11 @@ export class PatientAllergyService {
     await this.allergyRepository.delete(id)
   }
 
-  async checkPatientAllergy(
-    patientId: number,
-    drugId: number,
-  ): Promise<PatientAllergyEntity | null> {
+  async checkPatientAllergy(patientId: number, drugId: number): Promise<PatientAllergyEntity | null> {
     return this.allergyRepository.findOne({
       where: [
         { patientId, drugId },
-        { patientId, allergenName: '' as any },
+        { patientId, allergenName: "" as any },
       ],
     })
   }

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsString, IsOptional, IsInt, Min, IsNumber, IsEnum } from 'class-validator'
 
+import { PagerDto } from '~/common/dto/pager.dto'
 import { InventoryTransactionType } from './inventory-transaction.entity'
 
 export class CreateInventoryTransactionDto {
@@ -55,7 +56,7 @@ export class CreateInventoryTransactionDto {
   referenceType?: string
 }
 
-export class InventoryTransactionQueryDto {
+export class InventoryTransactionQueryDto extends PagerDto {
   @ApiProperty({ description: '药品ID', required: false })
   @IsInt()
   @Min(0)

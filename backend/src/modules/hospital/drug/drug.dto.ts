@@ -12,6 +12,8 @@ import {
 } from 'class-validator'
 import { PartialType } from '@nestjs/mapped-types'
 
+import { PagerDto } from '~/common/dto/pager.dto'
+
 import { DrugStatus } from './drug.entity'
 
 export class CreateDrugDto {
@@ -124,7 +126,7 @@ export class UpdateDrugDto extends PartialType(CreateDrugDto) {
   status?: DrugStatus
 }
 
-export class DrugQueryDto {
+export class DrugQueryDto extends PagerDto {
   @ApiProperty({ description: '药品名称', required: false })
   @IsString()
   @IsOptional()

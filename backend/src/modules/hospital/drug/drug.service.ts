@@ -1,18 +1,20 @@
-import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { Injectable } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+import { Repository } from "typeorm"
 
-import { BusinessException } from '~/common/exceptions/biz.exception'
-import { ErrorEnum } from '~/constants/error-code.constant'
+import { paginate } from "~/helper/paginate"
+import { Pagination } from "~/helper/paginate/pagination"
+import { BusinessException } from "~/common/exceptions/biz.exception"
+import { ErrorEnum } from "~/constants/error-code.constant"
 
-import { DrugEntity, DrugStatus } from './drug.entity'
-import { CreateDrugDto, UpdateDrugDto, DrugQueryDto } from './drug.dto'
+import { DrugEntity, DrugStatus } from "./drug.entity"
+import { CreateDrugDto, UpdateDrugDto, DrugQueryDto } from "./drug.dto"
 
 @Injectable()
 export class DrugService {
   constructor(
     @InjectRepository(DrugEntity)
-    private drugRepository: Repository<DrugEntity>,
+    private drugRepository: Repository<DrugEntity>
   ) {}
 
   async create(createDto: CreateDrugDto): Promise<DrugEntity> {
@@ -31,50 +33,53 @@ export class DrugService {
     return this.drugRepository.save(drug)
   }
 
-  async findAll(query: DrugQueryDto): Promise<DrugEntity[]> {
-    const queryBuilder = this.drugRepository.createQueryBuilder('drug')
-    queryBuilder.leftJoinAndSelect('drug.pharmacologicalClass', 'pharmacologicalClass')
-    queryBuilder.leftJoinAndSelect('drug.dosageClass', 'dosageClass')
-    queryBuilder.leftJoinAndSelect('drug.departmentClass', 'departmentClass')
+  async findAll(query: DrugQueryDto): Promise<Pagination<DrugEntity>> {
+    const queryBuilder = this.drugRepository.createQueryBuilder("drug")
+    queryBuilder.leftJoinAndSelect("drug.pharmacologicalClass", "pharmacologicalClass")
+    queryBuilder.leftJoinAndSelect("drug.dosageClass", "dosageClass")
+    queryBuilder.leftJoinAndSelect("drug.departmentClass", "departmentClass")
 
     if (query.name) {
-      queryBuilder.andWhere('(drug.genericName LIKE :name OR drug.tradeName LIKE :name)', {
+      queryBuilder.andWhere("(drug.genericName LIKE :name OR drug.tradeName LIKE :name)", {
         name: `%${query.name}%`,
       })
     }
     if (query.drugCode) {
-      queryBuilder.andWhere('drug.drugCode LIKE :drugCode', {
+      queryBuilder.andWhere("drug.drugCode LIKE :drugCode", {
         drugCode: `%${query.drugCode}%`,
       })
     }
     if (query.drugType) {
-      queryBuilder.andWhere('drug.drugType = :drugType', { drugType: query.drugType })
+      queryBuilder.andWhere("drug.drugType = :drugType", { drugType: query.drugType })
     }
     if (query.dosageForm) {
-      queryBuilder.andWhere('drug.dosageForm = :dosageForm', { dosageForm: query.dosageForm })
+      queryBuilder.andWhere("drug.dosageForm = :dosageForm", { dosageForm: query.dosageForm })
     }
     if (query.manufacturer) {
-      queryBuilder.andWhere('drug.manufacturer LIKE :manufacturer', {
+      queryBuilder.andWhere("drug.manufacturer LIKE :manufacturer", {
         manufacturer: `%${query.manufacturer}%`,
       })
     }
     if (query.status) {
-      queryBuilder.andWhere('drug.status = :status', { status: query.status })
+      queryBuilder.andWhere("drug.status = :status", { status: query.status })
     }
     if (query.pharmacologicalClassId) {
-      queryBuilder.andWhere('drug.pharmacologicalClassId = :pharmacologicalClassId', {
+      queryBuilder.andWhere("drug.pharmacologicalClassId = :pharmacologicalClassId", {
         pharmacologicalClassId: query.pharmacologicalClassId,
       })
     }
 
-    queryBuilder.orderBy('drug.createdAt', 'DESC')
-    return queryBuilder.getMany()
+    queryBuilder.orderBy("drug.createdAt", "DESC")
+    return paginate<DrugEntity>(queryBuilder, {
+      page: query.page,
+      pageSize: query.pageSize,
+    })
   }
 
   async findOne(id: number): Promise<DrugEntity> {
     const drug = await this.drugRepository.findOne({
       where: { id },
-      relations: ['pharmacologicalClass', 'dosageClass', 'departmentClass'],
+      relations: ["pharmacologicalClass", "dosageClass", "departmentClass"],
     })
     if (!drug) {
       throw new BusinessException(ErrorEnum.DATA_NOT_FOUND)

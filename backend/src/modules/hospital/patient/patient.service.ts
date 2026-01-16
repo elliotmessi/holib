@@ -1,18 +1,20 @@
-import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { Injectable } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+import { Repository } from "typeorm"
 
-import { BusinessException } from '~/common/exceptions/biz.exception'
-import { ErrorEnum } from '~/constants/error-code.constant'
+import { paginate } from "~/helper/paginate"
+import { Pagination } from "~/helper/paginate/pagination"
+import { BusinessException } from "~/common/exceptions/biz.exception"
+import { ErrorEnum } from "~/constants/error-code.constant"
 
-import { PatientEntity } from './patient.entity'
-import { CreatePatientDto, UpdatePatientDto, PatientQueryDto } from './patient.dto'
+import { PatientEntity } from "./patient.entity"
+import { CreatePatientDto, UpdatePatientDto, PatientQueryDto } from "./patient.dto"
 
 @Injectable()
 export class PatientService {
   constructor(
     @InjectRepository(PatientEntity)
-    private patientRepository: Repository<PatientEntity>,
+    private patientRepository: Repository<PatientEntity>
   ) {}
 
   async create(createDto: CreatePatientDto): Promise<PatientEntity> {
@@ -36,39 +38,42 @@ export class PatientService {
     return this.patientRepository.save(patient)
   }
 
-  async findAll(query: PatientQueryDto): Promise<PatientEntity[]> {
-    const queryBuilder = this.patientRepository.createQueryBuilder('patient')
+  async findAll(query: PatientQueryDto): Promise<Pagination<PatientEntity>> {
+    const queryBuilder = this.patientRepository.createQueryBuilder("patient")
 
     if (query.name) {
-      queryBuilder.andWhere('patient.name LIKE :name', { name: `%${query.name}%` })
+      queryBuilder.andWhere("patient.name LIKE :name", { name: `%${query.name}%` })
     }
     if (query.medicalRecordNumber) {
-      queryBuilder.andWhere('patient.medicalRecordNumber LIKE :medicalRecordNumber', {
+      queryBuilder.andWhere("patient.medicalRecordNumber LIKE :medicalRecordNumber", {
         medicalRecordNumber: `%${query.medicalRecordNumber}%`,
       })
     }
     if (query.idCard) {
-      queryBuilder.andWhere('patient.idCard LIKE :idCard', {
+      queryBuilder.andWhere("patient.idCard LIKE :idCard", {
         idCard: `%${query.idCard}%`,
       })
     }
     if (query.phone) {
-      queryBuilder.andWhere('patient.phone LIKE :phone', {
+      queryBuilder.andWhere("patient.phone LIKE :phone", {
         phone: `%${query.phone}%`,
       })
     }
     if (query.gender) {
-      queryBuilder.andWhere('patient.gender = :gender', { gender: query.gender })
+      queryBuilder.andWhere("patient.gender = :gender", { gender: query.gender })
     }
     if (query.minAge !== undefined) {
-      queryBuilder.andWhere('patient.age >= :minAge', { minAge: query.minAge })
+      queryBuilder.andWhere("patient.age >= :minAge", { minAge: query.minAge })
     }
     if (query.maxAge !== undefined) {
-      queryBuilder.andWhere('patient.age <= :maxAge', { maxAge: query.maxAge })
+      queryBuilder.andWhere("patient.age <= :maxAge", { maxAge: query.maxAge })
     }
 
-    queryBuilder.orderBy('patient.createdAt', 'DESC')
-    return queryBuilder.getMany()
+    queryBuilder.orderBy("patient.createdAt", "DESC")
+    return paginate<PatientEntity>(queryBuilder, {
+      page: query.page,
+      pageSize: query.pageSize,
+    })
   }
 
   async findOne(id: number): Promise<PatientEntity> {

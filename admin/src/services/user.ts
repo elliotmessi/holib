@@ -1,7 +1,7 @@
 import http from "@/utils/http"
 
 export type User = {
-  id: string
+  id: number
   username: string
   name: string
   nickName: string
@@ -9,9 +9,9 @@ export type User = {
   phone: string
   gender: number
   avatar: string
-  roleId: string
+  roleId: number
   roleName: string
-  departmentId: string
+  departmentId: number
   departmentName: string
   status: number
   createdAt: string
@@ -23,8 +23,8 @@ export type UserQueryParams = {
   name?: string
   email?: string
   phone?: string
-  roleId?: string
-  departmentId?: string
+  roleId?: number
+  departmentId?: number
   status?: number
   page?: number
   pageSize?: number
@@ -39,8 +39,8 @@ export type UserCreateRequest = {
   phone?: string
   gender?: number
   avatar?: string
-  roleId: string
-  departmentId: string
+  roleId: number
+  departmentId: number
   status?: number
 }
 
@@ -51,21 +51,21 @@ export type UserUpdateRequest = {
   phone?: string
   gender?: number
   avatar?: string
-  roleId?: string
-  departmentId?: string
+  roleId?: number
+  departmentId?: number
   status?: number
 }
 
-export const getUserList = (params: UserQueryParams) => http.get<{ list: User[]; total: number }>("/system/users", params)
+export const getUserList = (params: UserQueryParams) => http.get<User[]>("/system/users", params)
 
-export const getUserById = (id: string) => http.get<User>(`/system/users/${id}`)
+export const getUserById = (id: number) => http.get<User>(`/system/users/${id}`)
 
 export const createUser = (data: UserCreateRequest) => http.post<User>("/system/users", data)
 
-export const updateUser = (id: string, data: UserUpdateRequest) => http.put<User>(`/system/users/${id}`, data)
+export const updateUser = (id: number, data: UserUpdateRequest) => http.put<User>(`/system/users/${id}`, data)
 
-export const deleteUser = (id: string) => http.delete(`/system/users/${id}`)
+export const deleteUser = (id: number) => http.delete(`/system/users/${id}`)
 
-export const batchDeleteUser = (ids: string[]) => http.delete("/system/users", { data: { ids } })
+export const batchDeleteUser = (ids: number[]) => http.delete("/system/users", { data: { ids } })
 
-export const updateUserPassword = (id: string, data: { password: string }) => http.post(`/system/users/${id}/password`, data)
+export const updateUserPassword = (id: number, data: { password: string }) => http.post(`/system/users/${id}/password`, data)

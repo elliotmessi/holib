@@ -28,8 +28,8 @@ export default () => {
     } = usePagination((page, pageSize) => getRoleList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: (response) => response?.list || [],
-      total: (response) => response?.total || 0
+      data: (response) => response || [],
+      total: (response) => response?.length || 0
     })
 
     return {
@@ -50,8 +50,8 @@ export default () => {
   }
 
   // 获取角色详情
-  const useRoleDetail = (id?: string) => {
-    const { data, loading, send } = useRequest(() => getRoleById(id || ""), {
+  const useRoleDetail = (id?: number) => {
+    const { data, loading, send } = useRequest(() => getRoleById(id || 0), {
       immediate: !!id
     })
 
@@ -63,8 +63,8 @@ export default () => {
   }
 
   // 获取角色权限
-  const useRolePermissionList = (roleId?: string) => {
-    const { data, loading, send } = useRequest(() => getRolePermissions(roleId || ""), {
+  const useRolePermissionList = (roleId?: number) => {
+    const { data, loading, send } = useRequest(() => getRolePermissions(roleId || 0), {
       immediate: !!roleId
     })
 
@@ -103,7 +103,7 @@ export default () => {
   // 更新角色
   const useUpdateRole = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: RoleUpdateRequest) => updateRole(id, data), {
+    const { send, loading } = useRequest((id: number, data: RoleUpdateRequest) => updateRole(id, data), {
       immediate: false
     })
       .onSuccess(() => {
@@ -115,7 +115,7 @@ export default () => {
         error()
       })
 
-    const submitUpdate = (id: string, data: RoleUpdateRequest) => {
+    const submitUpdate = (id: number, data: RoleUpdateRequest) => {
       send(id, data)
     }
 
@@ -140,7 +140,7 @@ export default () => {
         error()
       })
 
-    const submitDelete = (id: string) => {
+    const submitDelete = (id: number) => {
       send(id)
     }
 
@@ -165,7 +165,7 @@ export default () => {
         error()
       })
 
-    const submitBatchDelete = (ids: string[]) => {
+    const submitBatchDelete = (ids: number[]) => {
       send(ids)
     }
 
@@ -178,7 +178,7 @@ export default () => {
   // 更新角色权限
   const useUpdateRolePermissions = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, permissions: string[]) => updateRolePermissions(id, { permissions }), {
+    const { send, loading } = useRequest((id: number, permissions: string[]) => updateRolePermissions(id, { permissions }), {
       immediate: false
     })
       .onSuccess(() => {
@@ -190,7 +190,7 @@ export default () => {
         error()
       })
 
-    const submitUpdatePermissions = (id: string, permissions: string[]) => {
+    const submitUpdatePermissions = (id: number, permissions: string[]) => {
       send(id, permissions)
     }
 

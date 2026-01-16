@@ -1,14 +1,14 @@
 import http from "@/utils/http"
 
 export type Doctor = {
-  doctorId: string
+  id: number
   doctorCode: string
   name: string
   gender: string
   title: string
   practiceType: string
   practiceScope: string
-  departmentId: string
+  departmentId: number
   phone: string
   email: string
   avatar: string
@@ -34,7 +34,7 @@ export type DoctorCreateRequest = {
   title: string
   practiceType: string
   practiceScope: string
-  departmentId: string
+  departmentId: number
   phone: string
   email?: string
   avatar?: string
@@ -48,7 +48,7 @@ export type DoctorUpdateRequest = {
   title?: string
   practiceType?: string
   practiceScope?: string
-  departmentId?: string
+  departmentId?: number
   phone?: string
   email?: string
   avatar?: string
@@ -56,14 +56,14 @@ export type DoctorUpdateRequest = {
   status?: string
 }
 
-export const getDoctorList = (params: DoctorQueryParams) => http.get<{ list: Doctor[]; total: number }>("/doctors", params)
+export const getDoctorList = (params: DoctorQueryParams) => http.get<Doctor[]>("/doctors", params)
 
-export const getDoctorById = (id: string) => http.get<Doctor>(`/doctors/${id}`)
+export const getDoctorById = (id: number) => http.get<Doctor>(`/doctors/${id}`)
 
 export const createDoctor = (data: DoctorCreateRequest) => http.post<Doctor>("/doctors", data)
 
-export const updateDoctor = (id: string, data: DoctorUpdateRequest) => http.put<Doctor>(`/doctors/${id}`, data)
+export const updateDoctor = (id: number, data: DoctorUpdateRequest) => http.put<Doctor>(`/doctors/${id}`, data)
 
-export const deleteDoctor = (id: string) => http.delete(`/doctors/${id}`)
+export const deleteDoctor = (id: number) => http.delete(`/doctors/${id}`)
 
-export const batchDeleteDoctor = (ids: string[]) => http.delete("/doctors", { data: { ids } })
+export const batchDeleteDoctor = (ids: number[]) => http.delete("/doctors", { data: { ids } })

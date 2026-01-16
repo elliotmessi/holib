@@ -16,8 +16,8 @@ export default () => {
     } = usePagination((page, pageSize) => getDoctorList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: (response: any) => response?.list || [],
-      total: (response: any) => response?.total || 0,
+      data: (response: any) => response || [],
+      total: (response: any) => response?.length || 0,
     })
 
     return {
@@ -38,8 +38,8 @@ export default () => {
   }
 
   // 获取医生详情
-  const useDoctorDetail = (id?: string) => {
-    const { data, loading, send } = useRequest(() => getDoctorById(id || ""), {
+  const useDoctorDetail = (id?: number) => {
+    const { data, loading, send } = useRequest(() => getDoctorById(id || 0), {
       immediate: !!id,
     })
 
@@ -78,7 +78,7 @@ export default () => {
   // 更新医生
   const useUpdateDoctor = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: DoctorUpdateRequest) => updateDoctor(id, data), {
+    const { send, loading } = useRequest((id: number, data: DoctorUpdateRequest) => updateDoctor(id, data), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -90,7 +90,7 @@ export default () => {
         error()
       })
 
-    const submitUpdate = (id: string, data: DoctorUpdateRequest) => {
+    const submitUpdate = (id: number, data: DoctorUpdateRequest) => {
       send(id, data)
     }
 
@@ -115,7 +115,7 @@ export default () => {
         error()
       })
 
-    const submitDelete = (id: string) => {
+    const submitDelete = (id: number) => {
       send(id)
     }
 
@@ -140,7 +140,7 @@ export default () => {
         error()
       })
 
-    const submitBatchDelete = (ids: string[]) => {
+    const submitBatchDelete = (ids: number[]) => {
       send(ids)
     }
 

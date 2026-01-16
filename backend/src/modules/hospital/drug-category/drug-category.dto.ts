@@ -1,6 +1,7 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger"
 import { IsString, IsOptional, IsInt, Min, MinLength, MaxLength, IsEnum } from "class-validator"
 
+import { PagerDto } from '~/common/dto/pager.dto'
 import { DrugCategoryType } from "./drug-category.entity"
 
 /**
@@ -34,7 +35,7 @@ export class CreateDrugCategoryDto {
  */
 export class UpdateDrugCategoryDto extends PartialType(CreateDrugCategoryDto) {}
 
-export class DrugCategoryQueryDto {
+export class DrugCategoryQueryDto extends PagerDto {
   @ApiProperty({ description: "分类名称", required: false })
   @IsString()
   @IsOptional()

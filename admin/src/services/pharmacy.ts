@@ -1,12 +1,12 @@
 import http from "@/utils/http"
 
 export type Pharmacy = {
-  pharmacyId: string
+  id: number
   pharmacyCode: string
   name: string
-  hospitalId: string
+  hospitalId: number
   pharmacyType: string
-  departmentId: string
+  departmentId: number
   floor: string
   contactPerson: string
   phone: string
@@ -27,9 +27,9 @@ export type PharmacyQueryParams = {
 export type PharmacyCreateRequest = {
   pharmacyCode: string
   name: string
-  hospitalId: string
+  hospitalId: number
   pharmacyType: string
-  departmentId: string
+  departmentId: number
   floor?: string
   contactPerson?: string
   phone?: string
@@ -39,21 +39,21 @@ export type PharmacyCreateRequest = {
 export type PharmacyUpdateRequest = {
   name?: string
   pharmacyType?: string
-  departmentId?: string
+  departmentId?: number
   floor?: string
   contactPerson?: string
   phone?: string
   description?: string
 }
 
-export const getPharmacyList = (params: PharmacyQueryParams) => http.get<{ list: Pharmacy[]; total: number }>("/pharmacies", params)
+export const getPharmacyList = (params: PharmacyQueryParams) => http.get<Pharmacy[]>("/pharmacies", params)
 
-export const getPharmacyById = (id: string) => http.get<Pharmacy>(`/pharmacies/${id}`)
+export const getPharmacyById = (id: number) => http.get<Pharmacy>(`/pharmacies/${id}`)
 
 export const createPharmacy = (data: PharmacyCreateRequest) => http.post<Pharmacy>("/pharmacies", data)
 
-export const updatePharmacy = (id: string, data: PharmacyUpdateRequest) => http.put<Pharmacy>(`/pharmacies/${id}`, data)
+export const updatePharmacy = (id: number, data: PharmacyUpdateRequest) => http.put<Pharmacy>(`/pharmacies/${id}`, data)
 
-export const deletePharmacy = (id: string) => http.delete(`/pharmacies/${id}`)
+export const deletePharmacy = (id: number) => http.delete(`/pharmacies/${id}`)
 
-export const batchDeletePharmacy = (ids: string[]) => http.delete("/pharmacies", { data: { ids } })
+export const batchDeletePharmacy = (ids: number[]) => http.delete("/pharmacies", { data: { ids } })

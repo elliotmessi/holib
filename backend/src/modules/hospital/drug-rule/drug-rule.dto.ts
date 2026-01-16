@@ -1,8 +1,8 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger"
 import { IsString, IsOptional, IsInt, Min, IsEnum, IsNumber, IsBoolean } from "class-validator"
 
+import { PagerDto } from "~/common/dto/pager.dto"
 import { DrugRuleType, InteractionSeverity } from "./drug-rule.entity"
-
 /**
  * 药品规则基础DTO，包含所有共同字段
  */
@@ -63,7 +63,7 @@ export class CreateDrugRuleDto {
  */
 export class UpdateDrugRuleDto extends PartialType(CreateDrugRuleDto) {}
 
-export class DrugRuleQueryDto {
+export class DrugRuleQueryDto extends PagerDto {
   @ApiProperty({ description: "药品ID", required: false })
   @IsInt()
   @Min(0)

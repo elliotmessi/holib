@@ -1,20 +1,22 @@
-import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { isEmpty } from 'lodash'
-import { DataSource, Repository, TreeRepository } from 'typeorm'
+import { Injectable } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+import { isEmpty } from "lodash"
+import { DataSource, Repository, TreeRepository } from "typeorm"
 
-import { BusinessException } from '~/common/exceptions/biz.exception'
-import { ErrorEnum } from '~/constants/error-code.constant'
+import { paginate } from "~/helper/paginate"
+import { Pagination } from "~/helper/paginate/pagination"
+import { BusinessException } from "~/common/exceptions/biz.exception"
+import { ErrorEnum } from "~/constants/error-code.constant"
 
-import { DepartmentEntity, DepartmentType } from './department.entity'
-import { CreateDepartmentDto, UpdateDepartmentDto, DepartmentQueryDto } from './department.dto'
+import { DepartmentEntity, DepartmentType } from "./department.entity"
+import { CreateDepartmentDto, UpdateDepartmentDto, DepartmentQueryDto } from "./department.dto"
 
 @Injectable()
 export class DepartmentService {
   constructor(
     @InjectRepository(DepartmentEntity)
     private departmentRepository: TreeRepository<DepartmentEntity>,
-    private dataSource: DataSource,
+    private dataSource: DataSource
   ) {}
 
   async create(createDto: CreateDepartmentDto): Promise<DepartmentEntity> {
@@ -33,7 +35,7 @@ export class DepartmentService {
       }
     }
 
-    const hospital = await this.dataSource.manager.findOneBy('hospitals', {
+    const hospital = await this.dataSource.manager.findOneBy("hospitals", {
       id: createDto.hospitalId,
     })
     if (!hospital) {
@@ -48,38 +50,41 @@ export class DepartmentService {
     return this.departmentRepository.save(department)
   }
 
-  async findAll(query: DepartmentQueryDto): Promise<DepartmentEntity[]> {
-    const queryBuilder = this.departmentRepository.createQueryBuilder('dept')
-    queryBuilder.leftJoinAndSelect('dept.hospital', 'hospital')
-    queryBuilder.leftJoinAndSelect('dept.parent', 'parent')
+  async findAll(query: DepartmentQueryDto): Promise<Pagination<DepartmentEntity>> {
+    const queryBuilder = this.departmentRepository.createQueryBuilder("dept")
+    queryBuilder.leftJoinAndSelect("dept.hospital", "hospital")
+    queryBuilder.leftJoinAndSelect("dept.parent", "parent")
 
     if (query.name) {
-      queryBuilder.andWhere('dept.name LIKE :name', { name: `%${query.name}%` })
+      queryBuilder.andWhere("dept.name LIKE :name", { name: `%${query.name}%` })
     }
     if (query.type) {
-      queryBuilder.andWhere('dept.type = :type', { type: query.type })
+      queryBuilder.andWhere("dept.type = :type", { type: query.type })
     }
     if (query.hospitalId) {
-      queryBuilder.andWhere('dept.hospitalId = :hospitalId', { hospitalId: query.hospitalId })
+      queryBuilder.andWhere("dept.hospitalId = :hospitalId", { hospitalId: query.hospitalId })
     }
     if (query.parentId !== undefined && query.parentId !== null) {
-      queryBuilder.andWhere('dept.parentId = :parentId', { parentId: query.parentId })
+      queryBuilder.andWhere("dept.parentId = :parentId", { parentId: query.parentId })
     }
 
-    queryBuilder.orderBy('dept.createdAt', 'DESC')
-    return queryBuilder.getMany()
+    queryBuilder.orderBy("dept.createdAt", "DESC")
+    return paginate<DepartmentEntity>(queryBuilder, {
+      page: query.page,
+      pageSize: query.pageSize,
+    })
   }
 
   async findTree(hospitalId?: number): Promise<DepartmentEntity[]> {
-    const queryBuilder = this.departmentRepository.createQueryBuilder('dept')
-    queryBuilder.leftJoinAndSelect('dept.hospital', 'hospital')
-    queryBuilder.leftJoinAndSelect('dept.children', 'children')
+    const queryBuilder = this.departmentRepository.createQueryBuilder("dept")
+    queryBuilder.leftJoinAndSelect("dept.hospital", "hospital")
+    queryBuilder.leftJoinAndSelect("dept.children", "children")
 
     if (hospitalId) {
-      queryBuilder.andWhere('dept.hospitalId = :hospitalId', { hospitalId })
+      queryBuilder.andWhere("dept.hospitalId = :hospitalId", { hospitalId })
     }
 
-    queryBuilder.orderBy('dept.createdAt', 'ASC')
+    queryBuilder.orderBy("dept.createdAt", "ASC")
     const depts = await queryBuilder.getMany()
     return this.buildTree(depts)
   }
@@ -88,12 +93,12 @@ export class DepartmentService {
     const map = new Map<number, DepartmentEntity>()
     const roots: DepartmentEntity[] = []
 
-    depts.forEach((dept) => {
+    depts.forEach(dept => {
       dept.children = []
       map.set(dept.id, dept)
     })
 
-    depts.forEach((dept) => {
+    depts.forEach(dept => {
       if (dept.parentId && map.has(dept.parentId)) {
         const parent = map.get(dept.parentId)
         parent!.children!.push(dept)
@@ -108,7 +113,7 @@ export class DepartmentService {
   async findOne(id: number): Promise<DepartmentEntity> {
     const dept = await this.departmentRepository.findOne({
       where: { id },
-      relations: ['hospital', 'parent', 'children'],
+      relations: ["hospital", "parent", "children"],
     })
     if (!dept) {
       throw new BusinessException(ErrorEnum.DATA_NOT_FOUND)

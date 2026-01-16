@@ -74,27 +74,39 @@ describe('PatientController', () => {
   })
 
   describe('GET /patients', () => {
-    it('should return all patients', async () => {
-      const mockPatients = [
-        { id: 1, name: '张三' } as PatientEntity,
-        { id: 2, name: '李四' } as PatientEntity,
-      ]
+    it('should return all patients with pagination', async () => {
+      const mockPatients = {
+        items: [
+          { id: 1, name: '张三' } as PatientEntity,
+          { id: 2, name: '李四' } as PatientEntity,
+        ],
+        total: 2,
+        page: 1,
+        pageSize: 10,
+      }
       patientService.findAll.mockResolvedValue(mockPatients)
 
       const response = await request(app.getHttpServer()).get('/patients').expect(200)
 
       expect(response.body).toBeDefined()
+      expect(response.body.items).toBeDefined()
       expect(patientService.findAll).toHaveBeenCalled()
     })
 
     it('should return patients with query parameters', async () => {
-      const mockPatients = [{ id: 1, name: '张三' } as PatientEntity]
+      const mockPatients = {
+        items: [{ id: 1, name: '张三' } as PatientEntity],
+        total: 1,
+        page: 1,
+        pageSize: 10,
+      }
       patientService.findAll.mockResolvedValue(mockPatients)
 
       const query: PatientQueryDto = { name: '张三' }
       const response = await request(app.getHttpServer()).get('/patients').query(query).expect(200)
 
       expect(response.body).toBeDefined()
+      expect(response.body.items).toBeDefined()
       expect(patientService.findAll).toHaveBeenCalledWith(query)
     })
 

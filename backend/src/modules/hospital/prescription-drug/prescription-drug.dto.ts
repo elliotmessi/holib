@@ -10,6 +10,8 @@ import {
 } from 'class-validator'
 import { PartialType } from '@nestjs/mapped-types'
 
+import { PagerDto } from '~/common/dto/pager.dto'
+
 export class CreatePrescriptionDrugDto {
   @ApiProperty({ description: '处方ID' })
   @IsInt()
@@ -66,7 +68,7 @@ export class CreatePrescriptionDrugDto {
 
 export class UpdatePrescriptionDrugDto extends PartialType(CreatePrescriptionDrugDto) {}
 
-export class PrescriptionDrugQueryDto {
+export class PrescriptionDrugQueryDto extends PagerDto {
   @ApiProperty({ description: '处方ID', required: false })
   @IsInt()
   @Min(0)

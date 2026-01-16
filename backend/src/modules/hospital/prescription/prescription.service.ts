@@ -1,23 +1,18 @@
-import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, DataSource, Between } from 'typeorm'
-import { nanoid } from 'nanoid'
+import { Injectable } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+import { Repository, DataSource, Between } from "typeorm"
+import { nanoid } from "nanoid"
 
-import { BusinessException } from '~/common/exceptions/biz.exception'
-import { ErrorEnum } from '~/constants/error-code.constant'
+import { paginate } from "~/helper/paginate"
+import { Pagination } from "~/helper/paginate/pagination"
+import { BusinessException } from "~/common/exceptions/biz.exception"
+import { ErrorEnum } from "~/constants/error-code.constant"
 
-import { PrescriptionEntity, PrescriptionStatus } from './prescription.entity'
-import {
-  CreatePrescriptionDto,
-  ReviewPrescriptionDto,
-  PrescriptionQueryDto,
-} from './prescription.dto'
-import { PrescriptionDrugEntity } from '../prescription-drug/prescription-drug.entity'
-import { InventoryEntity } from '../inventory/inventory.entity'
-import {
-  InventoryTransactionEntity,
-  InventoryTransactionType,
-} from '../inventory-transaction/inventory-transaction.entity'
+import { PrescriptionEntity, PrescriptionStatus } from "./prescription.entity"
+import { CreatePrescriptionDto, ReviewPrescriptionDto, PrescriptionQueryDto } from "./prescription.dto"
+import { PrescriptionDrugEntity } from "../prescription-drug/prescription-drug.entity"
+import { InventoryEntity } from "../inventory/inventory.entity"
+import { InventoryTransactionEntity, InventoryTransactionType } from "../inventory-transaction/inventory-transaction.entity"
 
 @Injectable()
 export class PrescriptionService {
@@ -30,12 +25,12 @@ export class PrescriptionService {
     private inventoryRepository: Repository<InventoryEntity>,
     @InjectRepository(InventoryTransactionEntity)
     private transactionRepository: Repository<InventoryTransactionEntity>,
-    private dataSource: DataSource,
+    private dataSource: DataSource
   ) {}
 
   private generatePrescriptionNumber(): string {
     const date = new Date()
-    const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '')
+    const dateStr = date.toISOString().slice(0, 10).replace(/-/g, "")
     const random = nanoid(8)
     return `PRES${dateStr}${random}`
   }
@@ -75,7 +70,7 @@ export class PrescriptionService {
 
     prescription.totalAmount = totalAmount
 
-    await this.dataSource.transaction(async (manager) => {
+    await this.dataSource.transaction(async manager => {
       await manager.save(prescription)
 
       for (const drugData of prescriptionDrugs) {
@@ -90,42 +85,45 @@ export class PrescriptionService {
     return this.findOne(prescription.id!)
   }
 
-  async findAll(query: PrescriptionQueryDto): Promise<PrescriptionEntity[]> {
-    const queryBuilder = this.prescriptionRepository.createQueryBuilder('prescription')
-    queryBuilder.leftJoinAndSelect('prescription.patient', 'patient')
-    queryBuilder.leftJoinAndSelect('prescription.doctor', 'doctor')
-    queryBuilder.leftJoinAndSelect('prescription.department', 'department')
-    queryBuilder.leftJoinAndSelect('prescription.pharmacy', 'pharmacy')
+  async findAll(query: PrescriptionQueryDto): Promise<Pagination<PrescriptionEntity>> {
+    const queryBuilder = this.prescriptionRepository.createQueryBuilder("prescription")
+    queryBuilder.leftJoinAndSelect("prescription.patient", "patient")
+    queryBuilder.leftJoinAndSelect("prescription.doctor", "doctor")
+    queryBuilder.leftJoinAndSelect("prescription.department", "department")
+    queryBuilder.leftJoinAndSelect("prescription.pharmacy", "pharmacy")
 
     if (query.patientId) {
-      queryBuilder.andWhere('prescription.patientId = :patientId', { patientId: query.patientId })
+      queryBuilder.andWhere("prescription.patientId = :patientId", { patientId: query.patientId })
     }
     if (query.doctorId) {
-      queryBuilder.andWhere('prescription.doctorId = :doctorId', { doctorId: query.doctorId })
+      queryBuilder.andWhere("prescription.doctorId = :doctorId", { doctorId: query.doctorId })
     }
     if (query.pharmacyId) {
-      queryBuilder.andWhere('prescription.pharmacyId = :pharmacyId', {
+      queryBuilder.andWhere("prescription.pharmacyId = :pharmacyId", {
         pharmacyId: query.pharmacyId,
       })
     }
     if (query.status) {
-      queryBuilder.andWhere('prescription.status = :status', { status: query.status })
+      queryBuilder.andWhere("prescription.status = :status", { status: query.status })
     }
     if (query.startDate && query.endDate) {
-      queryBuilder.andWhere('prescription.createdAt BETWEEN :startDate AND :endDate', {
+      queryBuilder.andWhere("prescription.createdAt BETWEEN :startDate AND :endDate", {
         startDate: query.startDate,
         endDate: query.endDate,
       })
     }
 
-    queryBuilder.orderBy('prescription.createdAt', 'DESC')
-    return queryBuilder.getMany()
+    queryBuilder.orderBy("prescription.createdAt", "DESC")
+    return paginate<PrescriptionEntity>(queryBuilder, {
+      page: query.page,
+      pageSize: query.pageSize,
+    })
   }
 
   async findOne(id: number): Promise<PrescriptionEntity> {
     const prescription = await this.prescriptionRepository.findOne({
       where: { id },
-      relations: ['patient', 'doctor', 'department', 'pharmacy'],
+      relations: ["patient", "doctor", "department", "pharmacy"],
     })
     if (!prescription) {
       throw new BusinessException(ErrorEnum.DATA_NOT_FOUND)
@@ -133,7 +131,7 @@ export class PrescriptionService {
 
     const drugs = await this.prescriptionDrugRepository.find({
       where: { prescriptionId: id },
-      relations: ['drug'],
+      relations: ["drug"],
     })
 
     return { ...prescription, prescriptionDrugs: drugs } as any
@@ -161,7 +159,7 @@ export class PrescriptionService {
       throw new BusinessException(ErrorEnum.PRESCRIPTION_NOT_APPROVED)
     }
 
-    await this.dataSource.transaction(async (manager) => {
+    await this.dataSource.transaction(async manager => {
       const drugs = await this.prescriptionDrugRepository.find({
         where: { prescriptionId: id },
       })
@@ -186,9 +184,9 @@ export class PrescriptionService {
           unitPrice: drug.unitPrice,
           totalAmount: drug.totalPrice,
           batchNumber: inventory.batchNumber,
-          reason: '处方发药',
+          reason: "处方发药",
           referenceId: prescription.id,
-          referenceType: 'prescription',
+          referenceType: "prescription",
           createdBy: prescription.doctorId!,
         })
         await manager.save(transaction)
@@ -218,27 +216,27 @@ export class PrescriptionService {
         pharmacyId,
         status: PrescriptionStatus.PENDING_REVIEW,
       },
-      relations: ['patient', 'doctor'],
-      order: { createdAt: 'ASC' },
+      relations: ["patient", "doctor"],
+      order: { createdAt: "ASC" },
     })
   }
 
   async getStats(startDate: string, endDate: string, doctorId?: number): Promise<any> {
     const queryBuilder = this.prescriptionRepository
-      .createQueryBuilder('prescription')
-      .select('prescription.status', 'status')
-      .addSelect('COUNT(*)', 'count')
-      .addSelect('SUM(prescription.totalAmount)', 'totalAmount')
-      .where('prescription.createdAt BETWEEN :startDate AND :endDate', {
+      .createQueryBuilder("prescription")
+      .select("prescription.status", "status")
+      .addSelect("COUNT(*)", "count")
+      .addSelect("SUM(prescription.totalAmount)", "totalAmount")
+      .where("prescription.createdAt BETWEEN :startDate AND :endDate", {
         startDate,
         endDate,
       })
 
     if (doctorId) {
-      queryBuilder.andWhere('prescription.doctorId = :doctorId', { doctorId })
+      queryBuilder.andWhere("prescription.doctorId = :doctorId", { doctorId })
     }
 
-    queryBuilder.groupBy('prescription.status')
+    queryBuilder.groupBy("prescription.status")
     return queryBuilder.getRawMany()
   }
 }

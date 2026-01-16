@@ -1,30 +1,32 @@
-import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
-import * as crypto from 'crypto'
+import { Injectable } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+import { Repository } from "typeorm"
+import * as crypto from "crypto"
 
-import { BusinessException } from '~/common/exceptions/biz.exception'
-import { ErrorEnum } from '~/constants/error-code.constant'
+import { paginate } from "~/helper/paginate"
+import { Pagination } from "~/helper/paginate/pagination"
+import { BusinessException } from "~/common/exceptions/biz.exception"
+import { ErrorEnum } from "~/constants/error-code.constant"
 
-import { DoctorEntity } from './doctor.entity'
-import { CreateDoctorDto, UpdateDoctorDto, DoctorQueryDto, ChangePasswordDto } from './doctor.dto'
+import { DoctorEntity } from "./doctor.entity"
+import { CreateDoctorDto, UpdateDoctorDto, DoctorQueryDto, ChangePasswordDto } from "./doctor.dto"
 
 @Injectable()
 export class DoctorService {
   constructor(
     @InjectRepository(DoctorEntity)
-    private doctorRepository: Repository<DoctorEntity>,
+    private doctorRepository: Repository<DoctorEntity>
   ) {}
 
   private hashPassword(password: string, salt: string): string {
     return crypto
-      .createHash('sha256')
+      .createHash("sha256")
       .update(password + salt)
-      .digest('hex')
+      .digest("hex")
   }
 
   private generateSalt(): string {
-    return crypto.randomBytes(16).toString('hex')
+    return crypto.randomBytes(16).toString("hex")
   }
 
   async create(createDto: CreateDoctorDto): Promise<DoctorEntity> {
@@ -36,7 +38,7 @@ export class DoctorService {
     }
 
     const salt = this.generateSalt()
-    const defaultPassword = 'a123456'
+    const defaultPassword = "a123456"
     const passwordHash = this.hashPassword(createDto.password || defaultPassword, salt)
 
     const doctor = this.doctorRepository.create({
@@ -47,38 +49,41 @@ export class DoctorService {
     return this.doctorRepository.save(doctor)
   }
 
-  async findAll(query: DoctorQueryDto): Promise<DoctorEntity[]> {
-    const queryBuilder = this.doctorRepository.createQueryBuilder('doctor')
-    queryBuilder.leftJoinAndSelect('doctor.department', 'department')
+  async findAll(query: DoctorQueryDto): Promise<Pagination<DoctorEntity>> {
+    const queryBuilder = this.doctorRepository.createQueryBuilder("doctor")
+    queryBuilder.leftJoinAndSelect("doctor.department", "department")
 
     if (query.name) {
-      queryBuilder.andWhere('doctor.name LIKE :name', { name: `%${query.name}%` })
+      queryBuilder.andWhere("doctor.name LIKE :name", { name: `%${query.name}%` })
     }
     if (query.doctorCode) {
-      queryBuilder.andWhere('doctor.doctorCode LIKE :doctorCode', {
+      queryBuilder.andWhere("doctor.doctorCode LIKE :doctorCode", {
         doctorCode: `%${query.doctorCode}%`,
       })
     }
     if (query.departmentId) {
-      queryBuilder.andWhere('doctor.departmentId = :departmentId', {
+      queryBuilder.andWhere("doctor.departmentId = :departmentId", {
         departmentId: query.departmentId,
       })
     }
     if (query.title) {
-      queryBuilder.andWhere('doctor.title = :title', { title: query.title })
+      queryBuilder.andWhere("doctor.title = :title", { title: query.title })
     }
     if (query.status) {
-      queryBuilder.andWhere('doctor.status = :status', { status: query.status })
+      queryBuilder.andWhere("doctor.status = :status", { status: query.status })
     }
 
-    queryBuilder.orderBy('doctor.createdAt', 'DESC')
-    return queryBuilder.getMany()
+    queryBuilder.orderBy("doctor.createdAt", "DESC")
+    return paginate<DoctorEntity>(queryBuilder, {
+      page: query.page,
+      pageSize: query.pageSize,
+    })
   }
 
   async findOne(id: number): Promise<DoctorEntity> {
     const doctor = await this.doctorRepository.findOne({
       where: { id },
-      relations: ['department'],
+      relations: ["department"],
     })
     if (!doctor) {
       throw new BusinessException(ErrorEnum.DATA_NOT_FOUND)

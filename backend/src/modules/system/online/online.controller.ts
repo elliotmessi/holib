@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common'
+import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common'
 import { ApiExtraModels, ApiOperation, ApiTags } from '@nestjs/swagger'
 
 import { FastifyRequest } from 'fastify'
 
 import { ApiResult } from '~/common/decorators/api-result.decorator'
 import { ApiSecurityAuth } from '~/common/decorators/swagger.decorator'
+import { Pagination } from '~/helper/paginate/pagination'
 
 import { AuthUser } from '~/modules/auth/decorators/auth-user.decorator'
 
@@ -25,10 +26,14 @@ export class OnlineController {
 
   @Get('list')
   @ApiOperation({ summary: '查询当前在线用户' })
-  @ApiResult({ type: [OnlineUserInfo] })
+  @ApiResult({ type: [OnlineUserInfo], isPage: true })
   @Perm(permissions.LIST)
-  async list(@Req() req: FastifyRequest): Promise<OnlineUserInfo[]> {
-    return this.onlineService.listOnlineUser(req.accessToken)
+  async list(
+    @Req() req: FastifyRequest,
+    @Query('page') page?: number,
+    @Query('pageSize') pageSize?: number,
+  ): Promise<Pagination<OnlineUserInfo>> {
+    return this.onlineService.listOnlineUser(req.accessToken, page, pageSize)
   }
 
   @Post('kick')

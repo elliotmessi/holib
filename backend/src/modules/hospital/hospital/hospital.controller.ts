@@ -6,6 +6,7 @@ import { Idempotence } from '~/common/decorators/idempotence.decorator'
 import { ApiSecurityAuth } from '~/common/decorators/swagger.decorator'
 import { CreatorPipe } from '~/common/pipes/creator.pipe'
 import { UpdaterPipe } from '~/common/pipes/updater.pipe'
+import { Pagination } from '~/helper/paginate/pagination'
 import { AuthUser } from '~/modules/auth/decorators/auth-user.decorator'
 import { definePermission, Perm } from '~/modules/auth/decorators/permission.decorator'
 
@@ -29,9 +30,9 @@ export class HospitalController {
 
   @Get()
   @ApiOperation({ summary: '获取医院列表' })
-  @ApiResult({ type: [HospitalEntity] })
+  @ApiResult({ type: [HospitalEntity], isPage: true })
   @Perm(permissions.LIST)
-  async list(@Query() query: HospitalQueryDto): Promise<HospitalEntity[]> {
+  async list(@Query() query: HospitalQueryDto): Promise<Pagination<HospitalEntity>> {
     return this.hospitalService.findAll(query)
   }
 

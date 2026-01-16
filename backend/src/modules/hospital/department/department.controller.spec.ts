@@ -77,23 +77,34 @@ describe('DepartmentController', () => {
   })
 
   describe('GET /departments', () => {
-    it('should return all departments', async () => {
-      const mockDepartments = [
-        { id: 1, departmentCode: 'DEP001', name: '内科' } as DepartmentEntity,
-        { id: 2, departmentCode: 'DEP002', name: '外科' } as DepartmentEntity,
-      ]
+    it('should return all departments with pagination', async () => {
+      const mockDepartments = {
+        items: [
+          { id: 1, departmentCode: 'DEP001', name: '内科' } as DepartmentEntity,
+          { id: 2, departmentCode: 'DEP002', name: '外科' } as DepartmentEntity,
+        ],
+        total: 2,
+        page: 1,
+        pageSize: 10,
+      }
       departmentService.findAll.mockResolvedValue(mockDepartments)
 
       const response = await request(app.getHttpServer()).get('/departments').expect(200)
 
       expect(response.body).toBeDefined()
+      expect(response.body.items).toBeDefined()
       expect(departmentService.findAll).toHaveBeenCalled()
     })
 
     it('should return departments with query parameters', async () => {
-      const mockDepartments = [
-        { id: 1, departmentCode: 'DEP001', name: '内科' } as DepartmentEntity,
-      ]
+      const mockDepartments = {
+        items: [
+          { id: 1, departmentCode: 'DEP001', name: '内科' } as DepartmentEntity,
+        ],
+        total: 1,
+        page: 1,
+        pageSize: 10,
+      }
       departmentService.findAll.mockResolvedValue(mockDepartments)
 
       const query: DepartmentQueryDto = { name: '内科', type: DepartmentType.CLINICAL }
@@ -103,6 +114,7 @@ describe('DepartmentController', () => {
         .expect(200)
 
       expect(response.body).toBeDefined()
+      expect(response.body.items).toBeDefined()
       expect(departmentService.findAll).toHaveBeenCalledWith(query)
     })
 

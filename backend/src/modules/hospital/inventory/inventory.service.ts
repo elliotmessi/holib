@@ -1,21 +1,15 @@
-import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, DataSource } from 'typeorm'
+import { Injectable } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+import { Repository, DataSource } from "typeorm"
 
-import { BusinessException } from '~/common/exceptions/biz.exception'
-import { ErrorEnum } from '~/constants/error-code.constant'
+import { paginate } from "~/helper/paginate"
+import { Pagination } from "~/helper/paginate/pagination"
+import { BusinessException } from "~/common/exceptions/biz.exception"
+import { ErrorEnum } from "~/constants/error-code.constant"
 
-import { InventoryEntity } from './inventory.entity'
-import {
-  CreateInventoryDto,
-  UpdateInventoryDto,
-  InventoryQueryDto,
-  AdjustInventoryDto,
-} from './inventory.dto'
-import {
-  InventoryTransactionEntity,
-  InventoryTransactionType,
-} from '../inventory-transaction/inventory-transaction.entity'
+import { InventoryEntity } from "./inventory.entity"
+import { CreateInventoryDto, UpdateInventoryDto, InventoryQueryDto, AdjustInventoryDto } from "./inventory.dto"
+import { InventoryTransactionEntity, InventoryTransactionType } from "../inventory-transaction/inventory-transaction.entity"
 
 @Injectable()
 export class InventoryService {
@@ -24,7 +18,7 @@ export class InventoryService {
     private inventoryRepository: Repository<InventoryEntity>,
     @InjectRepository(InventoryTransactionEntity)
     private transactionRepository: Repository<InventoryTransactionEntity>,
-    private dataSource: DataSource,
+    private dataSource: DataSource
   ) {}
 
   async create(createDto: CreateInventoryDto): Promise<InventoryEntity> {
@@ -47,37 +41,40 @@ export class InventoryService {
     return this.inventoryRepository.save(inventory)
   }
 
-  async findAll(query: InventoryQueryDto): Promise<InventoryEntity[]> {
-    const queryBuilder = this.inventoryRepository.createQueryBuilder('inventory')
-    queryBuilder.leftJoinAndSelect('inventory.drug', 'drug')
-    queryBuilder.leftJoinAndSelect('inventory.pharmacy', 'pharmacy')
+  async findAll(query: InventoryQueryDto): Promise<Pagination<InventoryEntity>> {
+    const queryBuilder = this.inventoryRepository.createQueryBuilder("inventory")
+    queryBuilder.leftJoinAndSelect("inventory.drug", "drug")
+    queryBuilder.leftJoinAndSelect("inventory.pharmacy", "pharmacy")
 
     if (query.drugId) {
-      queryBuilder.andWhere('inventory.drugId = :drugId', { drugId: query.drugId })
+      queryBuilder.andWhere("inventory.drugId = :drugId", { drugId: query.drugId })
     }
     if (query.pharmacyId) {
-      queryBuilder.andWhere('inventory.pharmacyId = :pharmacyId', { pharmacyId: query.pharmacyId })
+      queryBuilder.andWhere("inventory.pharmacyId = :pharmacyId", { pharmacyId: query.pharmacyId })
     }
     if (query.batchNumber) {
-      queryBuilder.andWhere('inventory.batchNumber LIKE :batchNumber', {
+      queryBuilder.andWhere("inventory.batchNumber LIKE :batchNumber", {
         batchNumber: `%${query.batchNumber}%`,
       })
     }
     if (query.unfrozenOnly) {
-      queryBuilder.andWhere('inventory.isFrozen = :isFrozen', { isFrozen: false })
+      queryBuilder.andWhere("inventory.isFrozen = :isFrozen", { isFrozen: false })
     }
     if (query.lowStockOnly) {
-      queryBuilder.andWhere('inventory.quantity < inventory.minimumThreshold')
+      queryBuilder.andWhere("inventory.quantity < inventory.minimumThreshold")
     }
 
-    queryBuilder.orderBy('inventory.createdAt', 'DESC')
-    return queryBuilder.getMany()
+    queryBuilder.orderBy("inventory.createdAt", "DESC")
+    return paginate<InventoryEntity>(queryBuilder, {
+      page: query.page,
+      pageSize: query.pageSize,
+    })
   }
 
   async findOne(id: number): Promise<InventoryEntity> {
     const inventory = await this.inventoryRepository.findOne({
       where: { id },
-      relations: ['drug', 'pharmacy'],
+      relations: ["drug", "pharmacy"],
     })
     if (!inventory) {
       throw new BusinessException(ErrorEnum.DATA_NOT_FOUND)
@@ -88,19 +85,15 @@ export class InventoryService {
   async findByDrugAndPharmacy(drugId: number, pharmacyId: number): Promise<InventoryEntity[]> {
     return this.inventoryRepository.find({
       where: { drugId, pharmacyId },
-      relations: ['drug', 'pharmacy'],
-      order: { validTo: 'ASC' },
+      relations: ["drug", "pharmacy"],
+      order: { validTo: "ASC" },
     })
   }
 
   async update(id: number, updateDto: UpdateInventoryDto): Promise<void> {
     const inventory = await this.findOne(id)
 
-    if (
-      updateDto.drugId !== inventory.drugId ||
-      updateDto.pharmacyId !== inventory.pharmacyId ||
-      updateDto.batchNumber !== inventory.batchNumber
-    ) {
+    if (updateDto.drugId !== inventory.drugId || updateDto.pharmacyId !== inventory.pharmacyId || updateDto.batchNumber !== inventory.batchNumber) {
       const exist = await this.inventoryRepository.findOne({
         where: {
           drugId: updateDto.drugId || inventory.drugId,
@@ -121,11 +114,7 @@ export class InventoryService {
     await this.inventoryRepository.save(inventory)
   }
 
-  async adjustQuantity(
-    id: number,
-    adjustDto: AdjustInventoryDto,
-    userId: number,
-  ): Promise<InventoryEntity> {
+  async adjustQuantity(id: number, adjustDto: AdjustInventoryDto, userId: number): Promise<InventoryEntity> {
     const inventory = await this.findOne(id)
     const newQuantity = inventory.quantity + adjustDto.adjustment
 
@@ -133,7 +122,7 @@ export class InventoryService {
       throw new BusinessException(ErrorEnum.INSUFFICIENT_INVENTORY)
     }
 
-    await this.dataSource.transaction(async (manager) => {
+    await this.dataSource.transaction(async manager => {
       inventory.quantity = newQuantity
       await manager.save(inventory)
 
@@ -170,12 +159,12 @@ export class InventoryService {
 
   async getLowStock(): Promise<InventoryEntity[]> {
     return this.inventoryRepository
-      .createQueryBuilder('inventory')
-      .leftJoinAndSelect('inventory.drug', 'drug')
-      .leftJoinAndSelect('inventory.pharmacy', 'pharmacy')
-      .where('inventory.quantity < inventory.minimumThreshold')
-      .andWhere('inventory.isFrozen = :isFrozen', { isFrozen: false })
-      .orderBy('inventory.quantity', 'ASC')
+      .createQueryBuilder("inventory")
+      .leftJoinAndSelect("inventory.drug", "drug")
+      .leftJoinAndSelect("inventory.pharmacy", "pharmacy")
+      .where("inventory.quantity < inventory.minimumThreshold")
+      .andWhere("inventory.isFrozen = :isFrozen", { isFrozen: false })
+      .orderBy("inventory.quantity", "ASC")
       .getMany()
   }
 
@@ -184,12 +173,12 @@ export class InventoryService {
     futureDate.setDate(futureDate.getDate() + days)
 
     return this.inventoryRepository
-      .createQueryBuilder('inventory')
-      .leftJoinAndSelect('inventory.drug', 'drug')
-      .leftJoinAndSelect('inventory.pharmacy', 'pharmacy')
-      .where('inventory.validTo <= :futureDate', { futureDate })
-      .andWhere('inventory.quantity > 0')
-      .orderBy('inventory.validTo', 'ASC')
+      .createQueryBuilder("inventory")
+      .leftJoinAndSelect("inventory.drug", "drug")
+      .leftJoinAndSelect("inventory.pharmacy", "pharmacy")
+      .where("inventory.validTo <= :futureDate", { futureDate })
+      .andWhere("inventory.quantity > 0")
+      .orderBy("inventory.validTo", "ASC")
       .getMany()
   }
 }

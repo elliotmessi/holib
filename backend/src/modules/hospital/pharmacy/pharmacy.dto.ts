@@ -1,53 +1,54 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { IsString, IsOptional, IsInt, Min, MinLength, MaxLength, IsEnum } from 'class-validator'
-import { PartialType } from '@nestjs/mapped-types'
+import { ApiProperty } from "@nestjs/swagger"
+import { IsString, IsOptional, IsInt, Min, MinLength, MaxLength, IsEnum } from "class-validator"
+import { PartialType } from "@nestjs/mapped-types"
 
-import { PharmacyType } from './pharmacy.entity'
+import { PagerDto } from "~/common/dto/pager.dto"
+import { PharmacyType } from "./pharmacy.entity"
 
 export class CreatePharmacyDto {
-  @ApiProperty({ description: '药房编码' })
+  @ApiProperty({ description: "药房编码" })
   @IsString()
   @MinLength(1)
   @MaxLength(20)
   pharmacyCode: string
 
-  @ApiProperty({ description: '药房名称' })
+  @ApiProperty({ description: "药房名称" })
   @IsString()
   @MinLength(1)
   @MaxLength(50)
   name: string
 
-  @ApiProperty({ description: '所属医院ID' })
+  @ApiProperty({ description: "所属医院ID" })
   @IsInt()
   @Min(1)
   hospitalId: number
 
-  @ApiProperty({ description: '药房类型', enum: PharmacyType })
+  @ApiProperty({ description: "药房类型", enum: PharmacyType })
   @IsEnum(PharmacyType)
   pharmacyType: PharmacyType
 
-  @ApiProperty({ description: '负责科室ID', required: false })
+  @ApiProperty({ description: "负责科室ID", required: false })
   @IsInt()
   @Min(0)
   @IsOptional()
   departmentId?: number
 
-  @ApiProperty({ description: '所在楼层', required: false })
+  @ApiProperty({ description: "所在楼层", required: false })
   @IsString()
   @IsOptional()
   floor?: string
 
-  @ApiProperty({ description: '联系人', required: false })
+  @ApiProperty({ description: "联系人", required: false })
   @IsString()
   @IsOptional()
   contactPerson?: string
 
-  @ApiProperty({ description: '联系电话', required: false })
+  @ApiProperty({ description: "联系电话", required: false })
   @IsString()
   @IsOptional()
   phone?: string
 
-  @ApiProperty({ description: '药房描述', required: false })
+  @ApiProperty({ description: "药房描述", required: false })
   @IsString()
   @IsOptional()
   description?: string
@@ -55,24 +56,24 @@ export class CreatePharmacyDto {
 
 export class UpdatePharmacyDto extends PartialType(CreatePharmacyDto) {}
 
-export class PharmacyQueryDto {
-  @ApiProperty({ description: '药房名称', required: false })
+export class PharmacyQueryDto extends PagerDto {
+  @ApiProperty({ description: "药房名称", required: false })
   @IsString()
   @IsOptional()
   name?: string
 
-  @ApiProperty({ description: '药房类型', enum: PharmacyType, required: false })
+  @ApiProperty({ description: "药房类型", enum: PharmacyType, required: false })
   @IsEnum(PharmacyType)
   @IsOptional()
   pharmacyType?: PharmacyType
 
-  @ApiProperty({ description: '所属医院ID', required: false })
+  @ApiProperty({ description: "所属医院ID", required: false })
   @IsInt()
   @Min(0)
   @IsOptional()
   hospitalId?: number
 
-  @ApiProperty({ description: '负责科室ID', required: false })
+  @ApiProperty({ description: "负责科室ID", required: false })
   @IsInt()
   @Min(0)
   @IsOptional()

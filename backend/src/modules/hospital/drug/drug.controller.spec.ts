@@ -77,27 +77,39 @@ describe('DrugController', () => {
   })
 
   describe('GET /drugs', () => {
-    it('should return all drugs', async () => {
-      const mockDrugs = [
-        { id: 1, drugCode: 'DRUG001', genericName: '阿莫西林' } as DrugEntity,
-        { id: 2, drugCode: 'DRUG002', genericName: '头孢克肟' } as DrugEntity,
-      ]
+    it('should return all drugs with pagination', async () => {
+      const mockDrugs = {
+        items: [
+          { id: 1, drugCode: 'DRUG001', genericName: '阿莫西林' } as DrugEntity,
+          { id: 2, drugCode: 'DRUG002', genericName: '头孢克肟' } as DrugEntity,
+        ],
+        total: 2,
+        page: 1,
+        pageSize: 10,
+      }
       drugService.findAll.mockResolvedValue(mockDrugs)
 
       const response = await request(app.getHttpServer()).get('/drugs').expect(200)
 
       expect(response.body).toBeDefined()
+      expect(response.body.items).toBeDefined()
       expect(drugService.findAll).toHaveBeenCalled()
     })
 
     it('should return drugs with query parameters', async () => {
-      const mockDrugs = [{ id: 1, drugCode: 'DRUG001', genericName: '阿莫西林' } as DrugEntity]
+      const mockDrugs = {
+        items: [{ id: 1, drugCode: 'DRUG001', genericName: '阿莫西林' } as DrugEntity],
+        total: 1,
+        page: 1,
+        pageSize: 10,
+      }
       drugService.findAll.mockResolvedValue(mockDrugs)
 
       const query: DrugQueryDto = { name: '阿莫西林', drugType: '抗生素' }
       const response = await request(app.getHttpServer()).get('/drugs').query(query).expect(200)
 
       expect(response.body).toBeDefined()
+      expect(response.body.items).toBeDefined()
       expect(drugService.findAll).toHaveBeenCalled()
     })
 

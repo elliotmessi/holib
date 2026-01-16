@@ -26,8 +26,8 @@ export default () => {
     } = usePagination((page, pageSize) => getDepartmentList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: (response) => response?.list || [],
-      total: (response) => response?.total || 0
+      data: (response) => response || [],
+      total: (response) => response?.length || 0
     })
 
     return {
@@ -48,8 +48,8 @@ export default () => {
   }
 
   // 获取科室详情
-  const useDepartmentDetail = (id?: string) => {
-    const { data, loading, send } = useRequest(() => getDepartmentById(id || ""), {
+  const useDepartmentDetail = (id?: number) => {
+    const { data, loading, send } = useRequest(() => getDepartmentById(id || 0), {
       immediate: !!id
     })
 
@@ -88,7 +88,7 @@ export default () => {
   // 更新科室
   const useUpdateDepartment = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: DepartmentUpdateRequest) => updateDepartment(id, data), {
+    const { send, loading } = useRequest((id: number, data: DepartmentUpdateRequest) => updateDepartment(id, data), {
       immediate: false
     })
       .onSuccess(() => {
@@ -100,7 +100,7 @@ export default () => {
         error()
       })
 
-    const submitUpdate = (id: string, data: DepartmentUpdateRequest) => {
+    const submitUpdate = (id: number, data: DepartmentUpdateRequest) => {
       send(id, data)
     }
 
@@ -125,7 +125,7 @@ export default () => {
         error()
       })
 
-    const submitDelete = (id: string) => {
+    const submitDelete = (id: number) => {
       send(id)
     }
 
@@ -150,7 +150,7 @@ export default () => {
         error()
       })
 
-    const submitBatchDelete = (ids: string[]) => {
+    const submitBatchDelete = (ids: number[]) => {
       send(ids)
     }
 

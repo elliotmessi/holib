@@ -1,24 +1,14 @@
 import { PageContainer, ProDescriptions } from '@ant-design/pro-components';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button } from 'antd';
-import { useNavigate, useParams } from 'umi';
+import { useNavigate, useParams } from '@umijs/max';
+import { useModel } from '@umijs/max';
 
 const DepartmentDetail: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const [detailData, setDetailData] = useState<any>({});
-
-  // 模拟获取数据
-  useEffect(() => {
-    setDetailData({
-      deptName: '内科',
-      deptCode: 'internal',
-      status: '1',
-      createBy: 'admin',
-      createTime: '2026-01-01 10:00:00',
-      remark: '内科科室',
-    });
-  }, [id]);
+  const { useDepartmentDetail } = useModel('department');
+  const { departmentDetail, loading } = useDepartmentDetail(Number(id));
 
   return (
     <PageContainer
@@ -30,13 +20,15 @@ const DepartmentDetail: React.FC = () => {
         ],
       }}
     >
-      <ProDescriptions column={2} title="科室信息">
-        <ProDescriptions.Item label="科室名称">{detailData.deptName}</ProDescriptions.Item>
-        <ProDescriptions.Item label="科室编码">{detailData.deptCode}</ProDescriptions.Item>
-        <ProDescriptions.Item label="状态">{detailData.status === '1' ? '启用' : '禁用'}</ProDescriptions.Item>
-        <ProDescriptions.Item label="创建人">{detailData.createBy}</ProDescriptions.Item>
-        <ProDescriptions.Item label="创建时间">{detailData.createTime}</ProDescriptions.Item>
-        <ProDescriptions.Item label="备注">{detailData.remark}</ProDescriptions.Item>
+      <ProDescriptions column={2} title="科室信息" loading={loading}>
+        <ProDescriptions.Item label="科室名称">{departmentDetail?.name}</ProDescriptions.Item>
+        <ProDescriptions.Item label="科室编码">{departmentDetail?.code}</ProDescriptions.Item>
+        <ProDescriptions.Item label="类型">{departmentDetail?.type === 1 ? '临床' : '非临床'}</ProDescriptions.Item>
+        <ProDescriptions.Item label="联系人">{departmentDetail?.contact}</ProDescriptions.Item>
+        <ProDescriptions.Item label="电话">{departmentDetail?.phone}</ProDescriptions.Item>
+        <ProDescriptions.Item label="状态">{departmentDetail?.status === 1 ? '启用' : '禁用'}</ProDescriptions.Item>
+        <ProDescriptions.Item label="创建时间">{departmentDetail?.createdAt}</ProDescriptions.Item>
+        <ProDescriptions.Item label="更新时间">{departmentDetail?.updatedAt}</ProDescriptions.Item>
       </ProDescriptions>
     </PageContainer>
   );

@@ -12,6 +12,8 @@ import {
 } from 'class-validator'
 import { PartialType } from '@nestjs/mapped-types'
 
+import { PagerDto } from '~/common/dto/pager.dto'
+
 /**
  * 创建库存DTO，所有必填字段均为必填
  */
@@ -73,7 +75,7 @@ export class CreateInventoryDto {
  */
 export class UpdateInventoryDto extends PartialType(CreateInventoryDto) {}
 
-export class InventoryQueryDto {
+export class InventoryQueryDto extends PagerDto {
   @ApiProperty({ description: '药品ID', required: false })
   @IsInt()
   @Min(0)

@@ -1,7 +1,7 @@
 import http from "@/utils/http"
 
 export type Drug = {
-  id: string
+  id: number
   genericName: string
   tradeName: string
   specification: string
@@ -66,17 +66,17 @@ export type DrugUpdateRequest = {
   status?: string
 }
 
-export const getDrugList = (params: DrugQueryParams) => http.get<{ list: Drug[]; total: number }>("/drugs", params)
+export const getDrugList = (params: DrugQueryParams) => http.get<Drug[]>("/drugs", params)
 
-export const getDrugById = (id: string) => http.get<Drug>(`/drugs/${id}`)
+export const getDrugById = (id: number) => http.get<Drug>(`/drugs/${id}`)
 
 export const createDrug = (data: DrugCreateRequest) => http.post<Drug>("/drugs", data)
 
-export const updateDrug = (id: string, data: DrugUpdateRequest) => http.put<Drug>(`/drugs/${id}`, data)
+export const updateDrug = (id: number, data: DrugUpdateRequest) => http.put<Drug>(`/drugs/${id}`, data)
 
-export const deleteDrug = (id: string) => http.delete(`/drugs/${id}`)
+export const deleteDrug = (id: number) => http.delete(`/drugs/${id}`)
 
-export const batchDeleteDrug = (ids: string[]) => http.delete("/drugs", { data: { ids } })
+export const batchDeleteDrug = (ids: number[]) => http.delete("/drugs", { data: { ids } })
 
 export const importDrug = (file: File) => {
   const formData = new FormData()

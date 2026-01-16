@@ -16,8 +16,8 @@ export default () => {
     } = usePagination((page, pageSize) => getInventoryList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: (response: any) => response?.list || [],
-      total: (response: any) => response?.total || 0,
+      data: (response: any) => response || [],
+      total: (response: any) => response?.length || 0,
     })
 
     return {
@@ -38,8 +38,8 @@ export default () => {
   }
 
   // 获取库存详情
-  const useInventoryDetail = (id?: string) => {
-    const { data, loading, send } = useRequest(() => getInventoryById(id || ""), {
+  const useInventoryDetail = (id?: number) => {
+    const { data, loading, send } = useRequest(() => getInventoryById(id || 0), {
       immediate: !!id,
     })
 
@@ -51,7 +51,7 @@ export default () => {
   }
 
   // 低库存预警列表
-  const useLowStockInventory = (params?: { pharmacyId?: string }) => {
+  const useLowStockInventory = (params?: { pharmacyId?: number }) => {
     const {
       data: lowStockList,
       total,
@@ -63,8 +63,8 @@ export default () => {
     } = usePagination((page, pageSize) => getInventoryList({ ...params, page, pageSize, filter: "stockLevel:lt:minThreshold" }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: (response: any) => response?.list || [],
-      total: (response: any) => response?.total || 0,
+      data: (response: any) => response || [],
+      total: (response: any) => response?.length || 0,
     })
 
     return {
@@ -97,8 +97,8 @@ export default () => {
     } = usePagination((page, pageSize) => getInventoryList({ ...params, page, pageSize, filter: 'expiring:true' }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: (response: any) => response?.list || [],
-      total: (response: any) => response?.total || 0,
+      data: (response: any) => response || [],
+      total: (response: any) => response?.length || 0,
     })
 
     return {
@@ -121,7 +121,7 @@ export default () => {
   // 更新库存
   const useUpdateInventory = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: InventoryUpdateRequest) => updateInventory(id, data), {
+    const { send, loading } = useRequest((id: number, data: InventoryUpdateRequest) => updateInventory(id, data), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -133,7 +133,7 @@ export default () => {
         error()
       })
 
-    const submitUpdate = (id: string, data: InventoryUpdateRequest) => {
+    const submitUpdate = (id: number, data: InventoryUpdateRequest) => {
       send(id, data)
     }
 
@@ -196,7 +196,7 @@ export default () => {
   // 删除库存
   const useDeleteInventory = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string) => deleteInventory(id), {
+    const { send, loading } = useRequest((id: number) => deleteInventory(id), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -208,7 +208,7 @@ export default () => {
         error()
       })
 
-    const submitDelete = (id: string) => {
+    const submitDelete = (id: number) => {
       send(id)
     }
 
@@ -221,7 +221,7 @@ export default () => {
   // 批量删除库存
   const useBatchDeleteInventory = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((ids: string[]) => batchDeleteInventory(ids), {
+    const { send, loading } = useRequest((ids: number[]) => batchDeleteInventory(ids), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -233,7 +233,7 @@ export default () => {
         error()
       })
 
-    const submitBatchDelete = (ids: string[]) => {
+    const submitBatchDelete = (ids: number[]) => {
       send(ids)
     }
 

@@ -27,8 +27,8 @@ export default () => {
     } = usePagination((page, pageSize) => getUserList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: (response) => response?.list || [],
-      total: (response) => response?.total || 0
+      data: (response) => response || [],
+      total: (response) => response?.length || 0
     })
 
     return {
@@ -49,8 +49,8 @@ export default () => {
   }
 
   // 获取用户详情
-  const useUserDetail = (id?: string) => {
-    const { data, loading, send } = useRequest(() => getUserById(id || ''), {
+  const useUserDetail = (id?: number) => {
+    const { data, loading, send } = useRequest(() => getUserById(id || 0), {
       immediate: !!id
     })
 
@@ -89,7 +89,7 @@ export default () => {
   // 更新用户
   const useUpdateUser = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: UserUpdateRequest) => updateUser(id, data), {
+    const { send, loading } = useRequest((id: number, data: UserUpdateRequest) => updateUser(id, data), {
       immediate: false
     })
       .onSuccess(() => {
@@ -101,7 +101,7 @@ export default () => {
         error()
       })
 
-    const submitUpdate = (id: string, data: UserUpdateRequest) => {
+    const submitUpdate = (id: number, data: UserUpdateRequest) => {
       send(id, data)
     }
 
@@ -126,7 +126,7 @@ export default () => {
         error()
       })
 
-    const submitDelete = (id: string) => {
+    const submitDelete = (id: number) => {
       send(id)
     }
 
@@ -151,7 +151,7 @@ export default () => {
         error()
       })
 
-    const submitBatchDelete = (ids: string[]) => {
+    const submitBatchDelete = (ids: number[]) => {
       send(ids)
     }
 
@@ -164,7 +164,7 @@ export default () => {
   // 更新用户密码
   const useUpdateUserPassword = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: { password: string }) => updateUserPassword(id, data), {
+    const { send, loading } = useRequest((id: number, data: { password: string }) => updateUserPassword(id, data), {
       immediate: false
     })
       .onSuccess(() => {
@@ -176,7 +176,7 @@ export default () => {
         error()
       })
 
-    const submitUpdatePassword = (id: string, password: string) => {
+    const submitUpdatePassword = (id: number, password: string) => {
       send(id, { password })
     }
 

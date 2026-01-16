@@ -1,22 +1,20 @@
-import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, TreeRepository } from 'typeorm'
+import { Injectable } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+import { Repository, TreeRepository } from "typeorm"
 
-import { BusinessException } from '~/common/exceptions/biz.exception'
-import { ErrorEnum } from '~/constants/error-code.constant'
+import { paginate } from "~/helper/paginate"
+import { Pagination } from "~/helper/paginate/pagination"
+import { BusinessException } from "~/common/exceptions/biz.exception"
+import { ErrorEnum } from "~/constants/error-code.constant"
 
-import { DrugCategoryEntity, DrugCategoryType } from './drug-category.entity'
-import {
-  CreateDrugCategoryDto,
-  UpdateDrugCategoryDto,
-  DrugCategoryQueryDto,
-} from './drug-category.dto'
+import { DrugCategoryEntity, DrugCategoryType } from "./drug-category.entity"
+import { CreateDrugCategoryDto, UpdateDrugCategoryDto, DrugCategoryQueryDto } from "./drug-category.dto"
 
 @Injectable()
 export class DrugCategoryService {
   constructor(
     @InjectRepository(DrugCategoryEntity)
-    private categoryRepository: TreeRepository<DrugCategoryEntity>,
+    private categoryRepository: TreeRepository<DrugCategoryEntity>
   ) {}
 
   async create(createDto: CreateDrugCategoryDto): Promise<DrugCategoryEntity> {
@@ -35,33 +33,36 @@ export class DrugCategoryService {
     return this.categoryRepository.save(category)
   }
 
-  async findAll(query: DrugCategoryQueryDto): Promise<DrugCategoryEntity[]> {
-    const queryBuilder = this.categoryRepository.createQueryBuilder('category')
-    queryBuilder.leftJoinAndSelect('category.parent', 'parent')
+  async findAll(query: DrugCategoryQueryDto): Promise<Pagination<DrugCategoryEntity>> {
+    const queryBuilder = this.categoryRepository.createQueryBuilder("category")
+    queryBuilder.leftJoinAndSelect("category.parent", "parent")
 
     if (query.name) {
-      queryBuilder.andWhere('category.name LIKE :name', { name: `%${query.name}%` })
+      queryBuilder.andWhere("category.name LIKE :name", { name: `%${query.name}%` })
     }
     if (query.type) {
-      queryBuilder.andWhere('category.type = :type', { type: query.type })
+      queryBuilder.andWhere("category.type = :type", { type: query.type })
     }
     if (query.parentId !== undefined && query.parentId !== null) {
-      queryBuilder.andWhere('category.parentId = :parentId', { parentId: query.parentId })
+      queryBuilder.andWhere("category.parentId = :parentId", { parentId: query.parentId })
     }
 
-    queryBuilder.orderBy('category.createdAt', 'DESC')
-    return queryBuilder.getMany()
+    queryBuilder.orderBy("category.createdAt", "DESC")
+    return paginate<DrugCategoryEntity>(queryBuilder, {
+      page: query.page,
+      pageSize: query.pageSize,
+    })
   }
 
   async findTree(type?: DrugCategoryType): Promise<DrugCategoryEntity[]> {
-    const queryBuilder = this.categoryRepository.createQueryBuilder('category')
-    queryBuilder.leftJoinAndSelect('category.children', 'children')
+    const queryBuilder = this.categoryRepository.createQueryBuilder("category")
+    queryBuilder.leftJoinAndSelect("category.children", "children")
 
     if (type) {
-      queryBuilder.andWhere('category.type = :type', { type })
+      queryBuilder.andWhere("category.type = :type", { type })
     }
 
-    queryBuilder.orderBy('category.createdAt', 'ASC')
+    queryBuilder.orderBy("category.createdAt", "ASC")
     const categories = await queryBuilder.getMany()
     return this.buildTree(categories)
   }
@@ -70,12 +71,12 @@ export class DrugCategoryService {
     const map = new Map<number, DrugCategoryEntity>()
     const roots: DrugCategoryEntity[] = []
 
-    categories.forEach((category) => {
+    categories.forEach(category => {
       category.children = []
       map.set(category.id, category)
     })
 
-    categories.forEach((category) => {
+    categories.forEach(category => {
       if (category.parentId && map.has(category.parentId)) {
         const parent = map.get(category.parentId)
         parent!.children!.push(category)
@@ -90,7 +91,7 @@ export class DrugCategoryService {
   async findOne(id: number): Promise<DrugCategoryEntity> {
     const category = await this.categoryRepository.findOne({
       where: { id },
-      relations: ['parent', 'children'],
+      relations: ["parent", "children"],
     })
     if (!category) {
       throw new BusinessException(ErrorEnum.DATA_NOT_FOUND)
