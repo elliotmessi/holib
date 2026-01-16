@@ -172,6 +172,7 @@ const DoctorList: React.FC = () => {
         valueEnum: departmentList.map(dept => ({
           text: dept.name,
           value: dept.id,
+          key: dept.id,
         })),
       },
       {
@@ -292,6 +293,7 @@ const DoctorList: React.FC = () => {
               options={departmentList.map(dept => ({
                 value: dept.id,
                 label: dept.name,
+                key: dept.id,
               }))}
               loading={deptLoading}
             />
@@ -407,6 +409,7 @@ const DoctorList: React.FC = () => {
               options={departmentList.map(dept => ({
                 value: dept.id,
                 label: dept.name,
+                key: dept.id,
               }))}
               loading={deptLoading}
             />

@@ -231,6 +231,7 @@ const InventoryList: React.FC = () => {
         valueEnum: pharmacyList.map(pharmacy => ({
           text: pharmacy.name,
           value: pharmacy.id,
+          key: pharmacy.id,
         })),
       },
       {
@@ -475,6 +476,7 @@ const InventoryList: React.FC = () => {
               options={drugList.map(drug => ({
                 value: drug.id,
                 label: `${drug.name} (${drug.specification})`,
+                key: drug.id,
               }))}
               loading={drugLoading}
             />
@@ -490,6 +492,7 @@ const InventoryList: React.FC = () => {
               options={pharmacyList.map(pharmacy => ({
                 value: pharmacy.id,
                 label: pharmacy.name,
+                key: pharmacy.id,
               }))}
               loading={pharmacyLoading}
             />
@@ -586,6 +589,7 @@ const InventoryList: React.FC = () => {
               options={drugList.map(drug => ({
                 value: drug.id,
                 label: `${drug.name} (${drug.specification})`,
+                key: drug.id,
               }))}
               loading={drugLoading}
             />
@@ -601,6 +605,7 @@ const InventoryList: React.FC = () => {
               options={pharmacyList.map(pharmacy => ({
                 value: pharmacy.id,
                 label: pharmacy.name,
+                key: pharmacy.id,
               }))}
               loading={pharmacyLoading}
             />

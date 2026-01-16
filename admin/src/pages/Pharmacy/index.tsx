@@ -163,6 +163,7 @@ const PharmacyList: React.FC = () => {
         valueEnum: hospitalList.map(hospital => ({
           text: hospital.name,
           value: hospital.id,
+          key: hospital.id,
         })),
       },
       {
@@ -259,6 +260,7 @@ const PharmacyList: React.FC = () => {
               options={hospitalList.map(hospital => ({
                 value: hospital.id,
                 label: hospital.name,
+                key: hospital.id,
               }))}
               loading={hospitalLoading}
             />
@@ -358,6 +360,7 @@ const PharmacyList: React.FC = () => {
               options={hospitalList.map(hospital => ({
                 value: hospital.id,
                 label: hospital.name,
+                key: hospital.id,
               }))}
               loading={hospitalLoading}
             />
