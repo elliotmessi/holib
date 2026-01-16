@@ -27,7 +27,7 @@ const newRoutes = [
         name: "医院详情",
         path: "detail/:id",
         component: "./Hospital/detail",
-        access: "hospital:hospital:detail",
+        access: "hospital:hospital:list",
       },
     ],
   },

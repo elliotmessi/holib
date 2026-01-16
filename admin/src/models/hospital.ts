@@ -9,7 +9,8 @@ import {
   batchDeleteHospital,
   HospitalQueryParams,
   HospitalCreateRequest,
-  HospitalUpdateRequest
+  HospitalUpdateRequest,
+  Hospital
 } from "@/services/hospital"
 
 export default () => {
@@ -26,8 +27,8 @@ export default () => {
     } = usePagination((page, pageSize) => getHospitalList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: (response) => response?.list || [],
-      total: (response) => response?.total || 0
+      data: (response) => response || [],
+      total: (response) => response?.length || 0
     })
 
     return {
@@ -49,8 +50,8 @@ export default () => {
   }
 
   // 获取医院详情
-  const useHospitalDetail = (id?: string) => {
-    const { data, loading, send } = useRequest(() => getHospitalById(id || ""), {
+  const useHospitalDetail = (id?: number) => {
+    const { data, loading, send } = useRequest(() => getHospitalById(id || 0), {
       immediate: !!id
     })
 
@@ -89,7 +90,7 @@ export default () => {
   // 更新医院
   const useUpdateHospital = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: HospitalUpdateRequest) => updateHospital(id, data), {
+    const { send, loading } = useRequest((id: number, data: HospitalUpdateRequest) => updateHospital(id, data), {
       immediate: false
     })
       .onSuccess(() => {
@@ -101,7 +102,7 @@ export default () => {
         error()
       })
 
-    const submitUpdate = (id: string, data: HospitalUpdateRequest) => {
+    const submitUpdate = (id: number, data: HospitalUpdateRequest) => {
       send(id, data)
     }
 
@@ -126,7 +127,7 @@ export default () => {
         error()
       })
 
-    const submitDelete = (id: string) => {
+    const submitDelete = (id: number) => {
       send(id)
     }
 
@@ -151,7 +152,7 @@ export default () => {
         error()
       })
 
-    const submitBatchDelete = (ids: string[]) => {
+    const submitBatchDelete = (ids: number[]) => {
       send(ids)
     }
 

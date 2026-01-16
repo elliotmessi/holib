@@ -2,11 +2,13 @@ import { PageContainer, ProForm, ProFormText, ProFormSelect } from '@ant-design/
 import React from 'react';
 import { Button } from 'antd';
 import { useNavigate } from '@umijs/max';
+import { Access, useAccess } from '@umijs/max';
 import { useModel } from '@umijs/max';
 import { HospitalCreateRequest } from '@/services/hospital';
 
 const HospitalCreate: React.FC = () => {
   const navigate = useNavigate();
+  const access = useAccess();
   const { useCreateHospital } = useModel('hospital');
   const { submitCreate, loading } = useCreateHospital({
     success: () => navigate('/hospital/list'),
@@ -26,6 +28,7 @@ const HospitalCreate: React.FC = () => {
         ],
       }}
     >
+      <Access accessible={access.hasPermission('hospital:hospital:create')}>
         <ProForm
           onFinish={handleSubmit}
           layout="vertical"
@@ -72,6 +75,7 @@ const HospitalCreate: React.FC = () => {
             rules={[{ required: true, message: '请选择状态' }]}
           />
         </ProForm>
+      </Access>
     </PageContainer>
   );
 };

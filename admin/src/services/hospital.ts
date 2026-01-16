@@ -1,7 +1,7 @@
 import http from "@/utils/http"
 
 export type Hospital = {
-  id: string
+  id: number
   name: string
   code: string
   address: string
@@ -41,14 +41,14 @@ export type HospitalUpdateRequest = {
   status?: number
 }
 
-export const getHospitalList = (params: HospitalQueryParams) => http.get<{ list: Hospital[]; total: number }>("/hospital/hospitals", params)
+export const getHospitalList = (params: HospitalQueryParams) => http.get<Hospital[]>("/hospitals", params)
 
-export const getHospitalById = (id: string) => http.get<Hospital>(`/hospital/hospitals/${id}`)
+export const getHospitalById = (id: number) => http.get<Hospital>(`/hospitals/${id}`)
 
-export const createHospital = (data: HospitalCreateRequest) => http.post<Hospital>("/hospital/hospitals", data)
+export const createHospital = (data: HospitalCreateRequest) => http.post<Hospital>("/hospitals", data)
 
-export const updateHospital = (id: string, data: HospitalUpdateRequest) => http.put<Hospital>(`/hospital/hospitals/${id}`, data)
+export const updateHospital = (id: number, data: HospitalUpdateRequest) => http.put<Hospital>(`/hospitals/${id}`, data)
 
-export const deleteHospital = (id: string) => http.delete(`/hospital/hospitals/${id}`)
+export const deleteHospital = (id: number) => http.delete(`/hospitals/${id}`)
 
-export const batchDeleteHospital = (ids: string[]) => http.delete("/hospital/hospitals", { data: { ids } })
+export const batchDeleteHospital = (ids: number[]) => http.delete("/hospitals", { data: { ids } })

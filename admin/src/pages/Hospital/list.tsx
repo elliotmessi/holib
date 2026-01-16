@@ -16,7 +16,7 @@ const HospitalList: React.FC = () => {
     success: () => refresh(),
   });
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     Modal.confirm({
       title: '确认删除',
       content: '确定要删除该医院吗？此操作不可恢复。',

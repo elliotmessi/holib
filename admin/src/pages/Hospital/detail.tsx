@@ -3,13 +3,12 @@ import React from 'react';
 import { Button } from 'antd';
 import { useNavigate, useParams } from '@umijs/max';
 import { useModel } from '@umijs/max';
-import { Hospital } from '@/services/hospital';
 
 const HospitalDetail: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { useHospitalDetail } = useModel('hospital');
-  const { hospitalDetail, loading } = useHospitalDetail(id);
+  const { hospitalDetail, loading } = useHospitalDetail(Number(id));
 
   return (
     <PageContainer

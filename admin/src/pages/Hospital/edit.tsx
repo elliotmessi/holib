@@ -11,14 +11,14 @@ const HospitalEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const access = useAccess();
   const { useHospitalDetail, useUpdateHospital } = useModel('hospital');
-  const { hospitalDetail, loading: detailLoading } = useHospitalDetail(id);
+  const { hospitalDetail, loading: detailLoading } = useHospitalDetail(Number(id));
   const { submitUpdate, loading: updateLoading } = useUpdateHospital({
     success: () => navigate('/hospital/list'),
   });
 
   const handleSubmit = (values: HospitalUpdateRequest) => {
     if (id) {
-      submitUpdate(id, values);
+      submitUpdate(Number(id), values);
     }
   };
 
