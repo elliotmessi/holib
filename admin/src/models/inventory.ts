@@ -1,43 +1,23 @@
 import { useRequest, usePagination } from "alova/client"
 import { message } from "antd"
-import { getInventoryList, getInventoryById, updateInventory, deleteInventory, batchDeleteInventory, inventoryInbound, inventoryOutbound, getInventoryTransactions, InventoryQueryParams, InventoryUpdateRequest, InventoryInboundRequest, InventoryOutboundRequest } from "@/services/inventory"
+import {
+  getInventoryList,
+  getInventoryById,
+  updateInventory,
+  deleteInventory,
+  batchDeleteInventory,
+  inventoryInbound,
+  inventoryOutbound,
+  InventoryQueryParams,
+  InventoryUpdateRequest,
+  InventoryInboundRequest,
+  InventoryOutboundRequest,
+} from "@/services/inventory"
+import usePaginatedList from "@/hooks/usePaginatedList"
 
 export default () => {
-  // 库存列表
-  const useInventoryList = (params?: InventoryQueryParams) => {
-    const {
-      data: inventoryList,
-      total,
-      page,
-      pageSize,
-      fetching: loading,
-      refresh,
-      reload,
-    } = usePagination((page, pageSize) => getInventoryList({ ...params, page, pageSize }), {
-      initialPage: 1,
-      initialPageSize: 10,
-      data: (response: any) => response || [],
-      total: (response: any) => response?.length || 0,
-    })
+  const useInventoryList = (params?: InventoryQueryParams) => usePaginatedList(getInventoryList, { params })
 
-    return {
-      inventoryList: inventoryList || [],
-      total: total || 0,
-      loading,
-      pagination: {
-        page,
-        pageSize,
-        total: total || 0,
-        onChange: (newPage: number, newPageSize: number) => {
-          reload()
-        },
-      },
-      refresh,
-      reload,
-    }
-  }
-
-  // 获取库存详情
   const useInventoryDetail = (id?: number) => {
     const { data, loading, send } = useRequest(() => getInventoryById(id || 0), {
       immediate: !!id,
@@ -50,75 +30,20 @@ export default () => {
     }
   }
 
-  // 低库存预警列表
   const useLowStockInventory = (params?: { pharmacyId?: number }) => {
-    const {
-      data: lowStockList,
-      total,
-      page,
-      pageSize,
-      fetching: loading,
-      refresh,
-      reload,
-    } = usePagination((page, pageSize) => getInventoryList({ ...params, page, pageSize, filter: "stockLevel:lt:minThreshold" }), {
-      initialPage: 1,
-      initialPageSize: 10,
-      data: (response: any) => response || [],
-      total: (response: any) => response?.length || 0,
+    return usePagination((page, pageSize) => getInventoryList({ ...params, page, pageSize, filter: "stockLevel:lt:minThreshold" } as InventoryQueryParams), {
+      page: 1,
+      pageSize: 10,
     })
-
-    return {
-      lowStockList: lowStockList || [],
-      total: total || 0,
-      loading,
-      pagination: {
-        page,
-        pageSize,
-        total: total || 0,
-        onChange: (newPage: number, newPageSize: number) => {
-          reload()
-        },
-      },
-      refresh,
-      reload,
-    }
   }
 
-  // 近效期预警列表
   const useExpiringInventory = (params?: { days?: number }) => {
-    const {
-      data: expiringList,
-      total,
-      page,
-      pageSize,
-      fetching: loading,
-      refresh,
-      reload,
-    } = usePagination((page, pageSize) => getInventoryList({ ...params, page, pageSize, filter: 'expiring:true' }), {
-      initialPage: 1,
-      initialPageSize: 10,
-      data: (response: any) => response || [],
-      total: (response: any) => response?.length || 0,
+    return usePagination((page, pageSize) => getInventoryList({ ...params, page, pageSize, filter: "expiring:true" } as InventoryQueryParams), {
+      page: 1,
+      pageSize: 10,
     })
-
-    return {
-      expiringList: expiringList || [],
-      total: total || 0,
-      loading,
-      pagination: {
-        page,
-        pageSize,
-        total: total || 0,
-        onChange: (newPage: number, newPageSize: number) => {
-          reload()
-        },
-      },
-      refresh,
-      reload,
-    }
   }
 
-  // 更新库存
   const useUpdateInventory = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest((id: number, data: InventoryUpdateRequest) => updateInventory(id, data), {
@@ -143,7 +68,6 @@ export default () => {
     }
   }
 
-  // 库存入库
   const useInventoryInbound = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(inventoryInbound, {
@@ -168,7 +92,6 @@ export default () => {
     }
   }
 
-  // 库存出库
   const useInventoryOutbound = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(inventoryOutbound, {
@@ -193,7 +116,6 @@ export default () => {
     }
   }
 
-  // 删除库存
   const useDeleteInventory = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest((id: number) => deleteInventory(id), {
@@ -218,7 +140,6 @@ export default () => {
     }
   }
 
-  // 批量删除库存
   const useBatchDeleteInventory = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest((ids: number[]) => batchDeleteInventory(ids), {

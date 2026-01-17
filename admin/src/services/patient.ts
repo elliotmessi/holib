@@ -1,4 +1,5 @@
 import http from "@/utils/http"
+import { PaginatedResponse } from "@/types/pagination"
 
 export type Patient = {
   id: number
@@ -18,12 +19,15 @@ export type Patient = {
 }
 
 export type PatientQueryParams = {
+  name?: string
+  gender?: string
+  medicalRecordNumber?: string
+  idCard?: string
+  phone?: string
+  minAge?: number
+  maxAge?: number
   page?: number
   pageSize?: number
-  sort?: string
-  order?: string
-  filter?: string
-  keyword?: string
 }
 
 export type PatientCreateRequest = {
@@ -53,7 +57,8 @@ export type PatientUpdateRequest = {
   currentDiagnosis?: string
 }
 
-export const getPatientList = (params: PatientQueryParams) => http.get<Patient[]>("/patients", params)
+export const getPatientList = (params?: PatientQueryParams) =>
+  http.get<PaginatedResponse<Patient>>("/patients", params)
 
 export const getPatientById = (id: number) => http.get<Patient>(`/patients/${id}`)
 

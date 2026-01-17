@@ -1,4 +1,5 @@
 import http from "@/utils/http"
+import { PaginatedResponse } from "@/types/pagination"
 
 export type Role = {
   id: number
@@ -32,7 +33,7 @@ export type RoleUpdateRequest = {
   status?: number
 }
 
-export const getRoleList = (params: RoleQueryParams) => http.get<Role[]>("/system/roles", params)
+export const getRoleList = (params?: RoleQueryParams) => http.get<PaginatedResponse<Role>>("/system/roles", params)
 
 export const getRoleById = (id: number) => http.get<Role>(`/system/roles/${id}`)
 

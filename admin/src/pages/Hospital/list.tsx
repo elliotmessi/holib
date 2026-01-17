@@ -11,7 +11,7 @@ const HospitalList: React.FC = () => {
   const navigate = useNavigate();
   const access = useAccess();
   const { useHospitalList, useDeleteHospital } = useModel('hospital');
-  const { hospitalList, loading, pagination, refresh } = useHospitalList();
+  const { data: hospitalList, loading, total, page, pageSize, refresh } = useHospitalList();
   const { submitDelete, loading: deleteLoading } = useDeleteHospital({
     success: () => refresh(),
   });
@@ -126,7 +126,7 @@ const HospitalList: React.FC = () => {
         dataSource={hospitalList}
         rowKey="id"
         loading={loading}
-        pagination={pagination}
+        pagination={{ total, current: page, pageSize }}
       />
     </PageContainer>
   );

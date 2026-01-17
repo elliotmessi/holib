@@ -1,7 +1,9 @@
 import http from "@/utils/http"
+import { PaginatedResponse } from "@/types/pagination"
 
 export type Drug = {
   id: number
+  drugCode: string
   genericName: string
   tradeName: string
   specification: string
@@ -22,15 +24,18 @@ export type Drug = {
 }
 
 export type DrugQueryParams = {
+  name?: string
+  drugCode?: string
+  drugType?: string
+  dosageForm?: string
+  status?: string
+  pharmacologicalClassId?: number
   page?: number
   pageSize?: number
-  sort?: string
-  order?: string
-  filter?: string
-  keyword?: string
 }
 
 export type DrugCreateRequest = {
+  drugCode: string
   genericName: string
   tradeName?: string
   specification: string
@@ -66,7 +71,7 @@ export type DrugUpdateRequest = {
   status?: string
 }
 
-export const getDrugList = (params: DrugQueryParams) => http.get<Drug[]>("/drugs", params)
+export const getDrugList = (params?: DrugQueryParams) => http.get<PaginatedResponse<Drug>>("/drugs", params)
 
 export const getDrugById = (id: number) => http.get<Drug>(`/drugs/${id}`)
 

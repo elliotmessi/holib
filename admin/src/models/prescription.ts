@@ -1,43 +1,24 @@
 import { useRequest, usePagination } from "alova/client"
 import { message } from "antd"
-import { getPrescriptionList, getPrescriptionById, createPrescription, updatePrescription, deletePrescription, batchDeletePrescription, reviewPrescription, cancelPrescription, PrescriptionQueryParams, PrescriptionCreateRequest, PrescriptionUpdateRequest, PrescriptionReviewRequest } from "@/services/prescription"
+import {
+  getPrescriptionList,
+  getPrescriptionById,
+  createPrescription,
+  updatePrescription,
+  deletePrescription,
+  batchDeletePrescription,
+  reviewPrescription,
+  cancelPrescription,
+  PrescriptionQueryParams,
+  PrescriptionCreateRequest,
+  PrescriptionUpdateRequest,
+  PrescriptionReviewRequest,
+} from "@/services/prescription"
+import usePaginatedList from "@/hooks/usePaginatedList"
 
 export default () => {
-  // 处方列表
-  const usePrescriptionList = (params?: PrescriptionQueryParams) => {
-    const {
-      data: prescriptionList,
-      total,
-      page,
-      pageSize,
-      fetching: loading,
-      refresh,
-      reload,
-    } = usePagination((page, pageSize) => getPrescriptionList({ ...params, page, pageSize }), {
-      initialPage: 1,
-      initialPageSize: 10,
-      data: (response: any) => response || [],
-      total: (response: any) => response?.length || 0,
-    })
+  const usePrescriptionList = (params?: PrescriptionQueryParams) => usePaginatedList(getPrescriptionList, { params })
 
-    return {
-      prescriptionList: prescriptionList || [],
-      total: total || 0,
-      loading,
-      pagination: {
-        page,
-        pageSize,
-        total: total || 0,
-        onChange: (newPage: number, newPageSize: number) => {
-          reload()
-        },
-      },
-      refresh,
-      reload,
-    }
-  }
-
-  // 获取处方详情
   const usePrescriptionDetail = (id?: number) => {
     const { data, loading, send } = useRequest(() => getPrescriptionById(id || 0), {
       immediate: !!id,
@@ -50,41 +31,16 @@ export default () => {
     }
   }
 
-  // 待审核处方列表
   const usePendingReviewPrescriptions = (params?: { pharmacyId?: number }) => {
-    const {
-      data: pendingList,
-      total,
-      page,
-      pageSize,
-      fetching: loading,
-      refresh,
-      reload,
-    } = usePagination((page, pageSize) => getPrescriptionList({ ...params, page, pageSize, filter: "status:eq:pending_review" }), {
-      initialPage: 1,
-      initialPageSize: 10,
-      data: (response: any) => response || [],
-      total: (response: any) => response?.length || 0,
-    })
-
-    return {
-      pendingList: pendingList || [],
-      total: total || 0,
-      loading,
-      pagination: {
-        page,
-        pageSize,
-        total: total || 0,
-        onChange: (newPage: number, newPageSize: number) => {
-          reload()
-        },
-      },
-      refresh,
-      reload,
-    }
+    return usePagination(
+      (page, pageSize) => getPrescriptionList({ ...params, page, pageSize, filter: "status:eq:pending_review" } as PrescriptionQueryParams),
+      {
+        page: 1,
+        pageSize: 10,
+      }
+    )
   }
 
-  // 审核处方
   const useReviewPrescription = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest((id: number, data: PrescriptionReviewRequest) => reviewPrescription(id, data), {
@@ -109,7 +65,6 @@ export default () => {
     }
   }
 
-  // 取消处方
   const useCancelPrescription = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest((id: number) => cancelPrescription(id), {
@@ -134,7 +89,6 @@ export default () => {
     }
   }
 
-  // 创建处方
   const useCreatePrescription = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(createPrescription, {
@@ -159,7 +113,6 @@ export default () => {
     }
   }
 
-  // 更新处方
   const useUpdatePrescription = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest((id: number, data: PrescriptionUpdateRequest) => updatePrescription(id, data), {
@@ -184,7 +137,6 @@ export default () => {
     }
   }
 
-  // 删除处方
   const useDeletePrescription = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest((id: number) => deletePrescription(id), {
@@ -209,7 +161,6 @@ export default () => {
     }
   }
 
-  // 批量删除处方
   const useBatchDeletePrescription = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest((ids: number[]) => batchDeletePrescription(ids), {

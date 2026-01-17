@@ -1,43 +1,21 @@
-import { useRequest, usePagination } from "alova/client"
+import { useRequest } from "alova/client"
 import { message } from "antd"
-import { getPatientList, getPatientById, createPatient, updatePatient, deletePatient, batchDeletePatient, PatientQueryParams, PatientCreateRequest, PatientUpdateRequest } from "@/services/patient"
+import {
+  getPatientList,
+  getPatientById,
+  createPatient,
+  updatePatient,
+  deletePatient,
+  batchDeletePatient,
+  PatientQueryParams,
+  PatientCreateRequest,
+  PatientUpdateRequest,
+} from "@/services/patient"
+import usePaginatedList from "@/hooks/usePaginatedList"
 
 export default () => {
-  // 患者列表
-  const usePatientList = (params?: PatientQueryParams) => {
-    const {
-      data: patientList,
-      total,
-      page,
-      pageSize,
-      fetching: loading,
-      refresh,
-      reload,
-    } = usePagination((page, pageSize) => getPatientList({ ...params, page, pageSize }), {
-      initialPage: 1,
-      initialPageSize: 10,
-      data: (response: any) => response || [],
-      total: (response: any) => response?.length || 0,
-    })
+  const usePatientList = (params?: PatientQueryParams) => usePaginatedList(getPatientList, { params })
 
-    return {
-      patientList: patientList || [],
-      total: total || 0,
-      loading,
-      pagination: {
-        page,
-        pageSize,
-        total: total || 0,
-        onChange: (newPage: number, newPageSize: number) => {
-          reload()
-        },
-      },
-      refresh,
-      reload,
-    }
-  }
-
-  // 获取患者详情
   const usePatientDetail = (id?: number) => {
     const { data, loading, send } = useRequest(() => getPatientById(id || 0), {
       immediate: !!id,
@@ -50,7 +28,6 @@ export default () => {
     }
   }
 
-  // 创建患者
   const useCreatePatient = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(createPatient, {
@@ -75,7 +52,6 @@ export default () => {
     }
   }
 
-  // 更新患者
   const useUpdatePatient = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest((id: number, data: PatientUpdateRequest) => updatePatient(id, data), {
@@ -100,7 +76,6 @@ export default () => {
     }
   }
 
-  // 删除患者
   const useDeletePatient = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(deletePatient, {
@@ -125,7 +100,6 @@ export default () => {
     }
   }
 
-  // 批量删除患者
   const useBatchDeletePatient = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(batchDeletePatient, {

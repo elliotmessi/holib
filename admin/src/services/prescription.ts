@@ -1,4 +1,5 @@
 import http from "@/utils/http"
+import { PaginatedResponse } from "@/types/pagination"
 
 export type PrescriptionDrug = {
   drugId: number
@@ -18,6 +19,7 @@ export type Prescription = {
   patientId: number
   doctorId: number
   departmentId: number
+  pharmacyId: number
   diagnosis: string
   totalAmount: number
   status: string
@@ -38,15 +40,21 @@ export type Prescription = {
   department?: {
     name: string
   }
+  pharmacy?: {
+    name: string
+  }
 }
 
 export type PrescriptionQueryParams = {
+  patientId?: number
+  doctorId?: number
+  departmentId?: number
+  pharmacyId?: number
+  status?: string
+  startDate?: string
+  endDate?: string
   page?: number
   pageSize?: number
-  sort?: string
-  order?: string
-  filter?: string
-  keyword?: string
 }
 
 export type PrescriptionCreateRequest = {
@@ -67,7 +75,8 @@ export type PrescriptionReviewRequest = {
   reviewOpinion?: string
 }
 
-export const getPrescriptionList = (params: PrescriptionQueryParams) => http.get<Prescription[]>("/prescriptions", params)
+export const getPrescriptionList = (params?: PrescriptionQueryParams) =>
+  http.get<PaginatedResponse<Prescription>>("/prescriptions", params)
 
 export const getPrescriptionById = (id: number) => http.get<Prescription>(`/prescriptions/${id}`)
 

@@ -1,4 +1,5 @@
 import http from "@/utils/http"
+import { PaginatedResponse } from "@/types/pagination"
 
 export type Inventory = {
   id: number
@@ -31,12 +32,13 @@ export type Inventory = {
 }
 
 export type InventoryQueryParams = {
+  drugId?: number
+  pharmacyId?: number
+  batchNumber?: string
+  unfrozenOnly?: boolean
+  lowStockOnly?: boolean
   page?: number
   pageSize?: number
-  sort?: string
-  order?: string
-  filter?: string
-  keyword?: string
 }
 
 export type InventoryCreateRequest = {
@@ -80,7 +82,8 @@ export type InventoryOutboundRequest = {
   referenceId?: string
 }
 
-export const getInventoryList = (params: InventoryQueryParams) => http.get<Inventory[]>("/inventory", params)
+export const getInventoryList = (params?: InventoryQueryParams) =>
+  http.get<PaginatedResponse<Inventory>>("/inventory", params)
 
 export const getInventoryById = (id: number) => http.get<Inventory>(`/inventory/${id}`)
 

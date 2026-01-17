@@ -1,4 +1,4 @@
-import { useRequest, usePagination } from "alova/client"
+import { useRequest } from "alova/client"
 import { message } from "antd"
 import {
   getUserList,
@@ -10,62 +10,29 @@ import {
   updateUserPassword,
   UserQueryParams,
   UserCreateRequest,
-  UserUpdateRequest
+  UserUpdateRequest,
 } from "@/services/user"
+import usePaginatedList from "@/hooks/usePaginatedList"
 
 export default () => {
-  // 用户列表
-  const useUserList = (params?: UserQueryParams) => {
-    const {
-      data: userList,
-      total,
-      page,
-      pageSize,
-      fetching: loading,
-      refresh,
-      reload
-    } = usePagination((page, pageSize) => getUserList({ ...params, page, pageSize }), {
-      initialPage: 1,
-      initialPageSize: 10,
-      data: (response) => response || [],
-      total: (response) => response?.length || 0
-    })
+  const useUserList = (params?: UserQueryParams) => usePaginatedList(getUserList, { params })
 
-    return {
-      userList: userList || [],
-      total: total || 0,
-      loading,
-      pagination: {
-        page,
-        pageSize,
-        total: total || 0,
-        onChange: (newPage: number, newPageSize: number) => {
-          reload()
-        }
-      },
-      refresh,
-      reload
-    }
-  }
-
-  // 获取用户详情
   const useUserDetail = (id?: number) => {
     const { data, loading, send } = useRequest(() => getUserById(id || 0), {
-      immediate: !!id
+      immediate: !!id,
     })
 
     return {
       userDetail: data,
       loading,
-      fetchDetail: send
+      fetchDetail: send,
     }
   }
 
-  // 创建用户
   const useCreateUser = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(createUser, {
-      immediate: false
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("用户创建成功")
@@ -82,15 +49,14 @@ export default () => {
 
     return {
       submitCreate,
-      loading
+      loading,
     }
   }
 
-  // 更新用户
   const useUpdateUser = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest((id: number, data: UserUpdateRequest) => updateUser(id, data), {
-      immediate: false
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("用户更新成功")
@@ -107,15 +73,14 @@ export default () => {
 
     return {
       submitUpdate,
-      loading
+      loading,
     }
   }
 
-  // 删除用户
   const useDeleteUser = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(deleteUser, {
-      immediate: false
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("用户删除成功")
@@ -132,15 +97,14 @@ export default () => {
 
     return {
       submitDelete,
-      loading
+      loading,
     }
   }
 
-  // 批量删除用户
   const useBatchDeleteUser = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(batchDeleteUser, {
-      immediate: false
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("用户批量删除成功")
@@ -157,15 +121,14 @@ export default () => {
 
     return {
       submitBatchDelete,
-      loading
+      loading,
     }
   }
 
-  // 更新用户密码
   const useUpdateUserPassword = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest((id: number, data: { password: string }) => updateUserPassword(id, data), {
-      immediate: false
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("密码更新成功")
@@ -182,7 +145,7 @@ export default () => {
 
     return {
       submitUpdatePassword,
-      loading
+      loading,
     }
   }
 
@@ -193,6 +156,6 @@ export default () => {
     useUpdateUser,
     useDeleteUser,
     useBatchDeleteUser,
-    useUpdateUserPassword
+    useUpdateUserPassword,
   }
 }

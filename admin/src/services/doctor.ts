@@ -1,4 +1,5 @@
 import http from "@/utils/http"
+import { PaginatedResponse } from "@/types/pagination"
 
 export type Doctor = {
   id: number
@@ -19,12 +20,12 @@ export type Doctor = {
 }
 
 export type DoctorQueryParams = {
+  name?: string
+  departmentId?: number
+  title?: string
+  status?: string
   page?: number
   pageSize?: number
-  sort?: string
-  order?: string
-  filter?: string
-  keyword?: string
 }
 
 export type DoctorCreateRequest = {
@@ -56,7 +57,8 @@ export type DoctorUpdateRequest = {
   status?: string
 }
 
-export const getDoctorList = (params: DoctorQueryParams) => http.get<Doctor[]>("/doctors", params)
+export const getDoctorList = (params?: DoctorQueryParams) =>
+  http.get<PaginatedResponse<Doctor>>("/doctors", params)
 
 export const getDoctorById = (id: number) => http.get<Doctor>(`/doctors/${id}`)
 

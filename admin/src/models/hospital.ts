@@ -1,72 +1,38 @@
-import { useRequest, usePagination } from "alova/client"
+import { usePagination, useRequest } from "alova/client"
 import { message } from "antd"
-import { 
-  getHospitalList, 
-  getHospitalById, 
-  createHospital, 
-  updateHospital, 
-  deleteHospital, 
+import {
+  getHospitalList,
+  getHospitalById,
+  createHospital,
+  updateHospital,
+  deleteHospital,
   batchDeleteHospital,
   HospitalQueryParams,
   HospitalCreateRequest,
   HospitalUpdateRequest,
-  Hospital
 } from "@/services/hospital"
+import usePaginatedList from "@/hooks/usePaginatedList"
 
 export default () => {
-  // 医院列表
-  const useHospitalList = (params?: HospitalQueryParams) => {
-    const {
-      data: hospitalList,
-      total,
-      page,
-      pageSize,
-      fetching: loading,
-      refresh,
-      reload
-    } = usePagination((page, pageSize) => getHospitalList({ ...params, page, pageSize }), {
-      initialPage: 1,
-      initialPageSize: 10,
-      data: (response) => response || [],
-      total: (response) => response?.length || 0
-    })
+  const useHospitalList = (params?: HospitalQueryParams) =>  usePaginatedList(getHospitalList, { params })
+  
 
-    return {
-      hospitalList: hospitalList || [],
-      total: total || 0,
-      loading,
-      pagination: {
-        page,
-        pageSize,
-        total: total || 0,
-        onChange: (newPage: number, newPageSize: number) => {
-          // Alova会自动处理分页变化，不需要手动调用setPage/setPageSize
-          reload()
-        }
-      },
-      refresh,
-      reload
-    }
-  }
-
-  // 获取医院详情
   const useHospitalDetail = (id?: number) => {
     const { data, loading, send } = useRequest(() => getHospitalById(id || 0), {
-      immediate: !!id
+      immediate: !!id,
     })
 
     return {
       hospitalDetail: data,
       loading,
-      fetchDetail: send
+      fetchDetail: send,
     }
   }
 
-  // 创建医院
   const useCreateHospital = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(createHospital, {
-      immediate: false
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("医院创建成功")
@@ -83,15 +49,14 @@ export default () => {
 
     return {
       submitCreate,
-      loading
+      loading,
     }
   }
 
-  // 更新医院
   const useUpdateHospital = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest((id: number, data: HospitalUpdateRequest) => updateHospital(id, data), {
-      immediate: false
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("医院更新成功")
@@ -108,15 +73,14 @@ export default () => {
 
     return {
       submitUpdate,
-      loading
+      loading,
     }
   }
 
-  // 删除医院
   const useDeleteHospital = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(deleteHospital, {
-      immediate: false
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("医院删除成功")
@@ -133,15 +97,14 @@ export default () => {
 
     return {
       submitDelete,
-      loading
+      loading,
     }
   }
 
-  // 批量删除医院
   const useBatchDeleteHospital = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(batchDeleteHospital, {
-      immediate: false
+      immediate: false,
     })
       .onSuccess(() => {
         message.success("医院批量删除成功")
@@ -158,7 +121,7 @@ export default () => {
 
     return {
       submitBatchDelete,
-      loading
+      loading,
     }
   }
 
@@ -168,6 +131,6 @@ export default () => {
     useCreateHospital,
     useUpdateHospital,
     useDeleteHospital,
-    useBatchDeleteHospital
+    useBatchDeleteHospital,
   }
 }

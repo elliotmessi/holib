@@ -1,43 +1,21 @@
-import { useRequest, usePagination } from "alova/client"
+import { useRequest } from "alova/client"
 import { message } from "antd"
-import { getPharmacyList, getPharmacyById, createPharmacy, updatePharmacy, deletePharmacy, batchDeletePharmacy, PharmacyQueryParams, PharmacyCreateRequest, PharmacyUpdateRequest } from "@/services/pharmacy"
+import {
+  getPharmacyList,
+  getPharmacyById,
+  createPharmacy,
+  updatePharmacy,
+  deletePharmacy,
+  batchDeletePharmacy,
+  PharmacyQueryParams,
+  PharmacyCreateRequest,
+  PharmacyUpdateRequest,
+} from "@/services/pharmacy"
+import usePaginatedList from "@/hooks/usePaginatedList"
 
 export default () => {
-  // 药房列表
-  const usePharmacyList = (params?: PharmacyQueryParams) => {
-    const {
-      data: pharmacyList,
-      total,
-      page,
-      pageSize,
-      fetching: loading,
-      refresh,
-      reload,
-    } = usePagination((page, pageSize) => getPharmacyList({ ...params, page, pageSize }), {
-      initialPage: 1,
-      initialPageSize: 10,
-      data: (response: any) => response || [],
-      total: (response: any) => response?.length || 0,
-    })
+  const usePharmacyList = (params?: PharmacyQueryParams) => usePaginatedList(getPharmacyList, { params })
 
-    return {
-      pharmacyList: pharmacyList || [],
-      total: total || 0,
-      loading,
-      pagination: {
-        page,
-        pageSize,
-        total: total || 0,
-        onChange: (newPage: number, newPageSize: number) => {
-          reload()
-        },
-      },
-      refresh,
-      reload,
-    }
-  }
-
-  // 获取药房详情
   const usePharmacyDetail = (id?: number) => {
     const { data, loading, send } = useRequest(() => getPharmacyById(id || 0), {
       immediate: !!id,
@@ -50,7 +28,6 @@ export default () => {
     }
   }
 
-  // 创建药房
   const useCreatePharmacy = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(createPharmacy, {
@@ -75,7 +52,6 @@ export default () => {
     }
   }
 
-  // 更新药房
   const useUpdatePharmacy = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest((id: number, data: PharmacyUpdateRequest) => updatePharmacy(id, data), {
@@ -100,7 +76,6 @@ export default () => {
     }
   }
 
-  // 删除药房
   const useDeletePharmacy = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(deletePharmacy, {
@@ -125,7 +100,6 @@ export default () => {
     }
   }
 
-  // 批量删除药房
   const useBatchDeletePharmacy = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(batchDeletePharmacy, {

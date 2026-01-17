@@ -1,43 +1,22 @@
-import { useRequest, usePagination } from "alova/client"
+import { useRequest } from "alova/client"
 import { message } from "antd"
-import { getDrugList, getDrugById, createDrug, updateDrug, deleteDrug, batchDeleteDrug, DrugQueryParams, DrugCreateRequest, DrugUpdateRequest } from "@/services/drug"
+import {
+  getDrugList,
+  getDrugById,
+  createDrug,
+  updateDrug,
+  deleteDrug,
+  batchDeleteDrug,
+  DrugQueryParams,
+  DrugCreateRequest,
+  DrugUpdateRequest,
+  Drug,
+} from "@/services/drug"
+import usePaginatedList from "@/hooks/usePaginatedList"
 
 export default () => {
-  // 药品列表
-  const useDrugList = (params?: DrugQueryParams) => {
-    const {
-      data: drugList,
-      total,
-      page,
-      pageSize,
-      fetching: loading,
-      refresh,
-      reload,
-    } = usePagination((page, pageSize) => getDrugList({ ...params, page, pageSize }), {
-      initialPage: 1,
-      initialPageSize: 10,
-      data: (response: any) => response || [],
-      total: (response: any) => response?.length || 0,
-    })
+  const useDrugList = (params?: DrugQueryParams) => usePaginatedList(getDrugList, { params })
 
-    return {
-      drugList: drugList || [],
-      total: total || 0,
-      loading,
-      pagination: {
-        page,
-        pageSize,
-        total: total || 0,
-        onChange: (newPage: number, newPageSize: number) => {
-          reload()
-        },
-      },
-      refresh,
-      reload,
-    }
-  }
-
-  // 获取药品详情
   const useDrugDetail = (id?: number) => {
     const { data, loading, send } = useRequest(() => getDrugById(id || 0), {
       immediate: !!id,
@@ -50,7 +29,6 @@ export default () => {
     }
   }
 
-  // 创建药品
   const useCreateDrug = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(createDrug, {
@@ -60,8 +38,8 @@ export default () => {
         message.success("药品创建成功")
         success()
       })
-      .onError(() => {
-        message.error("药品创建失败")
+      .onError(({ error: err }) => {
+        message.error(`药品创建失败: ${err.message}`)
         error()
       })
 
@@ -75,7 +53,6 @@ export default () => {
     }
   }
 
-  // 更新药品
   const useUpdateDrug = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest((id: number, data: DrugUpdateRequest) => updateDrug(id, data), {
@@ -85,8 +62,8 @@ export default () => {
         message.success("药品更新成功")
         success()
       })
-      .onError(() => {
-        message.error("药品更新失败")
+      .onError(({ error: err }) => {
+        message.error(`药品更新失败: ${err.message}`)
         error()
       })
 
@@ -100,7 +77,6 @@ export default () => {
     }
   }
 
-  // 删除药品
   const useDeleteDrug = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(deleteDrug, {
@@ -110,8 +86,8 @@ export default () => {
         message.success("药品删除成功")
         success()
       })
-      .onError(() => {
-        message.error("药品删除失败")
+      .onError(({ error: err }) => {
+        message.error(`药品删除失败: ${err.message}`)
         error()
       })
 
@@ -125,7 +101,6 @@ export default () => {
     }
   }
 
-  // 批量删除药品
   const useBatchDeleteDrug = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(batchDeleteDrug, {
@@ -135,8 +110,8 @@ export default () => {
         message.success("药品批量删除成功")
         success()
       })
-      .onError(() => {
-        message.error("药品批量删除失败")
+      .onError(({ error: err }) => {
+        message.error(`药品批量删除失败: ${err.message}`)
         error()
       })
 

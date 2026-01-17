@@ -1,4 +1,5 @@
 import http from "@/utils/http"
+import { PaginatedResponse } from "@/types/pagination"
 
 export type Hospital = {
   id: number
@@ -41,7 +42,8 @@ export type HospitalUpdateRequest = {
   status?: number
 }
 
-export const getHospitalList = (params: HospitalQueryParams) => http.get<Hospital[]>("/hospitals", params)
+export const getHospitalList = (params?: HospitalQueryParams) =>
+  http.get<PaginatedResponse<Hospital>>("/hospitals", params)
 
 export const getHospitalById = (id: number) => http.get<Hospital>(`/hospitals/${id}`)
 

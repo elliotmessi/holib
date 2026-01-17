@@ -1,43 +1,22 @@
-import { useRequest, usePagination } from "alova/client"
+import { useRequest } from "alova/client"
 import { message } from "antd"
-import { getDoctorList, getDoctorById, createDoctor, updateDoctor, deleteDoctor, batchDeleteDoctor, DoctorQueryParams, DoctorCreateRequest, DoctorUpdateRequest } from "@/services/doctor"
+import {
+  getDoctorList,
+  getDoctorById,
+  createDoctor,
+  updateDoctor,
+  deleteDoctor,
+  batchDeleteDoctor,
+  DoctorQueryParams,
+  DoctorCreateRequest,
+  DoctorUpdateRequest,
+  Doctor,
+} from "@/services/doctor"
+import usePaginatedList from "@/hooks/usePaginatedList"
 
 export default () => {
-  // 医生列表
-  const useDoctorList = (params?: DoctorQueryParams) => {
-    const {
-      data: doctorList,
-      total,
-      page,
-      pageSize,
-      fetching: loading,
-      refresh,
-      reload,
-    } = usePagination((page, pageSize) => getDoctorList({ ...params, page, pageSize }), {
-      initialPage: 1,
-      initialPageSize: 10,
-      data: (response: any) => response || [],
-      total: (response: any) => response?.length || 0,
-    })
+  const useDoctorList = (params?: DoctorQueryParams) => usePaginatedList(getDoctorList, { params })
 
-    return {
-      doctorList: doctorList || [],
-      total: total || 0,
-      loading,
-      pagination: {
-        page,
-        pageSize,
-        total: total || 0,
-        onChange: (newPage: number, newPageSize: number) => {
-          reload()
-        },
-      },
-      refresh,
-      reload,
-    }
-  }
-
-  // 获取医生详情
   const useDoctorDetail = (id?: number) => {
     const { data, loading, send } = useRequest(() => getDoctorById(id || 0), {
       immediate: !!id,
@@ -50,7 +29,6 @@ export default () => {
     }
   }
 
-  // 创建医生
   const useCreateDoctor = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(createDoctor, {
@@ -75,7 +53,6 @@ export default () => {
     }
   }
 
-  // 更新医生
   const useUpdateDoctor = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest((id: number, data: DoctorUpdateRequest) => updateDoctor(id, data), {
@@ -100,7 +77,6 @@ export default () => {
     }
   }
 
-  // 删除医生
   const useDeleteDoctor = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(deleteDoctor, {
@@ -125,7 +101,6 @@ export default () => {
     }
   }
 
-  // 批量删除医生
   const useBatchDeleteDoctor = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
     const { send, loading } = useRequest(batchDeleteDoctor, {

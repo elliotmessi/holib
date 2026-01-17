@@ -1,3 +1,4 @@
+import { PaginatedResponse } from "@/types/pagination"
 import http from "@/utils/http"
 
 export type User = {
@@ -56,7 +57,7 @@ export type UserUpdateRequest = {
   status?: number
 }
 
-export const getUserList = (params: UserQueryParams) => http.get<User[]>("/system/users", params)
+export const getUserList = (params?: UserQueryParams) => http.get<PaginatedResponse<User>>("/system/users", params)
 
 export const getUserById = (id: number) => http.get<User>(`/system/users/${id}`)
 
