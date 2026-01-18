@@ -1,4 +1,4 @@
-import { usePagination, useRequest } from "alova/client"
+import { useRequest } from "alova/client"
 import { message } from "antd"
 import {
   getHospitalList,
@@ -14,8 +14,18 @@ import {
 import usePaginatedList from "@/hooks/usePaginatedList"
 
 export default () => {
-  const useHospitalList = (params?: HospitalQueryParams) =>  usePaginatedList(getHospitalList, { params })
-  
+  const useHospitalList = (params?: HospitalQueryParams) => {
+    const result = usePaginatedList(getHospitalList, { params })
+    return {
+      ...result,
+      hospitalList: result.data,
+      pagination: {
+        total: result.total,
+        current: result.page,
+        pageSize: result.pageSize,
+      },
+    }
+  }
 
   const useHospitalDetail = (id?: number) => {
     const { data, loading, send } = useRequest(() => getHospitalById(id || 0), {

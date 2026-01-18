@@ -1,64 +1,71 @@
-import { PageContainer, ProTable } from '@ant-design/pro-components';
-import { Button, Modal, message } from 'antd';
-import React, { useState } from 'react';
-import { useModel } from '@umijs/max';
-import { history } from '@@/core/history';
+import { PageContainer, ProTable, ProColumns } from '@ant-design/pro-components';
+import React from 'react';
+import { Button, Modal } from 'antd';
+import { PlusOutlined, DeleteOutlined, EditOutlined, EyeOutlined, ImportOutlined, ExportOutlined } from '@ant-design/icons';
+import { useNavigate } from '@umijs/max';
+import { Access, useAccess, useModel } from '@umijs/max';
+import { Inventory } from '@/services/inventory';
 
 const InventoryList: React.FC = () => {
+  const navigate = useNavigate();
+  const access = useAccess();
   const { useInventoryList, useDeleteInventory, useBatchDeleteInventory } = useModel('inventory');
-  
-  const [selectedRows, setSelectedRows] = useState<any[]>([]);
-  
-  // 获取库存列表
-  const { inventoryList, total, loading, pagination, refresh } = useInventoryList();
-  
-  // 删除库存
+  const { data: inventoryList, loading, total, page, pageSize, refresh } = useInventoryList();
   const { submitDelete, loading: deleteLoading } = useDeleteInventory({
-    success: refresh
+    success: () => refresh(),
   });
-  
-  // 批量删除库存
   const { submitBatchDelete, loading: batchDeleteLoading } = useBatchDeleteInventory({
-    success: refresh
+    success: () => refresh(),
   });
-  
-  // 列配置
-  const columns = [
+
+  const [selectedRowKeys, setSelectedRowKeys] = React.useState<React.Key[]>([]);
+
+  const handleDelete = (id: number) => {
+    Modal.confirm({
+      title: '确认删除',
+      content: '确定要删除该库存记录吗？此操作不可恢复。',
+      onOk: () => submitDelete(id),
+    });
+  };
+
+  const handleBatchDelete = () => {
+    Modal.confirm({
+      title: '确认批量删除',
+      content: `确定要删除选中的 ${selectedRowKeys.length} 条库存记录吗？此操作不可恢复。`,
+      onOk: () => submitBatchDelete(selectedRowKeys as number[]),
+    });
+  };
+
+  const columns: ProColumns<Inventory>[] = [
     {
       title: '药品名称',
       dataIndex: 'drugName',
       key: 'drugName',
-      ellipsis: true,
     },
     {
       title: '药品编码',
       dataIndex: 'drugCode',
       key: 'drugCode',
-      ellipsis: true,
     },
     {
       title: '规格',
       dataIndex: 'specification',
       key: 'specification',
-      ellipsis: true,
     },
     {
       title: '单位',
       dataIndex: 'unit',
       key: 'unit',
-      ellipsis: true,
     },
     {
       title: '所属药房',
       dataIndex: 'pharmacyName',
       key: 'pharmacyName',
-      ellipsis: true,
     },
     {
       title: '批次号',
       dataIndex: 'batchNo',
       key: 'batchNo',
-      ellipsis: true,
     },
     {
       title: '有效期',
@@ -94,115 +101,90 @@ const InventoryList: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      valueType: 'option',
-      render: (_: any, record: any) => [
-        <Button
-          key="detail"
-          type="link"
-          onClick={() => history.push(`/inventory/detail/${record.id}`)}
-        >
-          详情
-        </Button>,
-        <Button
-          key="edit"
-          type="link"
-          onClick={() => history.push(`/inventory/edit/${record.id}`)}
-        >
-          编辑
-        </Button>,
-        <Button
-          key="delete"
-          type="link"
-          danger
-          onClick={() => {
-            Modal.confirm({
-              title: '确认删除',
-              content: `确定要删除库存记录吗？`,
-              onOk: () => submitDelete(record.id),
-            });
-          }}
-        >
-          删除
-        </Button>,
-      ],
+      render: (_: any, record: Inventory) => (
+        <div>
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
+            onClick={() => navigate(`/inventory/detail/${record.id}`)}
+          >
+            详情
+          </Button>
+          <Access accessible={access.hasPermission('inventory:inventory:update')}>
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => navigate(`/inventory/edit/${record.id}`)}
+            >
+              编辑
+            </Button>
+          </Access>
+          <Access accessible={access.hasPermission('inventory:inventory:delete')}>
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              loading={deleteLoading}
+              onClick={() => handleDelete(record.id)}
+            >
+              删除
+            </Button>
+          </Access>
+        </div>
+      ),
     },
   ];
-  
-  // 搜索表单配置
-  const searchConfig = {
-    labelWidth: 120,
-    columns: [
-      {
-        name: 'drugName',
-        label: '药品名称',
-        valueType: 'text',
-      },
-      {
-        name: 'drugCode',
-        label: '药品编码',
-        valueType: 'text',
-      },
-      {
-        name: 'pharmacyId',
-        label: '所属药房',
-        valueType: 'select',
-      },
-      {
-        name: 'batchNo',
-        label: '批次号',
-        valueType: 'text',
-      },
-      {
-        name: 'status',
-        label: '状态',
-        valueType: 'select',
-        valueEnum: {
-          1: { text: '正常', status: 'Success' },
-          0: { text: '禁用', status: 'Error' },
-        },
-      },
-    ],
-  };
-  
+
   return (
-    <PageContainer title="库存管理">
+    <PageContainer
+      ghost
+      header={{
+        title: '库存管理',
+        extra: [
+          <Access key="inbound" accessible={access.hasPermission('inventory:inventory:inbound')}>
+            <Button
+              icon={<ImportOutlined />}
+              onClick={() => navigate('/inventory/inbound')}
+            >
+              入库
+            </Button>
+          </Access>,
+          <Access key="outbound" accessible={access.hasPermission('inventory:inventory:outbound')}>
+            <Button
+              icon={<ExportOutlined />}
+              onClick={() => navigate('/inventory/outbound')}
+            >
+              出库
+            </Button>
+          </Access>,
+          <Access key="create" accessible={access.hasPermission('inventory:inventory:create')}>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => navigate('/inventory/create')}
+            >
+              新建库存
+            </Button>
+          </Access>,
+        ],
+      }}
+    >
       <ProTable
-        rowKey="id"
         columns={columns}
         dataSource={inventoryList}
-        pagination={pagination}
+        rowKey="id"
         loading={loading}
+        pagination={{ total, current: page, pageSize }}
         rowSelection={{
-          onChange: (_, rows) => setSelectedRows(rows),
+          selectedRowKeys,
+          onChange: (keys) => setSelectedRowKeys(keys),
         }}
-        search={searchConfig}
         toolBarRender={() => [
-          <Button
-            type="primary"
-            key="inbound"
-            onClick={() => history.push('/inventory/inbound')}
-          >
-            入库
-          </Button>,
-          <Button
-            type="default"
-            key="outbound"
-            onClick={() => history.push('/inventory/outbound')}
-          >
-            出库
-          </Button>,
-          selectedRows.length > 0 && (
+          selectedRowKeys.length > 0 && (
             <Button
-              type="default"
-              danger
               key="batchDelete"
-              onClick={() => {
-                Modal.confirm({
-                  title: '确认批量删除',
-                  content: `确定要删除选中的 ${selectedRows.length} 条库存记录吗？`,
-                  onOk: () => submitBatchDelete(selectedRows.map(row => row.id)),
-                });
-              }}
+              danger
+              onClick={handleBatchDelete}
               loading={batchDeleteLoading}
             >
               批量删除

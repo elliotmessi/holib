@@ -1,64 +1,71 @@
-import { PageContainer, ProTable } from '@ant-design/pro-components';
-import { Button, Modal, message } from 'antd';
-import React, { useState } from 'react';
-import { useModel } from '@umijs/max';
-import { history } from '@@/core/history';
+import { PageContainer, ProTable, ProColumns } from '@ant-design/pro-components';
+import React from 'react';
+import { Button, Modal } from 'antd';
+import { PlusOutlined, DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
+import { useNavigate } from '@umijs/max';
+import { Access, useAccess, useModel } from '@umijs/max';
+import { Drug } from '@/services/drug';
 
 const DrugList: React.FC = () => {
+  const navigate = useNavigate();
+  const access = useAccess();
   const { useDrugList, useDeleteDrug, useBatchDeleteDrug } = useModel('drug');
-  
-  const [selectedRows, setSelectedRows] = useState<any[]>([]);
-  
-  // 获取药品列表
-  const { drugList, total, loading, pagination, refresh } = useDrugList();
-  
-  // 删除药品
+  const { data: drugList, loading, total, page, pageSize, refresh } = useDrugList();
   const { submitDelete, loading: deleteLoading } = useDeleteDrug({
-    success: refresh
+    success: () => refresh(),
   });
-  
-  // 批量删除药品
   const { submitBatchDelete, loading: batchDeleteLoading } = useBatchDeleteDrug({
-    success: refresh
+    success: () => refresh(),
   });
-  
-  // 列配置
-  const columns = [
+
+  const [selectedRowKeys, setSelectedRowKeys] = React.useState<React.Key[]>([]);
+
+  const handleDelete = (id: number) => {
+    Modal.confirm({
+      title: '确认删除',
+      content: '确定要删除该药品吗？此操作不可恢复。',
+      onOk: () => submitDelete(id),
+    });
+  };
+
+  const handleBatchDelete = () => {
+    Modal.confirm({
+      title: '确认批量删除',
+      content: `确定要删除选中的 ${selectedRowKeys.length} 个药品吗？此操作不可恢复。`,
+      onOk: () => submitBatchDelete(selectedRowKeys as number[]),
+    });
+  };
+
+  const columns: ProColumns<Drug>[] = [
     {
       title: '药品名称',
       dataIndex: 'genericName',
       key: 'genericName',
-      ellipsis: true,
     },
     {
       title: '商品名',
       dataIndex: 'tradeName',
       key: 'tradeName',
-      ellipsis: true,
     },
     {
       title: '药品编码',
       dataIndex: 'drugCode',
       key: 'drugCode',
-      ellipsis: true,
     },
     {
       title: '规格',
       dataIndex: 'specification',
       key: 'specification',
-      ellipsis: true,
     },
     {
       title: '剂型',
       dataIndex: 'dosageForm',
       key: 'dosageForm',
-      ellipsis: true,
     },
     {
       title: '生产厂家',
       dataIndex: 'manufacturer',
       key: 'manufacturer',
-      ellipsis: true,
     },
     {
       title: '零售价',
@@ -85,104 +92,74 @@ const DrugList: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      valueType: 'option',
-      render: (_: any, record: any) => [
-        <Button
-          key="detail"
-          type="link"
-          onClick={() => history.push(`/drug/detail/${record.drugId}`)}
-        >
-          详情
-        </Button>,
-        <Button
-          key="edit"
-          type="link"
-          onClick={() => history.push(`/drug/edit/${record.drugId}`)}
-        >
-          编辑
-        </Button>,
-        <Button
-          key="delete"
-          type="link"
-          danger
-          onClick={() => {
-            Modal.confirm({
-              title: '确认删除',
-              content: `确定要删除药品「${record.genericName}」吗？`,
-              onOk: () => submitDelete(record.drugId),
-            });
-          }}
-        >
-          删除
-        </Button>,
-      ],
+      render: (_: any, record: Drug) => (
+        <div>
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
+            onClick={() => navigate(`/drug/detail/${record.id}`)}
+          >
+            详情
+          </Button>
+          <Access accessible={access.hasPermission('drug:drug:update')}>
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => navigate(`/drug/edit/${record.id}`)}
+            >
+              编辑
+            </Button>
+          </Access>
+          <Access accessible={access.hasPermission('drug:drug:delete')}>
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              loading={deleteLoading}
+              onClick={() => handleDelete(record.id)}
+            >
+              删除
+            </Button>
+          </Access>
+        </div>
+      ),
     },
   ];
-  
-  // 搜索表单配置
-  const searchConfig = {
-    labelWidth: 120,
-    columns: [
-      {
-        name: 'keyword',
-        label: '搜索关键词',
-        valueType: 'text',
-      },
-      {
-        name: 'drugType',
-        label: '药品类型',
-        valueType: 'select',
-        valueEnum: {
-          chinese_medicine: { text: '中药' },
-          western_medicine: { text: '西药' },
-          proprietary_chinese_medicine: { text: '中成药' },
-        },
-      },
-      {
-        name: 'status',
-        label: '状态',
-        valueType: 'select',
-        valueEnum: {
-          normal: { text: '正常', status: 'Success' },
-          stopped: { text: '停用', status: 'Error' },
-          out_of_stock: { text: '缺货', status: 'Warning' },
-        },
-      },
-    ],
-  };
-  
+
   return (
-    <PageContainer title="药品管理">
+    <PageContainer
+      ghost
+      header={{
+        title: '药品管理',
+        extra: [
+          <Access key="create" accessible={access.hasPermission('drug:drug:create')}>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => navigate('/drug/create')}
+            >
+              新建药品
+            </Button>
+          </Access>,
+        ],
+      }}
+    >
       <ProTable
-        rowKey="drugId"
         columns={columns}
         dataSource={drugList}
-        pagination={pagination}
+        rowKey="drugId"
         loading={loading}
+        pagination={{ total, current: page, pageSize }}
         rowSelection={{
-          onChange: (_, rows) => setSelectedRows(rows),
+          selectedRowKeys,
+          onChange: (keys) => setSelectedRowKeys(keys),
         }}
-        search={searchConfig}
         toolBarRender={() => [
-          <Button
-            type="primary"
-            key="add"
-            onClick={() => history.push('/drug/create')}
-          >
-            新建药品
-          </Button>,
-          selectedRows.length > 0 && (
+          selectedRowKeys.length > 0 && (
             <Button
-              type="default"
-              danger
               key="batchDelete"
-              onClick={() => {
-                Modal.confirm({
-                  title: '确认批量删除',
-                  content: `确定要删除选中的 ${selectedRows.length} 个药品吗？`,
-                  onOk: () => submitBatchDelete(selectedRows.map(row => row.drugId)),
-                });
-              }}
+              danger
+              onClick={handleBatchDelete}
               loading={batchDeleteLoading}
             >
               批量删除

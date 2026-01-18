@@ -10,7 +10,7 @@ const PrescriptionEdit: React.FC = () => {
   const { useUpdatePrescription, usePrescriptionDetail } = useModel('prescription');
   
   // 获取处方详情
-  const { prescriptionDetail, loading: detailLoading } = usePrescriptionDetail(id || '');
+  const { prescriptionDetail, loading: detailLoading } = usePrescriptionDetail(id ? Number(id) : undefined);
   
   // 更新处方
   const { submitUpdate, loading: updateLoading } = useUpdatePrescription({
@@ -24,7 +24,7 @@ const PrescriptionEdit: React.FC = () => {
     <PageContainer title="编辑处方">
       <ProForm
         initialValues={prescriptionDetail}
-        onFinish={(values) => submitUpdate(id || '', values)}
+        onFinish={(values) => submitUpdate(Number(id), values)}
         layout="vertical"
         loading={detailLoading}
         submitter={{

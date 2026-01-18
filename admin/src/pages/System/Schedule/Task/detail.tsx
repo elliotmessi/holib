@@ -1,46 +1,28 @@
 import { PageContainer, ProDescriptions } from '@ant-design/pro-components';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button } from 'antd';
-import { useNavigate, useParams } from 'umi';
+import { useNavigate, useParams } from '@umijs/max';
+import { useModel } from '@umijs/max';
 
 const TaskDetail: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const [detailData, setDetailData] = useState<any>({});
-
-  // 模拟获取数据
-  useEffect(() => {
-    setDetailData({
-      taskName: '系统备份',
-      taskGroup: 'system',
-      taskCron: '0 0 * * *',
-      taskClass: 'com.hospital.system.task.BackupTask',
-      status: '1',
-      createBy: 'admin',
-      createTime: '2026-01-01 10:00:00',
-      remark: '每日系统备份',
-    });
-  }, [id]);
+  const { useTaskDetail } = useModel('system') as any;
+  const detailHook = useTaskDetail ? useTaskDetail(id ? id : undefined) : { taskDetail: null, loading: false };
+  const { taskDetail, loading } = detailHook;
 
   return (
-    <PageContainer
-      ghost
-      header={{
-        title: '任务详情',
-        extra: [
-          <Button onClick={() => navigate('/system/schedule/task/list')}>返回列表</Button>,
-        ],
-      }}
-    >
-      <ProDescriptions column={2} title="任务信息">
-        <ProDescriptions.Item label="任务名称">{detailData.taskName}</ProDescriptions.Item>
-        <ProDescriptions.Item label="任务组">{detailData.taskGroup}</ProDescriptions.Item>
-        <ProDescriptions.Item label="Cron表达式">{detailData.taskCron}</ProDescriptions.Item>
-        <ProDescriptions.Item label="任务类">{detailData.taskClass}</ProDescriptions.Item>
-        <ProDescriptions.Item label="状态">{detailData.status === '1' ? '启用' : '禁用'}</ProDescriptions.Item>
-        <ProDescriptions.Item label="创建人">{detailData.createBy}</ProDescriptions.Item>
-        <ProDescriptions.Item label="创建时间">{detailData.createTime}</ProDescriptions.Item>
-        <ProDescriptions.Item label="备注">{detailData.remark}</ProDescriptions.Item>
+    <PageContainer title="定时任务详情">
+      <div style={{ marginBottom: 16 }}>
+        <Button onClick={() => navigate('/system/task')}>返回</Button>
+      </div>
+      <ProDescriptions column={2} title="定时任务信息" loading={loading}>
+        <ProDescriptions.Item label="任务名称">{taskDetail?.taskName}</ProDescriptions.Item>
+        <ProDescriptions.Item label="任务分组">{taskDetail?.taskGroup}</ProDescriptions.Item>
+        <ProDescriptions.Item label="cron表达式">{taskDetail?.taskCron}</ProDescriptions.Item>
+        <ProDescriptions.Item label="任务类名">{taskDetail?.taskClass}</ProDescriptions.Item>
+        <ProDescriptions.Item label="状态">{taskDetail?.status === 1 ? '启用' : '禁用'}</ProDescriptions.Item>
+        <ProDescriptions.Item label="创建时间">{taskDetail?.createdAt}</ProDescriptions.Item>
       </ProDescriptions>
     </PageContainer>
   );

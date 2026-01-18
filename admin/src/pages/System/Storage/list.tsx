@@ -1,130 +1,69 @@
-import { PageContainer, ProTable } from '@ant-design/pro-components';
+import { PageContainer, ProTable, ProColumns } from '@ant-design/pro-components';
 import React from 'react';
-import { Button, message } from 'antd';
+import { Button, Modal } from 'antd';
 import { PlusOutlined, DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
-import { useNavigate } from 'umi';
+import { useNavigate } from '@umijs/max';
+import { useModel } from '@umijs/max';
+import { useState } from 'react';
 
 const StorageList: React.FC = () => {
   const navigate = useNavigate();
+  const { useStorageList, useDeleteStorage, useBatchDeleteStorage } = useModel('system') as any;
+  const result = useStorageList ? useStorageList() : { data: [], loading: false, refresh: () => {} };
+  
+  const { data: storageList = [], loading = false, refresh } = result;
+  const deleteHook = useDeleteStorage ? useDeleteStorage({ success: () => refresh() }) : { submitDelete: () => {}, loading: false };
+  const batchDeleteHook = useBatchDeleteStorage ? useBatchDeleteStorage({ success: () => refresh() }) : { submitBatchDelete: () => {}, loading: false };
 
-  // 模拟数据
-  const dataSource = [
-    {
-      id: '1',
-      storageName: '本地存储',
-      storageType: 'local',
-      storagePath: '/data/storage',
-      status: '1',
-      createBy: 'admin',
-      createTime: '2026-01-01 10:00:00',
-      remark: '本地文件存储',
-    },
-    {
-      id: '2',
-      storageName: '云存储',
-      storageType: 'cloud',
-      storagePath: 'https://cloud.storage.com',
-      status: '1',
-      createBy: 'admin',
-      createTime: '2026-01-02 11:00:00',
-      remark: '云存储服务',
-    },
-  ];
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
-  const columns = [
-    {
-      title: '存储名称',
-      dataIndex: 'storageName',
-      key: 'storageName',
-    },
+  const handleDelete = (id: string) => {
+    Modal.confirm({
+      title: '确认删除',
+      content: '确定要删除该存储配置吗？',
+      onOk: () => deleteHook.submitDelete(id),
+    });
+  };
+
+  const handleBatchDelete = () => {
+    Modal.confirm({
+      title: '确认批量删除',
+      content: `确定要删除选中的 ${selectedRowKeys.length} 个存储配置吗？`,
+      onOk: () => batchDeleteHook.submitBatchDelete(selectedRowKeys as string[]),
+    });
+  };
+
+  const columns: ProColumns[] = [
+    { title: '存储名称', dataIndex: 'storageName', key: 'storageName' },
     {
       title: '存储类型',
       dataIndex: 'storageType',
       key: 'storageType',
-      render: (type: string) => (type === 'local' ? '本地存储' : '云存储'),
+      render: (_: any, record: any) => (record.storageType === 'local' ? '本地存储' : '云存储'),
     },
-    {
-      title: '存储路径',
-      dataIndex: 'storagePath',
-      key: 'storagePath',
-    },
+    { title: '存储路径', dataIndex: 'storagePath', key: 'storagePath' },
     {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => (status === '1' ? '启用' : '禁用'),
-    },
-    {
-      title: '创建人',
-      dataIndex: 'createBy',
-      key: 'createBy',
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'createTime',
-      key: 'createTime',
-    },
-    {
-      title: '备注',
-      dataIndex: 'remark',
-      key: 'remark',
+      render: (_: any, record: any) => (record.status === 1 ? '启用' : '禁用'),
     },
     {
       title: '操作',
       key: 'action',
       render: (_: any, record: any) => (
         <div>
-          <Button
-            type="text"
-            icon={<EyeOutlined />}
-            onClick={() => navigate(`/system/storage/detail/${record.id}`)}
-          >
-            详情
-          </Button>
-          <Button
-            type="text"
-            icon={<EditOutlined />}
-            onClick={() => navigate(`/system/storage/edit/${record.id}`)}
-          >
-            编辑
-          </Button>
-          <Button
-            type="text"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => message.success('删除成功')}
-          >
-            删除
-          </Button>
+          <Button type="text" icon={<EyeOutlined />} onClick={() => navigate(`/system/storage/detail/${record.id}`)}>详情</Button>
+          <Button type="text" icon={<EditOutlined />} onClick={() => navigate(`/system/storage/edit/${record.id}`)}>编辑</Button>
+          <Button type="text" danger icon={<DeleteOutlined />} loading={deleteHook.loading} onClick={() => handleDelete(record.id)}>删除</Button>
         </div>
       ),
     },
   ];
 
   return (
-    <PageContainer
-      ghost
-      header={{
-        title: '存储管理',
-        extra: [
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => navigate('/system/storage/create')}
-          >
-            新建存储
-          </Button>,
-        ],
-      }}
-    >
-      <ProTable
-        columns={columns}
-        dataSource={dataSource}
-        rowKey="id"
-        pagination={{
-          pageSize: 10,
-        }}
-      />
+    <PageContainer ghost header={{ title: '存储配置管理', extra: [<Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/system/storage/create')}>新建存储配置</Button>] }}>
+      <ProTable columns={columns} dataSource={storageList} rowKey="id" loading={loading} rowSelection={{ selectedRowKeys, onChange: (keys) => setSelectedRowKeys(keys) }} toolBarRender={() => [selectedRowKeys.length > 0 && <Button key="batchDelete" danger onClick={handleBatchDelete} loading={batchDeleteHook.loading}>批量删除</Button>]} />
     </PageContainer>
   );
 };

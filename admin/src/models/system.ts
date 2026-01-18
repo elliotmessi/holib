@@ -16,8 +16,12 @@ import {
   getOnlineUserList,
   forceLogout,
   getLoginLogList,
+  deleteLoginLog,
+  batchDeleteLoginLog,
   getSystemParamList,
   updateSystemParam,
+  deleteSystemParam,
+  batchDeleteSystemParam,
   DictTypeQueryParams,
   DictTypeCreateRequest,
   DictTypeUpdateRequest,
@@ -33,41 +37,25 @@ import {
 export default () => {
   // 字典类型列表
   const useDictTypeList = (params?: DictTypeQueryParams) => {
-    const {
-      data: dictTypeList,
-      total,
-      page,
-      pageSize,
-      fetching: loading,
-      refresh,
-      reload,
-    } = usePagination((page, pageSize) => getDictTypeList({ ...params, page, pageSize }), {
+    const result = usePagination((page, pageSize) => getDictTypeList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: response => response?.list || [],
-      total: response => response?.total || 0,
     })
 
     return {
-      dictTypeList: dictTypeList || [],
-      total: total || 0,
-      loading,
+      ...result,
+      dictTypeList: result.data,
       pagination: {
-        page,
-        pageSize,
-        total: total || 0,
-        onChange: (newPage: number, newPageSize: number) => {
-          reload()
-        },
+        total: result.total,
+        current: result.page,
+        pageSize: result.pageSize,
       },
-      refresh,
-      reload,
     }
   }
 
   // 获取字典类型详情
-  const useDictTypeDetail = (id?: string) => {
-    const { data, loading, send } = useRequest(() => getDictTypeById(id || ""), {
+  const useDictTypeDetail = (id?: number) => {
+    const { data, loading, send } = useRequest(() => getDictTypeById(id || 0), {
       immediate: !!id,
     })
 
@@ -106,7 +94,7 @@ export default () => {
   // 更新字典类型
   const useUpdateDictType = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: DictTypeUpdateRequest) => updateDictType(id, data), {
+    const { send, loading } = useRequest((id: number, data: DictTypeUpdateRequest) => updateDictType(id, data), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -118,7 +106,7 @@ export default () => {
         error()
       })
 
-    const submitUpdate = (id: string, data: DictTypeUpdateRequest) => {
+    const submitUpdate = (id: number, data: DictTypeUpdateRequest) => {
       send(id, data)
     }
 
@@ -131,7 +119,7 @@ export default () => {
   // 删除字典类型
   const useDeleteDictType = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(deleteDictType, {
+    const { send, loading } = useRequest((id: number) => deleteDictType(id), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -143,7 +131,7 @@ export default () => {
         error()
       })
 
-    const submitDelete = (id: string) => {
+    const submitDelete = (id: number) => {
       send(id)
     }
 
@@ -156,7 +144,7 @@ export default () => {
   // 批量删除字典类型
   const useBatchDeleteDictType = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(batchDeleteDictType, {
+    const { send, loading } = useRequest((ids: number[]) => batchDeleteDictType(ids), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -168,7 +156,7 @@ export default () => {
         error()
       })
 
-    const submitBatchDelete = (ids: string[]) => {
+    const submitBatchDelete = (ids: number[]) => {
       send(ids)
     }
 
@@ -179,42 +167,26 @@ export default () => {
   }
 
   // 字典项列表
-  const useDictItemList = (params?: Omit<DictItemQueryParams, "typeCode"> & { typeCode?: string }) => {
-    const {
-      data: dictItemList,
-      total,
-      page,
-      pageSize,
-      fetching: loading,
-      refresh,
-      reload,
-    } = usePagination((page, pageSize) => getDictItemList({ ...params, page, pageSize } as DictItemQueryParams), {
+  const useDictItemList = (params?: DictItemQueryParams) => {
+    const result = usePagination((page, pageSize) => getDictItemList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: response => response?.list || [],
-      total: response => response?.total || 0,
     })
 
     return {
-      dictItemList: dictItemList || [],
-      total: total || 0,
-      loading,
+      ...result,
+      dictItemList: result.data,
       pagination: {
-        page,
-        pageSize,
-        total: total || 0,
-        onChange: (newPage: number, newPageSize: number) => {
-          reload()
-        },
+        total: result.total,
+        current: result.page,
+        pageSize: result.pageSize,
       },
-      refresh,
-      reload,
     }
   }
 
   // 获取字典项详情
-  const useDictItemDetail = (id?: string) => {
-    const { data, loading, send } = useRequest(() => getDictItemById(id || ""), {
+  const useDictItemDetail = (id?: number) => {
+    const { data, loading, send } = useRequest(() => getDictItemById(id || 0), {
       immediate: !!id,
     })
 
@@ -253,7 +225,7 @@ export default () => {
   // 更新字典项
   const useUpdateDictItem = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: DictItemUpdateRequest) => updateDictItem(id, data), {
+    const { send, loading } = useRequest((id: number, data: DictItemUpdateRequest) => updateDictItem(id, data), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -265,7 +237,7 @@ export default () => {
         error()
       })
 
-    const submitUpdate = (id: string, data: DictItemUpdateRequest) => {
+    const submitUpdate = (id: number, data: DictItemUpdateRequest) => {
       send(id, data)
     }
 
@@ -278,7 +250,7 @@ export default () => {
   // 删除字典项
   const useDeleteDictItem = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(deleteDictItem, {
+    const { send, loading } = useRequest((id: number) => deleteDictItem(id), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -290,7 +262,7 @@ export default () => {
         error()
       })
 
-    const submitDelete = (id: string) => {
+    const submitDelete = (id: number) => {
       send(id)
     }
 
@@ -303,7 +275,7 @@ export default () => {
   // 批量删除字典项
   const useBatchDeleteDictItem = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(batchDeleteDictItem, {
+    const { send, loading } = useRequest((ids: number[]) => batchDeleteDictItem(ids), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -315,7 +287,7 @@ export default () => {
         error()
       })
 
-    const submitBatchDelete = (ids: string[]) => {
+    const submitBatchDelete = (ids: number[]) => {
       send(ids)
     }
 
@@ -327,55 +299,39 @@ export default () => {
 
   // 在线用户列表
   const useOnlineUserList = (params?: OnlineUserQueryParams) => {
-    const {
-      data: onlineUserList,
-      total,
-      page,
-      pageSize,
-      fetching: loading,
-      refresh,
-      reload,
-    } = usePagination((page, pageSize) => getOnlineUserList({ ...params, page, pageSize }), {
+    const result = usePagination((page, pageSize) => getOnlineUserList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: response => response?.list || [],
-      total: response => response?.total || 0,
     })
 
     return {
-      onlineUserList: onlineUserList || [],
-      total: total || 0,
-      loading,
+      ...result,
+      onlineUserList: result.data,
       pagination: {
-        page,
-        pageSize,
-        total: total || 0,
-        onChange: (newPage: number, newPageSize: number) => {
-          reload()
-        },
+        total: result.total,
+        current: result.page,
+        pageSize: result.pageSize,
       },
-      refresh,
-      reload,
     }
   }
 
-  // 强制用户退出
+  // 强制下线用户
   const useForceLogout = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest(forceLogout, {
+    const { send, loading } = useRequest((userId: string) => forceLogout(userId), {
       immediate: false,
     })
       .onSuccess(() => {
-        message.success("用户已强制退出")
+        message.success("强制下线成功")
         success()
       })
       .onError(({ error: err }) => {
-        message.error(`强制退出失败: ${err.message}`)
+        message.error(`强制下线失败: ${err.message}`)
         error()
       })
 
-    const submitForceLogout = (id: string) => {
-      send(id)
+    const submitForceLogout = (userId: string) => {
+      send(userId)
     }
 
     return {
@@ -386,76 +342,94 @@ export default () => {
 
   // 登录日志列表
   const useLoginLogList = (params?: LoginLogQueryParams) => {
-    const {
-      data: loginLogList,
-      total,
-      page,
-      pageSize,
-      fetching: loading,
-      refresh,
-      reload,
-    } = usePagination((page, pageSize) => getLoginLogList({ ...params, page, pageSize }), {
+    const result = usePagination((page, pageSize) => getLoginLogList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: response => response?.list || [],
-      total: response => response?.total || 0,
     })
 
     return {
-      loginLogList: loginLogList || [],
-      total: total || 0,
-      loading,
+      ...result,
+      loginLogList: result.data,
       pagination: {
-        page,
-        pageSize,
-        total: total || 0,
-        onChange: (newPage: number, newPageSize: number) => {
-          reload()
-        },
+        total: result.total,
+        current: result.page,
+        pageSize: result.pageSize,
       },
-      refresh,
-      reload,
+    }
+  }
+
+  // 删除登录日志
+  const useDeleteLoginLog = (options?: { success?: () => void; error?: () => void }) => {
+    const { success = () => {}, error = () => {} } = options || {}
+    const { send, loading } = useRequest((id: number) => deleteLoginLog(id), {
+      immediate: false,
+    })
+      .onSuccess(() => {
+        message.success("登录日志删除成功")
+        success()
+      })
+      .onError(({ error: err }) => {
+        message.error(`登录日志删除失败: ${err.message}`)
+        error()
+      })
+
+    const submitDelete = (id: number) => {
+      send(id)
+    }
+
+    return {
+      submitDelete,
+      loading,
+    }
+  }
+
+  // 批量删除登录日志
+  const useBatchDeleteLoginLog = (options?: { success?: () => void; error?: () => void }) => {
+    const { success = () => {}, error = () => {} } = options || {}
+    const { send, loading } = useRequest((ids: number[]) => batchDeleteLoginLog(ids), {
+      immediate: false,
+    })
+      .onSuccess(() => {
+        message.success("登录日志批量删除成功")
+        success()
+      })
+      .onError(({ error: err }) => {
+        message.error(`登录日志批量删除失败: ${err.message}`)
+        error()
+      })
+
+    const submitBatchDelete = (ids: number[]) => {
+      send(ids)
+    }
+
+    return {
+      submitBatchDelete,
+      loading,
     }
   }
 
   // 系统参数列表
   const useSystemParamList = (params?: SystemParamQueryParams) => {
-    const {
-      data: systemParamList,
-      total,
-      page,
-      pageSize,
-      fetching: loading,
-      refresh,
-      reload,
-    } = usePagination((page, pageSize) => getSystemParamList({ ...params, page, pageSize }), {
+    const result = usePagination((page, pageSize) => getSystemParamList({ ...params, page, pageSize }), {
       initialPage: 1,
       initialPageSize: 10,
-      data: response => response?.list || [],
-      total: response => response?.total || 0,
     })
 
     return {
-      systemParamList: systemParamList || [],
-      total: total || 0,
-      loading,
+      ...result,
+      systemParamList: result.data,
       pagination: {
-        page,
-        pageSize,
-        total: total || 0,
-        onChange: (newPage: number, newPageSize: number) => {
-          reload()
-        },
+        total: result.total,
+        current: result.page,
+        pageSize: result.pageSize,
       },
-      refresh,
-      reload,
     }
   }
 
   // 更新系统参数
   const useUpdateSystemParam = (options?: { success?: () => void; error?: () => void }) => {
     const { success = () => {}, error = () => {} } = options || {}
-    const { send, loading } = useRequest((id: string, data: SystemParamUpdateRequest) => updateSystemParam(id, data), {
+    const { send, loading } = useRequest((id: number, data: SystemParamUpdateRequest) => updateSystemParam(id, data), {
       immediate: false,
     })
       .onSuccess(() => {
@@ -467,12 +441,62 @@ export default () => {
         error()
       })
 
-    const submitUpdate = (id: string, data: SystemParamUpdateRequest) => {
+    const submitUpdate = (id: number, data: SystemParamUpdateRequest) => {
       send(id, data)
     }
 
     return {
       submitUpdate,
+      loading,
+    }
+  }
+
+  // 删除系统参数
+  const useDeleteSystemParam = (options?: { success?: () => void; error?: () => void }) => {
+    const { success = () => {}, error = () => {} } = options || {}
+    const { send, loading } = useRequest((id: number) => deleteSystemParam(id), {
+      immediate: false,
+    })
+      .onSuccess(() => {
+        message.success("系统参数删除成功")
+        success()
+      })
+      .onError(({ error: err }) => {
+        message.error(`系统参数删除失败: ${err.message}`)
+        error()
+      })
+
+    const submitDelete = (id: number) => {
+      send(id)
+    }
+
+    return {
+      submitDelete,
+      loading,
+    }
+  }
+
+  // 批量删除系统参数
+  const useBatchDeleteSystemParam = (options?: { success?: () => void; error?: () => void }) => {
+    const { success = () => {}, error = () => {} } = options || {}
+    const { send, loading } = useRequest((ids: number[]) => batchDeleteSystemParam(ids), {
+      immediate: false,
+    })
+      .onSuccess(() => {
+        message.success("系统参数批量删除成功")
+        success()
+      })
+      .onError(({ error: err }) => {
+        message.error(`系统参数批量删除失败: ${err.message}`)
+        error()
+      })
+
+    const submitBatchDelete = (ids: number[]) => {
+      send(ids)
+    }
+
+    return {
+      submitBatchDelete,
       loading,
     }
   }
@@ -493,7 +517,11 @@ export default () => {
     useOnlineUserList,
     useForceLogout,
     useLoginLogList,
+    useDeleteLoginLog,
+    useBatchDeleteLoginLog,
     useSystemParamList,
     useUpdateSystemParam,
+    useDeleteSystemParam,
+    useBatchDeleteSystemParam,
   }
 }

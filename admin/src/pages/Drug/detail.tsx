@@ -10,7 +10,7 @@ const DrugDetail: React.FC = () => {
   const { useDrugDetail } = useModel('drug');
   
   // 获取药品详情
-  const { drugDetail, loading: detailLoading } = useDrugDetail(id || '');
+  const { drugDetail, loading: detailLoading } = useDrugDetail(id ? Number(id) : undefined);
   
   return (
     <PageContainer title="药品详情">

@@ -15,7 +15,18 @@ import {
 import usePaginatedList from "@/hooks/usePaginatedList"
 
 export default () => {
-  const useDepartmentList = (params?: DepartmentQueryParams) => usePaginatedList(getDepartmentList, { params })
+  const useDepartmentList = (params?: DepartmentQueryParams) => {
+    const result = usePaginatedList(getDepartmentList, { params })
+    return {
+      ...result,
+      departmentList: result.data,
+      pagination: {
+        total: result.total,
+        current: result.page,
+        pageSize: result.pageSize,
+      },
+    }
+  }
 
   const useDepartmentDetail = (id?: number) => {
     const { data, loading, send } = useRequest(() => getDepartmentById(id || 0), {

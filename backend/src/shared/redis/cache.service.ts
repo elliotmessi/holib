@@ -25,7 +25,11 @@ export class CacheService {
   private get redisClient(): Redis {
     // eslint-disable-next-line ts/ban-ts-comment
     // @ts-expect-error
-    return this.cache.store.client
+    const client = this.cache.store?.client
+    if (!client) {
+      throw new Error('Redis client not initialized. Please ensure Redis server is running and cache module is properly configured.')
+    }
+    return client
   }
 
   public get<T>(key: TCacheKey): TCacheResult<T> {

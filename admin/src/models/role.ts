@@ -16,7 +16,18 @@ import {
 import usePaginatedList from "@/hooks/usePaginatedList"
 
 export default () => {
-  const useRoleList = (params?: RoleQueryParams) => usePaginatedList(getRoleList, { params })
+  const useRoleList = (params?: RoleQueryParams) => {
+    const result = usePaginatedList(getRoleList, { params })
+    return {
+      ...result,
+      roleList: result.data,
+      pagination: {
+        total: result.total,
+        current: result.page,
+        pageSize: result.pageSize,
+      },
+    }
+  }
 
   const useRoleDetail = (id?: number) => {
     const { data, loading, send } = useRequest(() => getRoleById(id || 0), {

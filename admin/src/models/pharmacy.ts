@@ -14,7 +14,18 @@ import {
 import usePaginatedList from "@/hooks/usePaginatedList"
 
 export default () => {
-  const usePharmacyList = (params?: PharmacyQueryParams) => usePaginatedList(getPharmacyList, { params })
+  const usePharmacyList = (params?: PharmacyQueryParams) => {
+    const result = usePaginatedList(getPharmacyList, { params })
+    return {
+      ...result,
+      pharmacyList: result.data,
+      pagination: {
+        total: result.total,
+        current: result.page,
+        pageSize: result.pageSize,
+      },
+    }
+  }
 
   const usePharmacyDetail = (id?: number) => {
     const { data, loading, send } = useRequest(() => getPharmacyById(id || 0), {

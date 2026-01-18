@@ -10,7 +10,7 @@ const InventoryEdit: React.FC = () => {
   const { useUpdateInventory, useInventoryDetail } = useModel('inventory');
   
   // 获取库存详情
-  const { inventoryDetail, loading: detailLoading } = useInventoryDetail(id || '');
+  const { inventoryDetail, loading: detailLoading } = useInventoryDetail(id ? Number(id) : undefined);
   
   // 更新库存
   const { submitUpdate, loading: updateLoading } = useUpdateInventory({
@@ -24,7 +24,7 @@ const InventoryEdit: React.FC = () => {
     <PageContainer title="编辑库存">
       <ProForm
         initialValues={inventoryDetail}
-        onFinish={(values) => submitUpdate(id || '', values)}
+        onFinish={(values) => submitUpdate(Number(id), values)}
         layout="vertical"
         loading={detailLoading}
         submitter={{

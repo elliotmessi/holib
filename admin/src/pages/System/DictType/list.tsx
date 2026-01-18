@@ -1,121 +1,76 @@
-import { PageContainer, ProTable } from '@ant-design/pro-components';
+import { PageContainer, ProTable, ProColumns } from '@ant-design/pro-components';
 import React from 'react';
-import { Button, message } from 'antd';
+import { Button, Modal } from 'antd';
 import { PlusOutlined, DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
-import { useNavigate } from 'umi';
+import { useNavigate } from '@umijs/max';
+import { useModel } from '@umijs/max';
+import { useState } from 'react';
 
 const DictTypeList: React.FC = () => {
   const navigate = useNavigate();
+  const { useDictTypeList, useDeleteDictType, useBatchDeleteDictType } = useModel('system');
+  const result = useDictTypeList();
+  const { data: dictTypeList, loading, refresh } = result;
+  const { submitDelete, loading: deleteLoading } = useDeleteDictType({ success: () => refresh() });
+  const { submitBatchDelete, loading: batchDeleteLoading } = useBatchDeleteDictType({ success: () => refresh() });
 
-  // 模拟数据
-  const dataSource = [
-    {
-      id: '1',
-      dictName: '用户状态',
-      dictType: 'user_status',
-      status: '1',
-      createBy: 'admin',
-      createTime: '2026-01-01 10:00:00',
-      remark: '用户状态字典',
-    },
-    {
-      id: '2',
-      dictName: '角色类型',
-      dictType: 'role_type',
-      status: '1',
-      createBy: 'admin',
-      createTime: '2026-01-02 11:00:00',
-      remark: '角色类型字典',
-    },
-  ];
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
-  const columns = [
+  const handleDelete = (id: number) => {
+    Modal.confirm({
+      title: '确认删除',
+      content: '确定要删除该字典类型吗？',
+      onOk: () => submitDelete(id),
+    });
+  };
+
+  const handleBatchDelete = () => {
+    Modal.confirm({
+      title: '确认批量删除',
+      content: `确定要删除选中的 ${selectedRowKeys.length} 个字典类型吗？`,
+      onOk: () => submitBatchDelete(selectedRowKeys as number[]),
+    });
+  };
+
+  const columns: ProColumns[] = [
     {
       title: '字典名称',
-      dataIndex: 'dictName',
-      key: 'dictName',
+      dataIndex: 'name',
+      key: 'name',
     },
     {
       title: '字典类型',
-      dataIndex: 'dictType',
-      key: 'dictType',
+      dataIndex: 'code',
+      key: 'code',
     },
     {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => (status === '1' ? '启用' : '禁用'),
-    },
-    {
-      title: '创建人',
-      dataIndex: 'createBy',
-      key: 'createBy',
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'createTime',
-      key: 'createTime',
-    },
-    {
-      title: '备注',
-      dataIndex: 'remark',
-      key: 'remark',
+      render: (_: any, record: any) => (record.status === 1 ? '启用' : '禁用'),
     },
     {
       title: '操作',
       key: 'action',
       render: (_: any, record: any) => (
         <div>
-          <Button
-            type="text"
-            icon={<EyeOutlined />}
-            onClick={() => navigate(`/system/dict-type/detail/${record.id}`)}
-          >
-            详情
-          </Button>
-          <Button
-            type="text"
-            icon={<EditOutlined />}
-            onClick={() => navigate(`/system/dict-type/edit/${record.id}`)}
-          >
-            编辑
-          </Button>
-          <Button
-            type="text"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => message.success('删除成功')}
-          >
-            删除
-          </Button>
+          <Button type="text" icon={<EyeOutlined />} onClick={() => navigate(`/system/dictType/detail/${record.id}`)}>详情</Button>
+          <Button type="text" icon={<EditOutlined />} onClick={() => navigate(`/system/dictType/edit/${record.id}`)}>编辑</Button>
+          <Button type="text" danger icon={<DeleteOutlined />} loading={deleteLoading} onClick={() => handleDelete(record.id)}>删除</Button>
         </div>
       ),
     },
   ];
 
   return (
-    <PageContainer
-      ghost
-      header={{
-        title: '字典管理',
-        extra: [
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => navigate('/system/dict-type/create')}
-          >
-            新建字典
-          </Button>,
-        ],
-      }}
-    >
+    <PageContainer ghost header={{ title: '字典类型管理', extra: [<Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/system/dictType/create')}>新建字典类型</Button>] }}>
       <ProTable
         columns={columns}
-        dataSource={dataSource}
+        dataSource={dictTypeList}
         rowKey="id"
-        pagination={{
-          pageSize: 10,
-        }}
+        loading={loading}
+        rowSelection={{ selectedRowKeys, onChange: (keys) => setSelectedRowKeys(keys) }}
+        toolBarRender={() => [selectedRowKeys.length > 0 && <Button key="batchDelete" danger onClick={handleBatchDelete} loading={batchDeleteLoading}>批量删除</Button>]}
       />
     </PageContainer>
   );

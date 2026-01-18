@@ -1,58 +1,66 @@
-import { PageContainer, ProTable } from '@ant-design/pro-components';
-import { Button, Modal, message } from 'antd';
-import React, { useState } from 'react';
-import { useModel } from '@umijs/max';
-import { history } from '@@/core/history';
+import { PageContainer, ProTable, ProColumns } from '@ant-design/pro-components';
+import React from 'react';
+import { Button, Modal } from 'antd';
+import { PlusOutlined, DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
+import { useNavigate } from '@umijs/max';
+import { Access, useAccess, useModel } from '@umijs/max';
+import { Prescription } from '@/services/prescription';
 
 const PrescriptionList: React.FC = () => {
+  const navigate = useNavigate();
+  const access = useAccess();
   const { usePrescriptionList, useDeletePrescription, useBatchDeletePrescription } = useModel('prescription');
-  
-  const [selectedRows, setSelectedRows] = useState<any[]>([]);
-  
-  // 获取处方列表
-  const { prescriptionList, total, loading, pagination, refresh } = usePrescriptionList();
-  
-  // 删除处方
+  const { data: prescriptionList, loading, total, page, pageSize, refresh } = usePrescriptionList();
   const { submitDelete, loading: deleteLoading } = useDeletePrescription({
-    success: refresh
+    success: () => refresh(),
   });
-  
-  // 批量删除处方
   const { submitBatchDelete, loading: batchDeleteLoading } = useBatchDeletePrescription({
-    success: refresh
+    success: () => refresh(),
   });
-  
-  // 列配置
-  const columns = [
+
+  const [selectedRowKeys, setSelectedRowKeys] = React.useState<React.Key[]>([]);
+
+  const handleDelete = (id: number) => {
+    Modal.confirm({
+      title: '确认删除',
+      content: '确定要删除该处方吗？此操作不可恢复。',
+      onOk: () => submitDelete(id),
+    });
+  };
+
+  const handleBatchDelete = () => {
+    Modal.confirm({
+      title: '确认批量删除',
+      content: `确定要删除选中的 ${selectedRowKeys.length} 个处方吗？此操作不可恢复。`,
+      onOk: () => submitBatchDelete(selectedRowKeys as number[]),
+    });
+  };
+
+  const columns: ProColumns<Prescription>[] = [
     {
       title: '处方编号',
       dataIndex: 'prescriptionNumber',
       key: 'prescriptionNumber',
-      ellipsis: true,
     },
     {
       title: '患者姓名',
       dataIndex: 'patientName',
       key: 'patientName',
-      ellipsis: true,
     },
     {
       title: '医生姓名',
       dataIndex: 'doctorName',
       key: 'doctorName',
-      ellipsis: true,
     },
     {
       title: '所属科室',
       dataIndex: 'departmentName',
       key: 'departmentName',
-      ellipsis: true,
     },
     {
       title: '诊断',
       dataIndex: 'diagnosis',
       key: 'diagnosis',
-      ellipsis: true,
     },
     {
       title: '总金额',
@@ -80,110 +88,74 @@ const PrescriptionList: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      valueType: 'option',
-      render: (_: any, record: any) => [
-        <Button
-          key="detail"
-          type="link"
-          onClick={() => history.push(`/prescription/detail/${record.id}`)}
-        >
-          详情
-        </Button>,
-        <Button
-          key="edit"
-          type="link"
-          onClick={() => history.push(`/prescription/edit/${record.id}`)}
-        >
-          编辑
-        </Button>,
-        <Button
-          key="delete"
-          type="link"
-          danger
-          onClick={() => {
-            Modal.confirm({
-              title: '确认删除',
-              content: `确定要删除处方「${record.prescriptionNumber}」吗？`,
-              onOk: () => submitDelete(record.id),
-            });
-          }}
-        >
-          删除
-        </Button>,
-      ],
+      render: (_: any, record: Prescription) => (
+        <div>
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
+            onClick={() => navigate(`/prescription/detail/${record.id}`)}
+          >
+            详情
+          </Button>
+          <Access accessible={access.hasPermission('prescription:prescription:update')}>
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => navigate(`/prescription/edit/${record.id}`)}
+            >
+              编辑
+            </Button>
+          </Access>
+          <Access accessible={access.hasPermission('prescription:prescription:delete')}>
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              loading={deleteLoading}
+              onClick={() => handleDelete(record.id)}
+            >
+              删除
+            </Button>
+          </Access>
+        </div>
+      ),
     },
   ];
-  
-  // 搜索表单配置
-  const searchConfig = {
-    labelWidth: 120,
-    columns: [
-      {
-        name: 'prescriptionNumber',
-        label: '处方编号',
-        valueType: 'text',
-      },
-      {
-        name: 'patientName',
-        label: '患者姓名',
-        valueType: 'text',
-      },
-      {
-        name: 'doctorName',
-        label: '医生姓名',
-        valueType: 'text',
-      },
-      {
-        name: 'departmentId',
-        label: '所属科室',
-        valueType: 'select',
-      },
-      {
-        name: 'status',
-        label: '状态',
-        valueType: 'select',
-        valueEnum: {
-          pending: { text: '待审核' },
-          approved: { text: '已审核' },
-          rejected: { text: '已拒绝' },
-          completed: { text: '已完成' },
-        },
-      },
-    ],
-  };
-  
+
   return (
-    <PageContainer title="处方管理">
+    <PageContainer
+      ghost
+      header={{
+        title: '处方管理',
+        extra: [
+          <Access key="create" accessible={access.hasPermission('prescription:prescription:create')}>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => navigate('/prescription/create')}
+            >
+              新建处方
+            </Button>
+          </Access>,
+        ],
+      }}
+    >
       <ProTable
-        rowKey="id"
         columns={columns}
         dataSource={prescriptionList}
-        pagination={pagination}
+        rowKey="id"
         loading={loading}
+        pagination={{ total, current: page, pageSize }}
         rowSelection={{
-          onChange: (_, rows) => setSelectedRows(rows),
+          selectedRowKeys,
+          onChange: (keys) => setSelectedRowKeys(keys),
         }}
-        search={searchConfig}
         toolBarRender={() => [
-          <Button
-            type="primary"
-            key="add"
-            onClick={() => history.push('/prescription/create')}
-          >
-            新建处方
-          </Button>,
-          selectedRows.length > 0 && (
+          selectedRowKeys.length > 0 && (
             <Button
-              type="default"
-              danger
               key="batchDelete"
-              onClick={() => {
-                Modal.confirm({
-                  title: '确认批量删除',
-                  content: `确定要删除选中的 ${selectedRows.length} 个处方吗？`,
-                  onOk: () => submitBatchDelete(selectedRows.map(row => row.id)),
-                });
-              }}
+              danger
+              onClick={handleBatchDelete}
               loading={batchDeleteLoading}
             >
               批量删除

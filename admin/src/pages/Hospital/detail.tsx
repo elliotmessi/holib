@@ -16,7 +16,7 @@ const HospitalDetail: React.FC = () => {
       header={{
         title: '医院详情',
         extra: [
-          <Button onClick={() => navigate('/hospital/list')}>返回列表</Button>,
+          <Button onClick={() => navigate('/hospital/list')} key="back">返回列表</Button>,
         ],
       }}
     >

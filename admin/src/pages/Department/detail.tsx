@@ -23,7 +23,7 @@ const DepartmentDetail: React.FC = () => {
       <ProDescriptions column={2} title="科室信息" loading={loading}>
         <ProDescriptions.Item label="科室名称">{departmentDetail?.name}</ProDescriptions.Item>
         <ProDescriptions.Item label="科室编码">{departmentDetail?.code}</ProDescriptions.Item>
-        <ProDescriptions.Item label="类型">{departmentDetail?.type === 1 ? '临床' : '非临床'}</ProDescriptions.Item>
+        <ProDescriptions.Item label="类型">{departmentDetail?.type === '1' ? '临床' : '非临床'}</ProDescriptions.Item>
         <ProDescriptions.Item label="联系人">{departmentDetail?.contact}</ProDescriptions.Item>
         <ProDescriptions.Item label="电话">{departmentDetail?.phone}</ProDescriptions.Item>
         <ProDescriptions.Item label="状态">{departmentDetail?.status === 1 ? '启用' : '禁用'}</ProDescriptions.Item>

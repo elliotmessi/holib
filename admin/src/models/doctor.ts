@@ -15,7 +15,18 @@ import {
 import usePaginatedList from "@/hooks/usePaginatedList"
 
 export default () => {
-  const useDoctorList = (params?: DoctorQueryParams) => usePaginatedList(getDoctorList, { params })
+  const useDoctorList = (params?: DoctorQueryParams) => {
+    const result = usePaginatedList(getDoctorList, { params })
+    return {
+      ...result,
+      doctorList: result.data,
+      pagination: {
+        total: result.total,
+        current: result.page,
+        pageSize: result.pageSize,
+      },
+    }
+  }
 
   const useDoctorDetail = (id?: number) => {
     const { data, loading, send } = useRequest(() => getDoctorById(id || 0), {

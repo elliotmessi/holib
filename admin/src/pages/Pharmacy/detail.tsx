@@ -10,7 +10,7 @@ const PharmacyDetail: React.FC = () => {
   const { usePharmacyDetail } = useModel('pharmacy');
   
   // 获取药房详情
-  const { pharmacyDetail, loading: detailLoading } = usePharmacyDetail(id || '');
+  const { pharmacyDetail, loading: detailLoading } = usePharmacyDetail(id ? Number(id) : undefined);
   
   return (
     <PageContainer title="药房详情">

@@ -45,9 +45,14 @@ const providers: Provider[] = [
 
         return {
           isGlobal: true,
-          store: redisStore,
+          store: redisStore({
+            host: redisOptions.host!,
+            port: redisOptions.port!,
+            password: redisOptions.password,
+            db: redisOptions.db,
+          }),
           isCacheableValue: () => true,
-          ...redisOptions,
+          ttl: 60 * 1000,
         }
       },
       inject: [ConfigService],

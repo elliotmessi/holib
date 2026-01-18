@@ -15,7 +15,18 @@ import {
 import usePaginatedList from "@/hooks/usePaginatedList"
 
 export default () => {
-  const useUserList = (params?: UserQueryParams) => usePaginatedList(getUserList, { params })
+  const useUserList = (params?: UserQueryParams) => {
+    const result = usePaginatedList(getUserList, { params })
+    return {
+      ...result,
+      userList: result.data,
+      pagination: {
+        total: result.total,
+        current: result.page,
+        pageSize: result.pageSize,
+      },
+    }
+  }
 
   const useUserDetail = (id?: number) => {
     const { data, loading, send } = useRequest(() => getUserById(id || 0), {

@@ -11,7 +11,7 @@ const DepartmentList: React.FC = () => {
   const navigate = useNavigate();
   const access = useAccess();
   const { useDepartmentList, useDeleteDepartment } = useModel('department');
-  const { departmentList, loading, pagination, refresh } = useDepartmentList();
+  const { data: departmentList, loading, total, page, pageSize, refresh } = useDepartmentList();
   const { submitDelete, loading: deleteLoading } = useDeleteDepartment({
     success: () => refresh(),
   });
@@ -39,7 +39,7 @@ const DepartmentList: React.FC = () => {
       title: '类型',
       dataIndex: 'type',
       key: 'type',
-      render: (_, { type }) => type === 1 ? '临床' : '非临床',
+      render: (_, { type }) => type === '1' ? '临床' : '非临床',
     },
     {
       title: '联系人',
@@ -122,7 +122,7 @@ const DepartmentList: React.FC = () => {
         dataSource={departmentList}
         rowKey="id"
         loading={loading}
-        pagination={pagination}
+        pagination={{ total, current: page, pageSize }}
       />
     </PageContainer>
   );

@@ -16,7 +16,18 @@ import {
 import usePaginatedList from "@/hooks/usePaginatedList"
 
 export default () => {
-  const useInventoryList = (params?: InventoryQueryParams) => usePaginatedList(getInventoryList, { params })
+  const useInventoryList = (params?: InventoryQueryParams) => {
+    const result = usePaginatedList(getInventoryList, { params })
+    return {
+      ...result,
+      inventoryList: result.data,
+      pagination: {
+        total: result.total,
+        current: result.page,
+        pageSize: result.pageSize,
+      },
+    }
+  }
 
   const useInventoryDetail = (id?: number) => {
     const { data, loading, send } = useRequest(() => getInventoryById(id || 0), {
@@ -31,17 +42,42 @@ export default () => {
   }
 
   const useLowStockInventory = (params?: { pharmacyId?: number }) => {
-    return usePagination((page, pageSize) => getInventoryList({ ...params, page, pageSize, filter: "stockLevel:lt:minThreshold" } as InventoryQueryParams), {
-      page: 1,
-      pageSize: 10,
-    })
+    const result = usePagination(
+      (page, pageSize) => getInventoryList({ ...params, page, pageSize, filter: "stockLevel:lt:minThreshold" } as InventoryQueryParams),
+      {
+        page: 1,
+        pageSize: 10,
+        data: response => response?.items || [],
+        total: response => response?.meta?.totalItems || 0,
+      }
+    )
+    return {
+      ...result,
+      lowStockList: result.data,
+      pagination: {
+        total: result.total,
+        current: result.page,
+        pageSize: result.pageSize,
+      },
+    }
   }
 
   const useExpiringInventory = (params?: { days?: number }) => {
-    return usePagination((page, pageSize) => getInventoryList({ ...params, page, pageSize, filter: "expiring:true" } as InventoryQueryParams), {
+    const result = usePagination((page, pageSize) => getInventoryList({ ...params, page, pageSize, filter: "expiring:true" } as InventoryQueryParams), {
       page: 1,
       pageSize: 10,
+      data: response => response?.items || [],
+      total: response => response?.meta?.totalItems || 0,
     })
+    return {
+      ...result,
+      expiringList: result.data,
+      pagination: {
+        total: result.total,
+        current: result.page,
+        pageSize: result.pageSize,
+      },
+    }
   }
 
   const useUpdateInventory = (options?: { success?: () => void; error?: () => void }) => {

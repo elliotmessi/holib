@@ -10,7 +10,7 @@ const InventoryDetail: React.FC = () => {
   const { useInventoryDetail } = useModel('inventory');
   
   // 获取库存详情
-  const { inventoryDetail, loading: detailLoading } = useInventoryDetail(id || '');
+  const { inventoryDetail, loading: detailLoading } = useInventoryDetail(id ? Number(id) : undefined);
   
   return (
     <PageContainer title="库存详情">

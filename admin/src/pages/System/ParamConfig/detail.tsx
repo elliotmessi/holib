@@ -1,44 +1,27 @@
 import { PageContainer, ProDescriptions } from '@ant-design/pro-components';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button } from 'antd';
-import { useNavigate, useParams } from 'umi';
+import { useNavigate, useParams } from '@umijs/max';
+import { useModel } from '@umijs/max';
 
 const ParamConfigDetail: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const [detailData, setDetailData] = useState<any>({});
-
-  // 模拟获取数据
-  useEffect(() => {
-    setDetailData({
-      paramName: '系统名称',
-      paramKey: 'system.name',
-      paramValue: '医院管理系统',
-      status: '1',
-      createBy: 'admin',
-      createTime: '2026-01-01 10:00:00',
-      remark: '系统显示名称',
-    });
-  }, [id]);
+  const { useSystemParamDetail } = useModel('system') as any;
+  const detailHook = useSystemParamDetail ? useSystemParamDetail(id ? Number(id) : undefined) : { systemParamDetail: null, loading: false };
+  const { systemParamDetail, loading } = detailHook;
 
   return (
-    <PageContainer
-      ghost
-      header={{
-        title: '参数详情',
-        extra: [
-          <Button onClick={() => navigate('/system/param-config/list')}>返回列表</Button>,
-        ],
-      }}
-    >
-      <ProDescriptions column={2} title="参数信息">
-        <ProDescriptions.Item label="参数名称">{detailData.paramName}</ProDescriptions.Item>
-        <ProDescriptions.Item label="参数键">{detailData.paramKey}</ProDescriptions.Item>
-        <ProDescriptions.Item label="参数值">{detailData.paramValue}</ProDescriptions.Item>
-        <ProDescriptions.Item label="状态">{detailData.status === '1' ? '启用' : '禁用'}</ProDescriptions.Item>
-        <ProDescriptions.Item label="创建人">{detailData.createBy}</ProDescriptions.Item>
-        <ProDescriptions.Item label="创建时间">{detailData.createTime}</ProDescriptions.Item>
-        <ProDescriptions.Item label="备注">{detailData.remark}</ProDescriptions.Item>
+    <PageContainer title="参数配置详情">
+      <div style={{ marginBottom: 16 }}>
+        <Button onClick={() => navigate('/system/paramConfig')}>返回</Button>
+      </div>
+      <ProDescriptions column={2} title="参数配置信息" loading={loading}>
+        <ProDescriptions.Item label="参数名称">{systemParamDetail?.paramName}</ProDescriptions.Item>
+        <ProDescriptions.Item label="参数键">{systemParamDetail?.paramKey}</ProDescriptions.Item>
+        <ProDescriptions.Item label="参数值">{systemParamDetail?.paramValue}</ProDescriptions.Item>
+        <ProDescriptions.Item label="状态">{systemParamDetail?.status === 1 ? '启用' : '禁用'}</ProDescriptions.Item>
+        <ProDescriptions.Item label="创建时间">{systemParamDetail?.createdAt}</ProDescriptions.Item>
       </ProDescriptions>
     </PageContainer>
   );
