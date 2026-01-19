@@ -46,6 +46,11 @@ const DrugCreate: React.FC = () => {
           label="商品名"
         />
         <ProFormText
+          name="drugCode"
+          label="药品编码"
+          rules={[{ required: true, message: '请输入药品编码' }]}
+        />
+        <ProFormText
           name="specification"
           label="规格"
           rules={[{ required: true, message: '请输入规格' }]}
@@ -107,9 +112,31 @@ const DrugCreate: React.FC = () => {
           name="medicalInsuranceRate"
           label="医保报销比例"
         />
+        <ProFormText
+          name="pharmacologicalClassId"
+          label="药理分类ID"
+        />
+        <ProFormText
+          name="dosageClassId"
+          label="剂型分类ID"
+        />
+        <ProFormText
+          name="departmentClassId"
+          label="科室分类ID"
+        />
         <ProFormTextArea
           name="description"
           label="药品描述"
+        />
+        <ProFormSelect
+          name="status"
+          label="状态"
+          options={[
+            { value: 'normal', label: '正常' },
+            { value: 'stopped', label: '停用' },
+            { value: 'out_of_stock', label: '缺货' },
+          ]}
+          initialValue="normal"
         />
       </ProForm>
     </PageContainer>

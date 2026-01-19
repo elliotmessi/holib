@@ -50,10 +50,15 @@ export type DrugCreateRequest = {
   retailPrice: number
   wholesalePrice: number
   medicalInsuranceRate?: number
+  pharmacologicalClassId?: number
+  dosageClassId?: number
+  departmentClassId?: number
+  description?: string
   status?: string
 }
 
 export type DrugUpdateRequest = {
+  drugCode?: string
   genericName?: string
   tradeName?: string
   specification?: string
@@ -68,6 +73,10 @@ export type DrugUpdateRequest = {
   retailPrice?: number
   wholesalePrice?: number
   medicalInsuranceRate?: number
+  pharmacologicalClassId?: number
+  dosageClassId?: number
+  departmentClassId?: number
+  description?: string
   status?: string
 }
 

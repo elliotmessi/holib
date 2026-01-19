@@ -1,5 +1,5 @@
 import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio } from '@ant-design/pro-components';
-import { Button, message, Radio } from 'antd';
+import { Button, message } from 'antd';
 import React from 'react';
 import { useModel } from '@umijs/max';
 import { history } from '@@/core/history';
@@ -42,21 +42,19 @@ const DoctorCreate: React.FC = () => {
           rules={[{ required: true, message: '请输入医生姓名' }]}
         />
         <ProFormText
-          name="code"
+          name="doctorCode"
           label="医生编码"
           rules={[{ required: true, message: '请输入医生编码' }]}
         />
-        <ProFormRadio
+        <ProFormRadio.Group
           name="gender"
           label="性别"
-          initialValue={1}
           rules={[{ required: true, message: '请选择性别' }]}
-        >
-          <Radio.Group>
-            <Radio value={1}>男</Radio>
-            <Radio value={2}>女</Radio>
-          </Radio.Group>
-        </ProFormRadio>
+          options={[
+            { value: 'male', label: '男' },
+            { value: 'female', label: '女' },
+          ]}
+        />
         <ProFormText
           name="phone"
           label="联系电话"
@@ -77,14 +75,23 @@ const DoctorCreate: React.FC = () => {
           rules={[{ required: true, message: '请输入职称' }]}
         />
         <ProFormText
-          name="specialty"
-          label="专长"
-          rules={[{ required: true, message: '请输入专长' }]}
+          name="practiceType"
+          label="执业类别"
+          rules={[{ required: true, message: '请输入执业类别' }]}
+        />
+        <ProFormText
+          name="practiceScope"
+          label="执业范围"
+          rules={[{ required: true, message: '请输入执业范围' }]}
         />
         <ProFormSelect
           name="status"
           label="状态"
-          initialValue={1}
+          options={[
+            { value: 'active', label: '启用' },
+            { value: 'inactive', label: '禁用' },
+          ]}
+          initialValue="active"
         />
       </ProForm>
     </PageContainer>
