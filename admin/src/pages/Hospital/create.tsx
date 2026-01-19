@@ -40,7 +40,7 @@ const HospitalCreate: React.FC = () => {
             rules={[{ required: true, message: '请输入医院名称' }]}
           />
           <ProFormText
-            name="code"
+            name="hospitalCode"
             label="医院编码"
             rules={[{ required: true, message: '请输入医院编码' }]}
           />
@@ -50,7 +50,7 @@ const HospitalCreate: React.FC = () => {
             rules={[{ required: true, message: '请输入地址' }]}
           />
           <ProFormText
-            name="contact"
+            name="contactPerson"
             label="联系人"
             rules={[{ required: true, message: '请输入联系人' }]}
           />
@@ -58,11 +58,6 @@ const HospitalCreate: React.FC = () => {
             name="phone"
             label="电话"
             rules={[{ required: true, message: '请输入电话' }]}
-          />
-          <ProFormText
-            name="email"
-            label="邮箱"
-            rules={[{ type: 'email', message: '请输入正确的邮箱格式' }]}
           />
           <ProFormSelect
             name="status"

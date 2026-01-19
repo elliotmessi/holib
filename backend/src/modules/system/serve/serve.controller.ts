@@ -1,5 +1,4 @@
-import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager'
-import { Controller, Get, UseInterceptors } from '@nestjs/common'
+import { Controller, Get } from '@nestjs/common'
 import { ApiExtraModels, ApiOperation, ApiTags } from '@nestjs/swagger'
 
 import { ApiResult } from '~/common/decorators/api-result.decorator'
@@ -15,9 +14,6 @@ import { ServeService } from './serve.service'
 @ApiSecurityAuth()
 @ApiExtraModels(ServeStatInfo)
 @Controller('serve')
-@UseInterceptors(CacheInterceptor)
-@CacheKey('serve_stat')
-@CacheTTL(10000)
 export class ServeController {
   constructor(private serveService: ServeService) {}
 

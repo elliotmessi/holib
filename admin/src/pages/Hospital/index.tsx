@@ -56,42 +56,24 @@ const HospitalList: React.FC = () => {
     },
     {
       title: '医院编码',
-      dataIndex: 'code',
-      key: 'code',
+      dataIndex: 'hospitalCode',
+      key: 'hospitalCode',
       ellipsis: true,
     },
     {
       title: '地址',
       dataIndex: 'address',
-      key: 'address',
       ellipsis: true,
     },
     {
       title: '联系人',
-      dataIndex: 'contact',
-      key: 'contact',
+      dataIndex: 'contactPerson',
       ellipsis: true,
     },
     {
       title: '联系电话',
       dataIndex: 'phone',
-      key: 'phone',
       ellipsis: true,
-    },
-    {
-      title: '邮箱',
-      dataIndex: 'email',
-      key: 'email',
-      ellipsis: true,
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      key: 'status',
-      valueEnum: {
-        1: { text: '启用', status: 'Success' },
-        0: { text: '禁用', status: 'Error' },
-      },
     },
     {
       title: '创建时间',
@@ -149,18 +131,9 @@ const HospitalList: React.FC = () => {
         valueType: 'text',
       },
       {
-        name: 'code',
+        name: 'hospitalCode',
         label: '医院编码',
         valueType: 'text',
-      },
-      {
-        name: 'status',
-        label: '状态',
-        valueType: 'select',
-        valueEnum: {
-          1: { text: '启用', status: 'Success' },
-          0: { text: '禁用', status: 'Error' },
-        },
       },
     ],
   };
@@ -230,7 +203,7 @@ const HospitalList: React.FC = () => {
             <Input placeholder="请输入医院名称" />
           </Form.Item>
           <Form.Item
-            name="code"
+            name="hospitalCode"
             label="医院编码"
             rules={[{ required: true, message: '请输入医院编码' }]}
           >
@@ -321,7 +294,7 @@ const HospitalList: React.FC = () => {
             <Input placeholder="请输入医院名称" />
           </Form.Item>
           <Form.Item
-            name="code"
+            name="hospitalCode"
             label="医院编码"
             rules={[{ required: true, message: '请输入医院编码' }]}
           >

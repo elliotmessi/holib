@@ -4,19 +4,19 @@ import { PaginatedResponse } from "@/types/pagination"
 export type Hospital = {
   id: number
   name: string
-  code: string
+  hospitalCode: string
   address: string
-  contact: string
+  contactPerson: string
   phone: string
-  email: string
-  status: number
+  level?: string
+  description?: string
   createdAt: string
   updatedAt: string
 }
 
 export type HospitalQueryParams = {
   name?: string
-  code?: string
+  hospitalCode?: string
   status?: number
   page?: number
   pageSize?: number
@@ -42,8 +42,7 @@ export type HospitalUpdateRequest = {
   status?: number
 }
 
-export const getHospitalList = (params?: HospitalQueryParams) =>
-  http.get<PaginatedResponse<Hospital>>("/hospitals", params)
+export const getHospitalList = (params?: HospitalQueryParams) => http.get<PaginatedResponse<Hospital>>("/hospitals", params)
 
 export const getHospitalById = (id: number) => http.get<Hospital>(`/hospitals/${id}`)
 

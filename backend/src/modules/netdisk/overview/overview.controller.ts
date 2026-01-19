@@ -1,5 +1,4 @@
-import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager'
-import { Controller, Get, UseInterceptors } from '@nestjs/common'
+import { Controller, Get } from '@nestjs/common'
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 
 import { definePermission, Perm } from '~/modules/auth/decorators/permission.decorator'
@@ -17,9 +16,6 @@ export class NetDiskOverviewController {
   constructor(private overviewService: NetDiskOverviewService) {}
 
   @Get('desc')
-  @CacheKey('netdisk_overview_desc')
-  @CacheTTL(3600)
-  @UseInterceptors(CacheInterceptor)
   @ApiOperation({ summary: '获取网盘空间数据统计' })
   @ApiOkResponse({ type: OverviewSpaceInfo })
   @Perm(permissions.DESC)

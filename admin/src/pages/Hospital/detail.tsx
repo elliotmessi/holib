@@ -22,12 +22,12 @@ const HospitalDetail: React.FC = () => {
     >
       <ProDescriptions column={2} title="医院信息" loading={loading}>
         <ProDescriptions.Item label="医院名称">{hospitalDetail?.name}</ProDescriptions.Item>
-        <ProDescriptions.Item label="医院编码">{hospitalDetail?.code}</ProDescriptions.Item>
+        <ProDescriptions.Item label="医院编码">{hospitalDetail?.hospitalCode}</ProDescriptions.Item>
         <ProDescriptions.Item label="地址">{hospitalDetail?.address}</ProDescriptions.Item>
-        <ProDescriptions.Item label="联系人">{hospitalDetail?.contact}</ProDescriptions.Item>
+        <ProDescriptions.Item label="联系人">{hospitalDetail?.contactPerson}</ProDescriptions.Item>
         <ProDescriptions.Item label="电话">{hospitalDetail?.phone}</ProDescriptions.Item>
-        <ProDescriptions.Item label="邮箱">{hospitalDetail?.email}</ProDescriptions.Item>
-        <ProDescriptions.Item label="状态">{hospitalDetail?.status === 1 ? '启用' : '禁用'}</ProDescriptions.Item>
+        <ProDescriptions.Item label="等级">{hospitalDetail?.level}</ProDescriptions.Item>
+        <ProDescriptions.Item label="描述">{hospitalDetail?.description}</ProDescriptions.Item>
         <ProDescriptions.Item label="创建时间">{hospitalDetail?.createdAt}</ProDescriptions.Item>
         <ProDescriptions.Item label="更新时间">{hospitalDetail?.updatedAt}</ProDescriptions.Item>
       </ProDescriptions>

@@ -11,7 +11,7 @@ const HospitalList: React.FC = () => {
   const navigate = useNavigate();
   const access = useAccess();
   const { useHospitalList, useDeleteHospital } = useModel('hospital');
-  const { data: hospitalList, loading, total, page, pageSize, refresh } = useHospitalList();
+  const { data: hospitalList, loading, pagination, refresh } = useHospitalList();
   const { submitDelete, loading: deleteLoading } = useDeleteHospital({
     success: () => refresh(),
   });
@@ -32,39 +32,28 @@ const HospitalList: React.FC = () => {
     },
     {
       title: '医院编码',
-      dataIndex: 'code',
-      key: 'code',
+      dataIndex: 'hospitalCode',
+      key: 'hospitalCode',
     },
     {
       title: '地址',
       dataIndex: 'address',
-      key: 'address',
     },
     {
       title: '联系人',
-      dataIndex: 'contact',
-      key: 'contact',
+      dataIndex: 'contactPerson',
     },
     {
       title: '电话',
       dataIndex: 'phone',
-      key: 'phone',
     },
     {
-      title: '邮箱',
-      dataIndex: 'email',
-      key: 'email',
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      key: 'status',
-      render: (_, { status }) => (status === 1 ? '启用' : '禁用'),
+      title: '医院等级',
+      dataIndex: 'level',
     },
     {
       title: '创建时间',
       dataIndex: 'createdAt',
-      key: 'createdAt',
     },
     {
       title: '操作',
@@ -126,7 +115,7 @@ const HospitalList: React.FC = () => {
         dataSource={hospitalList}
         rowKey="id"
         loading={loading}
-        pagination={{ total, current: page, pageSize }}
+        pagination={pagination}
       />
     </PageContainer>
   );

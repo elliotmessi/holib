@@ -1,18 +1,19 @@
-import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common'
+import type { CallHandler, ExecutionContext, NestInterceptor } from "@nestjs/common"
 
-import type { FastifyRequest } from 'fastify'
-import { ConflictException, Injectable, SetMetadata } from '@nestjs/common'
-import { Reflector } from '@nestjs/core'
-import { catchError, tap } from 'rxjs'
+import type { FastifyRequest } from "fastify"
+import { ConflictException, Injectable, SetMetadata } from "@nestjs/common"
+import { Reflector } from "@nestjs/core"
+import { catchError, tap } from "rxjs"
 
-import { CacheService } from '~/shared/redis/cache.service'
-import { hashString } from '~/utils'
-import { getIp } from '~/utils/ip.util'
-import { getRedisKey } from '~/utils/redis.util'
+import { InjectRedis } from "~/common/decorators/inject-redis.decorator"
+import { hashString } from "~/utils"
+import { getIp } from "~/utils/ip.util"
+import { getRedisKey } from "~/utils/redis.util"
+import Redis from "ioredis"
 
-import { HTTP_IDEMPOTENCE_KEY, HTTP_IDEMPOTENCE_OPTIONS } from '../decorators/idempotence.decorator'
+import { HTTP_IDEMPOTENCE_KEY, HTTP_IDEMPOTENCE_OPTIONS } from "../decorators/idempotence.decorator"
 
-const IdempotenceHeaderKey = 'x-idempotence'
+const IdempotenceHeaderKey = "x-idempotence"
 
 export interface IdempotenceOption {
   errorMessage?: string
@@ -43,48 +44,37 @@ export interface IdempotenceOption {
 
 @Injectable()
 export class IdempotenceInterceptor implements NestInterceptor {
-  constructor(
-    private readonly reflector: Reflector,
-    private readonly cacheService: CacheService,
-  ) {}
+  constructor(private readonly reflector: Reflector, @InjectRedis() private readonly redis: Redis) {}
 
   async intercept(context: ExecutionContext, next: CallHandler) {
     const request = context.switchToHttp().getRequest<FastifyRequest>()
 
     // skip Get 请求
-    if (request.method.toUpperCase() === 'GET') return next.handle()
+    if (request.method.toUpperCase() === "GET") return next.handle()
 
     const handler = context.getHandler()
-    const options: IdempotenceOption | undefined = this.reflector.get(
-      HTTP_IDEMPOTENCE_OPTIONS,
-      handler,
-    )
+    const options: IdempotenceOption | undefined = this.reflector.get(HTTP_IDEMPOTENCE_OPTIONS, handler)
 
     if (!options) return next.handle()
 
     const {
-      errorMessage = '相同请求成功后在 60 秒内只能发送一次',
-      pendingMessage = '相同请求正在处理中...',
+      errorMessage = "相同请求成功后在 60 秒内只能发送一次",
+      pendingMessage = "相同请求正在处理中...",
       handler: errorHandler,
       expired = 60,
       disableGenerateKey = false,
     } = options
-    const redis = this.cacheService.getClient()
+    const redis = this.redis
 
     const idempotence = request.headers[IdempotenceHeaderKey] as string
-    const key = disableGenerateKey
-      ? undefined
-      : options.generateKey
-        ? options.generateKey(request)
-        : this.generateKey(request)
+    const key = disableGenerateKey ? undefined : options.generateKey ? options.generateKey(request) : this.generateKey(request)
 
-    const idempotenceKey =
-      !!(idempotence || key) && getRedisKey(`idempotence:${idempotence || key}`)
+    const idempotenceKey = !!(idempotence || key) && getRedisKey(`idempotence:${idempotence || key}`)
 
     SetMetadata(HTTP_IDEMPOTENCE_KEY, idempotenceKey)(handler)
 
     if (idempotenceKey) {
-      const resultValue: '0' | '1' | null = (await redis.get(idempotenceKey)) as any
+      const resultValue: "0" | "1" | null = (await redis.get(idempotenceKey)) as any
       if (resultValue !== null) {
         if (errorHandler) return await errorHandler(request)
 
@@ -94,20 +84,20 @@ export class IdempotenceInterceptor implements NestInterceptor {
         }[resultValue]
         throw new ConflictException(message)
       } else {
-        await redis.set(idempotenceKey, '0', 'EX', expired)
+        await redis.set(idempotenceKey, "0", "EX", expired)
       }
     }
     return next.handle().pipe(
       tap(async () => {
         if (idempotenceKey) {
-          await redis.set(idempotenceKey, '1', 'KEEPTTL')
+          await redis.set(idempotenceKey, "1", "KEEPTTL")
         }
       }),
-      catchError(async (err) => {
+      catchError(async err => {
         if (idempotenceKey) await redis.del(idempotenceKey)
 
         throw err
-      }),
+      })
     )
   }
 
@@ -116,11 +106,11 @@ export class IdempotenceInterceptor implements NestInterceptor {
 
     const obj = { body, url, params, query } as any
 
-    const uuid = headers['x-uuid']
+    const uuid = headers["x-uuid"]
     if (uuid) {
       obj.uuid = uuid
     } else {
-      const ua = headers['user-agent']
+      const ua = headers["user-agent"]
       const ip = getIp(req)
 
       if (!ua && !ip) return undefined
